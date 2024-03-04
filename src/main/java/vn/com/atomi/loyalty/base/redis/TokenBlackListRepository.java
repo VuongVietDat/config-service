@@ -1,11 +1,10 @@
-package vn.com.atomi.loyalty.config.repository.redis;
+package vn.com.atomi.loyalty.base.redis;
 
 import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import vn.com.atomi.loyalty.config.entity.redis.TokenBlackList;
 
 /**
  * @author haidv

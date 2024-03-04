@@ -1,6 +1,6 @@
 package vn.com.atomi.loyalty.config.service;
 
-import vn.com.atomi.loyalty.base.data.ListRequest;
+import org.springframework.data.domain.Pageable;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
@@ -14,11 +14,11 @@ public interface CampaignService {
 
   void createCampaign(CampaignInput campaignInput);
 
-  ResponsePage<CampaignOutput> getCampaignApprovals(ListRequest listRequest);
+  ResponsePage<CampaignOutput> getCampaignApprovals(Pageable pageable);
 
   CampaignOutput getCampaignApproval(Long id);
 
-  ResponsePage<CampaignOutput> getCampaigns(ListRequest listRequest);
+  ResponsePage<CampaignOutput> getCampaigns(Pageable pageable);
 
   CampaignOutput getCampaign(Long id);
 

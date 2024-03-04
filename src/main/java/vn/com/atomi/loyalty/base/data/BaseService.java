@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
-import vn.com.atomi.loyalty.config.dto.output.UserOutput;
 import vn.com.atomi.loyalty.config.mapper.ModelMapper;
 import vn.com.atomi.loyalty.config.security.UserPrincipal;
 
@@ -47,10 +46,6 @@ public abstract class BaseService {
       return (UserPrincipal) authentication.getPrincipal();
     }
     throw new BaseException(CommonErrorCode.UNAUTHORIZED);
-  }
-
-  protected UserOutput getUserOutput() {
-    return getCurrentUserPrincipal().getUserOutput();
   }
 
   protected String getRequestId() {

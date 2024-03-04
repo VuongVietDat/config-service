@@ -1,9 +1,9 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.atomi.loyalty.base.data.BaseService;
-import vn.com.atomi.loyalty.base.data.ListRequest;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
@@ -22,7 +22,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   public void createCampaign(CampaignInput campaignInput) {}
 
   @Override
-  public ResponsePage<CampaignOutput> getCampaignApprovals(ListRequest listRequest) {
+  public ResponsePage<CampaignOutput> getCampaignApprovals(Pageable pageable) {
     return null;
   }
 
@@ -32,7 +32,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public ResponsePage<CampaignOutput> getCampaigns(ListRequest listRequest) {
+  public ResponsePage<CampaignOutput> getCampaigns(Pageable pageable) {
     return null;
   }
 

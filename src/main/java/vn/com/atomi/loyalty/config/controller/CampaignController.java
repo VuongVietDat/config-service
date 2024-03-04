@@ -1,13 +1,11 @@
 package vn.com.atomi.loyalty.config.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.com.atomi.loyalty.base.data.ListRequest;
-import vn.com.atomi.loyalty.base.data.ResponseData;
-import vn.com.atomi.loyalty.base.data.ResponsePage;
-import vn.com.atomi.loyalty.base.data.ResponseUtils;
+import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
@@ -19,11 +17,11 @@ import vn.com.atomi.loyalty.config.service.CampaignService;
  */
 @RestController
 @RequiredArgsConstructor
-public class CampaignController {
+public class CampaignController extends BaseController {
 
   private final CampaignService campaignService;
 
-  @ApiOperation("APi tạo mới chiến dịch (bản ghi chờ duyệt)")
+  @Operation(summary = "APi tạo mới chiến dịch (bản ghi chờ duyệt)")
   @PostMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<Void>> createCampaign(
       @RequestBody CampaignInput campaignInput) {
@@ -31,57 +29,75 @@ public class CampaignController {
     return ResponseUtils.success();
   }
 
-  @ApiOperation("Api lấy danh sách duyệt chiến dịch")
+  @Operation(summary = "Api lấy danh sách duyệt chiến dịch")
   @GetMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaignApprovals(
-      @ModelAttribute ListRequest listRequest) {
-    return ResponseUtils.success(campaignService.getCampaignApprovals(listRequest));
+      @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
+          Integer pageSize,
+      @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
+          @RequestParam(required = false)
+          String sort) {
+    return ResponseUtils.success(
+        campaignService.getCampaignApprovals(super.pageable(pageNo, pageSize, sort)));
   }
 
-  @ApiOperation("Api lấy chi tiết bản ghi duyệt chiến dịch theo id")
+  @Operation(summary = "Api lấy chi tiết bản ghi duyệt chiến dịch theo id")
   @GetMapping("/campaigns/approvals/{id}")
-  public ResponseEntity<ResponseData<CampaignOutput>> getCampaignApproval(@PathVariable Long id) {
+  public ResponseEntity<ResponseData<CampaignOutput>> getCampaignApproval(
+      @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
     return ResponseUtils.success(campaignService.getCampaignApproval(id));
   }
 
-  @ApiOperation("Api cập nhật bản ghi chờ duyệt chiến dịch theo id")
+  @Operation(summary = "Api cập nhật bản ghi chờ duyệt chiến dịch theo id")
   @PutMapping("/campaigns/approvals/{id}")
   public ResponseEntity<ResponseData<Void>> updateCampaignApproval(
-      @PathVariable Long id, @RequestBody CampaignInput campaignInput) {
+      @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id,
+      @RequestBody CampaignInput campaignInput) {
     campaignService.updateCampaignApproval(id, campaignInput);
     return ResponseUtils.success();
   }
 
-  @ApiOperation("Api thu hồi yêu cầu chờ duyệt chiến dịch theo id")
+  @Operation(summary = "Api thu hồi yêu cầu chờ duyệt chiến dịch theo id")
   @PutMapping("/campaigns/approvals/{id}/recall")
-  public ResponseEntity<ResponseData<Void>> recallCampaignApproval(@PathVariable Long id) {
+  public ResponseEntity<ResponseData<Void>> recallCampaignApproval(
+      @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
     campaignService.recallCampaignApproval(id);
     return ResponseUtils.success();
   }
 
-  @ApiOperation("Api lấy danh sách chiến dịch")
+  @Operation(summary = "Api lấy danh sách chiến dịch")
   @GetMapping("/campaigns")
   public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaigns(
-      @ModelAttribute ListRequest listRequest) {
-    return ResponseUtils.success(campaignService.getCampaigns(listRequest));
+      @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
+          Integer pageSize,
+      @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
+          @RequestParam(required = false)
+          String sort) {
+    return ResponseUtils.success(
+        campaignService.getCampaigns(super.pageable(pageNo, pageSize, sort)));
   }
 
-  @ApiOperation("Api lấy chi tiết bản ghi chiến dịch theo id")
+  @Operation(summary = "Api lấy chi tiết bản ghi chiến dịch theo id")
   @GetMapping("/campaigns/{id}")
-  public ResponseEntity<ResponseData<CampaignOutput>> getCampaign(@PathVariable Long id) {
+  public ResponseEntity<ResponseData<CampaignOutput>> getCampaign(
+      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id) {
     return ResponseUtils.success(campaignService.getCampaign(id));
   }
 
-  @ApiOperation(
-      "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
+  @Operation(
+      summary =
+          "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
   @PutMapping("/campaigns/{id}")
   public ResponseEntity<ResponseData<Void>> updateCampaign(
-      @PathVariable Long id, @RequestBody CampaignInput campaignInput) {
+      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id,
+      @RequestBody CampaignInput campaignInput) {
     campaignService.updateCampaign(id, campaignInput);
     return ResponseUtils.success();
   }
 
-  @ApiOperation("Api phê duyệt chiến dịch")
+  @Operation(summary = "Api phê duyệt chiến dịch")
   @PutMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<Void>> approveCampaign(@RequestBody ApprovalInput input) {
     campaignService.approveCampaign(input);

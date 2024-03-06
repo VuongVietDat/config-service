@@ -1,4 +1,4 @@
-package vn.com.atomi.loyalty.config.dto.output;
+package vn.com.atomi.loyalty.base.security;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.List;
 import lombok.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 
@@ -54,10 +53,6 @@ public class UserOutput {
   private String avatar;
 
   private ZonedDateTime lockExpired;
-
-  private List<UserClientOutput> userClientOutputs;
-
-  private List<UserRoleOutput> userRoleOutputs;
 
   private String introducer;
 }

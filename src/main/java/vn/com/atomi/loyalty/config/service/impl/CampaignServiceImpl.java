@@ -8,7 +8,10 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
+import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.repository.CampaignRepository;
 import vn.com.atomi.loyalty.config.service.CampaignService;
+import vn.com.atomi.loyalty.config.utils.Utils;
 
 /**
  * @author haidv
@@ -17,6 +20,8 @@ import vn.com.atomi.loyalty.config.service.CampaignService;
 @Service
 @RequiredArgsConstructor
 public class CampaignServiceImpl extends BaseService implements CampaignService {
+
+  private final CampaignRepository campaignRepository;
 
   @Override
   public void createCampaign(CampaignInput campaignInput) {}
@@ -32,8 +37,16 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public ResponsePage<CampaignOutput> getCampaigns(Pageable pageable) {
-    return null;
+  public ResponsePage<CampaignOutput> getCampaigns(
+      Status status, String startDate, String endDate, Pageable pageable) {
+    var campaignPage =
+        campaignRepository.findByCondition(
+            status,
+            Utils.convertToLocalDateTime(startDate),
+            Utils.convertToLocalDateTime(endDate),
+            pageable);
+    return new ResponsePage<>(
+        campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
   }
 
   @Override

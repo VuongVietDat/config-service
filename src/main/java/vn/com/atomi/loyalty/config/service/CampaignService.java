@@ -5,6 +5,7 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
+import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
  * @author haidv
@@ -18,7 +19,8 @@ public interface CampaignService {
 
   CampaignOutput getCampaignApproval(Long id);
 
-  ResponsePage<CampaignOutput> getCampaigns(Pageable pageable);
+  ResponsePage<CampaignOutput> getCampaigns(
+      Status status, String startDate, String endDate, Pageable pageable);
 
   CampaignOutput getCampaign(Long id);
 

@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
+import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.CampaignService;
 
 /**
@@ -74,9 +76,21 @@ public class CampaignController extends BaseController {
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)
-          String sort) {
+          String sort,
+      @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
+          @RequestParam(required = false)
+          Status status,
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String startDate,
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String endDate) {
     return ResponseUtils.success(
-        campaignService.getCampaigns(super.pageable(pageNo, pageSize, sort)));
+        campaignService.getCampaigns(
+            status, startDate, endDate, super.pageable(pageNo, pageSize, sort)));
   }
 
   @Operation(summary = "Api lấy chi tiết bản ghi chiến dịch theo id")

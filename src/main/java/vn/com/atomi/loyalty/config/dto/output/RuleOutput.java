@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
@@ -31,6 +30,9 @@ public class RuleOutput {
   @Schema(description = "Mã qui tắc sinh điểm")
   private String code;
 
+  @Schema(description = "Tên quy tắc sinh điểm")
+  private String name;
+
   @Schema(
       description =
           "Loại điểm:</br> ALL: Tất cả loại điẻm</br> RANK_POINT: Điểm xếp hạng</br> CONSUMPTION_POINT: Điểm tích lũy dùng để tiêu dùng")
@@ -44,13 +46,13 @@ public class RuleOutput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS)
-  private LocalDateTime startDate;
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS)
-  private LocalDateTime endDate;
+  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  private LocalDate endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   private Status status;

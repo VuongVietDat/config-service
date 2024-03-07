@@ -1,6 +1,6 @@
 package vn.com.atomi.loyalty.config.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +39,7 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
           "select r.id           as id, "
               + "       r.type         as type, "
               + "       r.code         as code, "
+              + "       r.name         as name, "
               + "       r.pointType    as pointType, "
               + "       c.id           as campaignId, "
               + "       c.name         as campaignName, "
@@ -68,8 +69,8 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
       PointType pointType,
       Status status,
       Long campaignId,
-      LocalDateTime startDate,
-      LocalDateTime endDate,
+      LocalDate startDate,
+      LocalDate endDate,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
       Pageable pageable);

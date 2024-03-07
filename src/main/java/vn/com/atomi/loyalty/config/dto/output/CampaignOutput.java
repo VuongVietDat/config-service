@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.config.dto.output;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
@@ -28,13 +29,13 @@ public class CampaignOutput {
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   private Status status;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS)
-  private LocalDateTime startDate;
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS)
-  private LocalDateTime endDate;
+  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  private LocalDate endDate;
 
   @Schema(description = "Người tạo")
   private String creator;

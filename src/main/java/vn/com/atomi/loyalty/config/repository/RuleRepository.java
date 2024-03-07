@@ -26,6 +26,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
           "select r.id                   as id, "
               + "       r.type                 as type, "
               + "       r.code                 as code, "
+              + "       r.name                 as name, "
               + "       r.pointType            as pointType, "
               + "       c.id                   as campaignId, "
               + "       c.name                 as campaignName, "

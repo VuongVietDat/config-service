@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,6 @@ import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.PointType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.RuleService;
-
-import java.util.List;
 
 /**
  * @author haidv
@@ -69,11 +68,11 @@ public class RuleController extends BaseController {
                   "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
           @RequestParam(required = false)
           ApprovalType approvalType,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endDate) {
@@ -135,11 +134,11 @@ public class RuleController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endDate) {

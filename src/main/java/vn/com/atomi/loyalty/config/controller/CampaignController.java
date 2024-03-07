@@ -80,11 +80,11 @@ public class CampaignController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endDate) {

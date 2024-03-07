@@ -1,8 +1,9 @@
 package vn.com.atomi.loyalty.config.dto.input;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.atomi.loyalty.config.enums.*;
@@ -15,12 +16,16 @@ import vn.com.atomi.loyalty.config.enums.*;
 @Getter
 public class UpdateRuleInput {
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  @NotNull
-  private LocalDateTime startDate;
+  @NotBlank
+  @Schema(description = "Tên quy tắc sinh điểm")
+  private String name;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
-  private LocalDateTime endDate;
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+  @NotNull
+  private LocalDate startDate;
+
+  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+  private LocalDate endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   @NotNull

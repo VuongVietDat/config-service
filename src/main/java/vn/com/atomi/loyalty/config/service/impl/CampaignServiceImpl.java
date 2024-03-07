@@ -42,8 +42,8 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var campaignPage =
         campaignRepository.findByCondition(
             status,
-            Utils.convertToLocalDateTime(startDate),
-            Utils.convertToLocalDateTime(endDate),
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate),
             pageable);
     return new ResponsePage<>(
         campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));

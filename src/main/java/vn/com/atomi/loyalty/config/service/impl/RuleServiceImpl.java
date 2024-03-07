@@ -1,6 +1,6 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,15 +58,15 @@ public class RuleServiceImpl extends BaseService implements RuleService {
 
   @Override
   public void createRule(CreateRuleInput createRuleInput) {
-    LocalDateTime ruleStartDate = Utils.convertToLocalDateTime(createRuleInput.getStartDate());
-    LocalDateTime ruleEndDate = Utils.convertToLocalDateTime(createRuleInput.getEndDate());
+    LocalDate ruleStartDate = Utils.convertToLocalDate(createRuleInput.getStartDate());
+    LocalDate ruleEndDate = Utils.convertToLocalDate(createRuleInput.getEndDate());
     // kiểm tra chiến dịch
     var campaign =
         campaignRepository
             .findByDeletedFalseAndIdAndStatus(createRuleInput.getCampaignId(), Status.ACTIVE)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
     // kiểm tra thời gian hiệu lực của chiến dịch
-    if (campaign.getEndDate() != null && campaign.getEndDate().isBefore(LocalDateTime.now())) {
+    if (campaign.getEndDate() != null && campaign.getEndDate().isBefore(LocalDate.now())) {
       throw new BaseException(ErrorCode.CAMPAIGN_INACTIVE);
     }
     // so sánh ngày bắt đầu quy tắc và ngày bắt đầu chiến dịch
@@ -149,8 +149,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pointType,
             status,
             campaignId,
-            Utils.convertToLocalDateTime(startDate),
-            Utils.convertToLocalDateTime(endDate),
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate),
             approvalStatus,
             approvalType,
             pageable);
@@ -365,12 +365,12 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         new DiffBuilder<>(oldRuleApproval, newRuleApproval, ToStringStyle.DEFAULT_STYLE)
             .append(
                 "startDate",
-                Utils.formatLocalDateTimeToString(oldRuleApproval.getStartDate()),
-                Utils.formatLocalDateTimeToString(newRuleApproval.getStartDate()))
+                Utils.formatLocalDateToString(oldRuleApproval.getStartDate()),
+                Utils.formatLocalDateToString(newRuleApproval.getStartDate()))
             .append(
                 "endDate",
-                Utils.formatLocalDateTimeToString(oldRuleApproval.getEndDate()),
-                Utils.formatLocalDateTimeToString(newRuleApproval.getEndDate()))
+                Utils.formatLocalDateToString(oldRuleApproval.getEndDate()),
+                Utils.formatLocalDateToString(newRuleApproval.getEndDate()))
             .append("status", oldRuleApproval.getStatus(), newRuleApproval.getStatus())
             .append(
                 "expirePolicyType",

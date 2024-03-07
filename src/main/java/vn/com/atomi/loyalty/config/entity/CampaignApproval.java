@@ -1,13 +1,12 @@
 package vn.com.atomi.loyalty.config.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.Status;
-
-import java.time.LocalDateTime;
 
 /**
  * @author haidv
@@ -39,10 +38,10 @@ public class CampaignApproval extends BaseEntity {
   private Status status;
 
   @Column(name = "start_date")
-  private LocalDateTime startDate;
+  private LocalDate startDate;
 
   @Column(name = "end_date")
-  private LocalDateTime endDate;
+  private LocalDate endDate;
 
   @Column(name = "approval_status")
   @Enumerated(EnumType.STRING)

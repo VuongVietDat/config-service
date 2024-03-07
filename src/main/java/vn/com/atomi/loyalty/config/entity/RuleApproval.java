@@ -1,7 +1,7 @@
 package vn.com.atomi.loyalty.config.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
 import vn.com.atomi.loyalty.config.enums.*;
@@ -37,6 +37,9 @@ public class RuleApproval extends BaseEntity {
   @Column(name = "code")
   private String code;
 
+  @Column(name = "name")
+  private String name;
+
   @Column(name = "point_type")
   @Enumerated(EnumType.STRING)
   private PointType pointType;
@@ -49,10 +52,10 @@ public class RuleApproval extends BaseEntity {
   private ConditionType conditionType;
 
   @Column(name = "start_date")
-  private LocalDateTime startDate;
+  private LocalDate startDate;
 
   @Column(name = "end_date")
-  private LocalDateTime endDate;
+  private LocalDate endDate;
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)

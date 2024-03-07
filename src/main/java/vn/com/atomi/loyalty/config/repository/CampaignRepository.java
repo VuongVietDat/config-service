@@ -1,6 +1,6 @@
 package vn.com.atomi.loyalty.config.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,5 +29,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
               + "  and (:endDate is null or c.endDate <= :endDate) "
               + "order by c.updatedAt desc ")
   Page<Campaign> findByCondition(
-      Status status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+      Status status, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

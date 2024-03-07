@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.mapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -163,8 +164,8 @@ public interface ModelMapper {
   @Mapping(target = "approvalStatus", source = "approvalStatus")
   RuleApproval convertToRuleApproval(
       CreateRuleInput createRuleInput,
-      LocalDateTime ruleStartDate,
-      LocalDateTime ruleEndDate,
+      LocalDate ruleStartDate,
+      LocalDate ruleEndDate,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType);
 

@@ -23,6 +23,10 @@ public class CreateRuleInput {
   @NotBlank
   private String type;
 
+  @Schema(description = "Tên quy tắc sinh điểm")
+  @NotBlank
+  private String name;
+
   @Schema(
       description =
           "Loại điểm:</br> ALL: Tất cả loại điẻm</br> RANK_POINT: Điểm xếp hạng</br> CONSUMPTION_POINT: Điểm tích lũy dùng để tiêu dùng")
@@ -38,11 +42,11 @@ public class CreateRuleInput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy HH:mm:ss)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
   @DateTimeValidator
   private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy HH:mm:ss)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
   @DateTimeValidator(required = false)
   private String endDate;
 

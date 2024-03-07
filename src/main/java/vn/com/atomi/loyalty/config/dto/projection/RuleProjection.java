@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.dto.projection;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
 import vn.com.atomi.loyalty.config.enums.*;
@@ -16,15 +17,17 @@ public interface RuleProjection {
 
   String getCode();
 
+  String getName();
+
   PointType getPointType();
 
   Long getCampaignId();
 
   String getCampaignName();
 
-  LocalDateTime getStartDate();
+  LocalDate getStartDate();
 
-  LocalDateTime getEndDate();
+  LocalDate getEndDate();
 
   Status getStatus();
 

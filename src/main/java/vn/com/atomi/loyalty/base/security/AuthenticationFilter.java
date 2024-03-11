@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +32,7 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.exception.CommonErrorCode;
+import vn.com.atomi.loyalty.base.redis.CacheUserRepository;
 import vn.com.atomi.loyalty.base.redis.TokenBlackListRepository;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 
@@ -44,6 +44,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
   @Autowired private TokenProvider tokenProvider;
 
   @Autowired private TokenBlackListRepository tokenBlackListRepository;
+
+  @Autowired private CacheUserRepository cacheUserRepository;
+
+  @Autowired private UserinfoClient userinfoClient;
 
   @Value("${spring.application.name}")
   private String serviceName;
@@ -84,8 +88,11 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (tokenBlackListRepository.find(claims.getSubject()).isPresent()) {
           throw new BaseException(CommonErrorCode.REFRESH_TOKEN_EXPIRED);
         }
-        var userDetails =
-            new UserPrincipal(claims.getSubject(), claims.getIssuer(), new ArrayList<>());
+        UserOutput userOutput =
+            cacheUserRepository
+                .get(claims.getIssuer())
+                .orElseGet(() -> userinfoClient.getUser(requestId, claims.getIssuer()).getData());
+        var userDetails = new UserPrincipal(claims.getSubject(), claims.getIssuer(), userOutput);
         var authentication =
             new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());

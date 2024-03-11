@@ -20,10 +20,11 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Entity
 @Table(name = "CF_CAMPAIGN_APPROVAL")
 public class CampaignApproval extends BaseEntity {
+  public static final String GENERATOR = "cf_campaign_arv_id_seq";
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_campaign_arv_id_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = GENERATOR)
   @SequenceGenerator(
       name = "cf_campaign_arv_id_seq",
       sequenceName = "cf_campaign_arv_id_seq",
@@ -32,6 +33,15 @@ public class CampaignApproval extends BaseEntity {
 
   @Column(name = "name")
   private String name;
+
+  @Column(name = "code")
+  private String code;
+
+  @Column(name = "description")
+  private String description;
+
+  @Column(name = "customer_group")
+  private String customerGroup;
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)

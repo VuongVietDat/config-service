@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
@@ -157,6 +158,21 @@ public interface ModelMapper {
     }
     return null;
   }
+
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "code", source = "code")
+  @Mapping(target = "startDate", source = "startDate")
+  @Mapping(target = "endDate", source = "endDate")
+  @Mapping(target = "approvalType", source = "approvalType")
+  @Mapping(target = "approvalStatus", source = "approvalStatus")
+  CampaignApproval convertToCampaignApproval(
+      CampaignInput campaignInput,
+      LocalDate startDate,
+      LocalDate endDate,
+      ApprovalStatus approvalStatus,
+      ApprovalType approvalType,
+      Long id,
+      String code);
 
   @Mapping(target = "id", source = "id")
   @Mapping(target = "code", source = "code")

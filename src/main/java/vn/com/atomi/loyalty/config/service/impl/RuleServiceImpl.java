@@ -399,6 +399,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                 Utils.formatLocalDateToString(oldRuleApproval.getEndDate()),
                 Utils.formatLocalDateToString(newRuleApproval.getEndDate()))
             .append("status", oldRuleApproval.getStatus(), newRuleApproval.getStatus())
+            .append("name", oldRuleApproval.getName(), newRuleApproval.getName())
             .append(
                 "expirePolicyType",
                 oldRuleApproval.getExpirePolicyType(),

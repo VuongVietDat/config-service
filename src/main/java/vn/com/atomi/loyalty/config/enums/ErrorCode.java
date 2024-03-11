@@ -24,6 +24,9 @@ public enum ErrorCode implements AbstractError {
       HttpStatus.BAD_REQUEST),
   RULE_TYPE_NOT_EXISTED(1007, "Không tồn tại loại quy tắc sinh điểm.", HttpStatus.NOT_FOUND),
   RULE_BONUS_TYPE_NOT_EXISTED(1008, "Không tồn tại loại thưởng thêm.", HttpStatus.NOT_FOUND),
+  CUSTOMER_GROUP_NOT_EXISTED(1009, "Không tồn tại nhóm khách hàng.", HttpStatus.NOT_FOUND),
+  EXISTED_CAMPAIGN_USE_CUSTOMER_GROUP(
+      1010, "Nhóm khách hàng này đang được sử dụng ở chiến dịch.", HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

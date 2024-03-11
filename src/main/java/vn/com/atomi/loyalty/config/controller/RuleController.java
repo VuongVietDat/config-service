@@ -6,9 +6,11 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.data.*;
+import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
@@ -30,6 +32,7 @@ public class RuleController extends BaseController {
   private final RuleService ruleService;
 
   @Operation(summary = "Api tạo mới quy tắc sinh điểm (bản ghi chờ duyệt)")
+  @PreAuthorize(Authority.Rule.CREATE_RULE)
   @PostMapping("/rules/approvals")
   public ResponseEntity<ResponseData<Void>> createRule(
       @Valid @RequestBody CreateRuleInput createRuleInput) {
@@ -38,7 +41,8 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api lấy danh sách duyệt quy tắc sinh điểm")
-  @GetMapping("/public/rules/approvals")
+  @PreAuthorize(Authority.Rule.READ_RULE)
+  @GetMapping("/rules/approvals")
   public ResponseEntity<ResponseData<ResponsePage<RuleApprovalPreviewOutput>>> getRuleApprovals(
       @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
           Integer pageNo,
@@ -104,6 +108,7 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api lấy chi tiết bản ghi duyệt quy tắc sinh điểm theo id")
+  @PreAuthorize(Authority.Rule.READ_RULE)
   @GetMapping("/rules/approvals/{id}")
   public ResponseEntity<ResponseData<RuleApprovalOutput>> getRuleApproval(
       @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
@@ -113,6 +118,7 @@ public class RuleController extends BaseController {
   @Operation(
       summary =
           "Api so sánh bản ghi duyệt cập nhật hiện tại với bản ghi đã được phê duyệt trước đó")
+  @PreAuthorize(Authority.Rule.READ_RULE)
   @GetMapping("/rules/approvals/{id}/comparison")
   public ResponseEntity<ResponseData<List<ComparisonOutput>>> getRuleApprovalComparison(
       @Parameter(description = "ID bản ghi duyệt cập nhật") @PathVariable Long id) {
@@ -120,6 +126,7 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api thu hồi yêu cầu chờ duyệt quy tắc sinh điểm theo id")
+  @PreAuthorize(Authority.Rule.UPDATE_RULE)
   @PutMapping("/rules/approvals/{id}/recall")
   public ResponseEntity<ResponseData<Void>> recallRuleApproval(
       @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
@@ -128,7 +135,8 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api lấy danh sách quy tắc sinh điểm")
-  @GetMapping("/public/rules")
+  @PreAuthorize(Authority.Rule.READ_RULE)
+  @GetMapping("/rules")
   public ResponseEntity<ResponseData<ResponsePage<RulePreviewOutput>>> getRules(
       @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
           Integer pageNo,
@@ -172,6 +180,7 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api lấy chi tiết bản ghi quy tắc sinh điểm theo id")
+  @PreAuthorize(Authority.Rule.READ_RULE)
   @GetMapping("/rules/{id}")
   public ResponseEntity<ResponseData<RuleOutput>> getRule(
       @Parameter(description = "ID bản ghi quy tắc sinh điểm") @PathVariable Long id) {
@@ -181,6 +190,7 @@ public class RuleController extends BaseController {
   @Operation(
       summary =
           "Api cập nhật bản ghi quy tắc sinh điểm theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
+  @PreAuthorize(Authority.Rule.UPDATE_RULE)
   @PutMapping("/rules/{id}")
   public ResponseEntity<ResponseData<Void>> updateRule(
       @Parameter(description = "ID bản ghi quy tắc sinh điểm") @PathVariable Long id,
@@ -190,6 +200,7 @@ public class RuleController extends BaseController {
   }
 
   @Operation(summary = "Api phê duyệt quy tắc sinh điểm")
+  @PreAuthorize(Authority.Rule.APPROVE_RULE)
   @PutMapping("/rules/approvals")
   public ResponseEntity<ResponseData<Void>> approveRule(@Valid @RequestBody ApprovalInput input) {
     ruleService.approveRule(input);

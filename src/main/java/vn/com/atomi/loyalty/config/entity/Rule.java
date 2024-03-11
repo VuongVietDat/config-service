@@ -26,10 +26,7 @@ public class Rule extends BaseEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_rule_id_seq")
-  @SequenceGenerator(
-      name = "cf_rule_id_seq",
-      sequenceName = "cf_rule_id_seq",
-      allocationSize = 1)
+  @SequenceGenerator(name = "cf_rule_id_seq", sequenceName = "cf_rule_id_seq", allocationSize = 1)
   private Long id;
 
   @Column(name = "type")

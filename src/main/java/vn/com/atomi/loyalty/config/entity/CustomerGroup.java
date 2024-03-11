@@ -1,7 +1,6 @@
 package vn.com.atomi.loyalty.config.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
@@ -17,17 +16,20 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_CAMPAIGN")
-public class Campaign extends BaseEntity {
+@Table(name = "CF_CUSTOMER_GROUP")
+public class CustomerGroup extends BaseEntity {
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_campaign_id_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_customer_group_id_seq")
   @SequenceGenerator(
-      name = "cf_campaign_id_seq",
-      sequenceName = "cf_campaign_id_seq",
+      name = "cf_customer_group_id_seq",
+      sequenceName = "cf_customer_group_id_seq",
       allocationSize = 1)
   private Long id;
+
+  @Column(name = "code")
+  private String code;
 
   @Column(name = "name")
   private String name;
@@ -36,14 +38,8 @@ public class Campaign extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  @Column(name = "start_date")
-  private LocalDate startDate;
-
-  @Column(name = "end_date")
-  private LocalDate endDate;
-
-  @Column(name = "customer_group_id")
-  private Long customerGroupId;
+  @Column(name = "builder")
+  private String builder;
 
   @Column(name = "creator")
   private String creator;

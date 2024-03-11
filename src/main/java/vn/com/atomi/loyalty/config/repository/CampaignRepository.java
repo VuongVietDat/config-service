@@ -21,6 +21,16 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
   @Query(
       value =
+          "select count(1) "
+              + " from Campaign c "
+              + " where c.deleted = false "
+              + "   and c.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
+              + "   and c.customerGroupId = :groupId "
+              + "   and (c.startDate >= :startDate or c.endDate >= :startDate)")
+  boolean existsByActiveCampaign(Long groupId, LocalDate startDate);
+
+  @Query(
+      value =
           "select c "
               + "from Campaign c "
               + "where c.deleted = false "

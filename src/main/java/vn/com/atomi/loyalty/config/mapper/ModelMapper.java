@@ -7,6 +7,7 @@ import java.util.List;
 import org.mapstruct.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.CustomerGroupInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.dto.projection.RuleApprovalProjection;
@@ -274,4 +275,41 @@ public interface ModelMapper {
       CreateRuleInput.RuleBonusInput ruleBonus, Long ruleApprovalId);
 
   List<CampaignOutput> convertToCampaignOutput(List<Campaign> campaigns);
+
+  @Mapping(target = "creator", source = "createdBy")
+  @Mapping(target = "creationDate", source = "createdAt")
+  @Mapping(
+      target = "approveDate",
+      expression = "java(getApproveDate(approval.getApprovalStatus(), approval.getUpdatedAt()))")
+  @Mapping(
+      target = "approver",
+      expression = "java(getApprover(approval.getApprovalStatus(), approval.getUpdatedBy()))")
+  CustomerGroupApprovalPreviewOutput convertToCustomerGroupApprovalPreviewOutput(
+      CustomerGroupApproval approval);
+
+  List<CustomerGroupApprovalPreviewOutput> convertToCustomerGroupApprovalPreviewOutputs(
+      List<CustomerGroupApproval> customerGroupApprovals);
+
+  List<CustomerGroupPreviewOutput> convertToCustomerGroupPreviewOutputs(
+      List<CustomerGroup> content);
+
+  CustomerGroupApprovalOutput convertCustomerGroupApprovalOutput(
+      CustomerGroupApproval customerGroupApproval);
+
+  CustomerGroupOutput convertCustomerGroupOutput(CustomerGroup customerGroup);
+
+  CustomerGroup convertToCustomerGroup(CustomerGroupApproval customerGroupApproval);
+
+  CustomerGroup convertToCustomerGroup(
+      @MappingTarget CustomerGroup currentGroup, CustomerGroupApproval customerGroupApproval);
+
+  CustomerGroup convertToCustomerGroup(
+      @MappingTarget CustomerGroup customerGroup, CustomerGroupInput customerGroupInput);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "customerGroupId", source = "customerGroup.id")
+  @Mapping(target = "approvalType", source = "approvalType")
+  @Mapping(target = "approvalStatus", source = "approvalStatus")
+  CustomerGroupApproval convertToGroupApproval(
+      CustomerGroup customerGroup, ApprovalStatus approvalStatus, ApprovalType approvalType);
 }

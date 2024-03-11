@@ -46,12 +46,12 @@ public class RuleOutput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
@@ -64,7 +64,7 @@ public class RuleOutput {
 
   @Schema(
       description =
-          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd-MM-yyyy</br> FIRST_DATE_OF_MONTH: number")
+          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd/MM/yyyy</br> FIRST_DATE_OF_MONTH: number")
   private String expirePolicyValue;
 
   @Schema(description = "Quy tắc chung phân bổ điểm")
@@ -141,12 +141,12 @@ public class RuleOutput {
             "Loại giá trị thưởng:</br> PERCENTAGE: Phần trăm base điểm</br> FIX: Số điểm cụ thể")
     private PlusType plusType;
 
-    @Schema(description = "Từ ngày (dd-MM-yyyy)")
-    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+    @Schema(description = "Từ ngày (dd/MM/yyyy)")
+    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private LocalDate fromDate;
 
-    @Schema(description = "Đến ngày (dd-MM-yyyy)")
-    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+    @Schema(description = "Đến ngày (dd/MM/yyyy)")
+    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private LocalDate toDate;
 
     @Schema(description = "Điều kiện nhận thưởng thêm")

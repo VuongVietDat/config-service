@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.config.entity.CampaignApproval;
+import vn.com.atomi.loyalty.config.entity.RuleApproval;
 
 /**
  * @author haidv
@@ -14,9 +16,9 @@ import vn.com.atomi.loyalty.base.constant.DateConstant;
 public class Utils {
 
   public static DateTimeFormatter LOCAL_DATETIME_FORMATTER =
-      DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS);
+      DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE);
   public static DateTimeFormatter LOCAL_DATE_FORMATTER =
-      DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_DD_MM_YYYY);
+      DateTimeFormatter.ofPattern(DateConstant.STR_PLAN_DD_MM_YYYY_STROKE);
 
   private Utils() {
     throw new IllegalStateException("Utility class");
@@ -27,11 +29,26 @@ public class Utils {
   }
 
   public static String makeLikeParameter(String param) {
-    return "%|" + param + "|%";
+    return StringUtils.isBlank(param) ? null : "%|" + param + "|%";
   }
 
   public static LocalDateTime convertToLocalDateTime(String date) {
     return StringUtils.isEmpty(date) ? null : LocalDateTime.parse(date, LOCAL_DATETIME_FORMATTER);
+  }
+
+  public static LocalDateTime convertToLocalDateTimeStartDay(String date) {
+    return StringUtils.isEmpty(date)
+        ? null
+        : LocalDateTime.parse(
+            String.format("%s %s", date, Constants.DEFAULT_DAY_START_TIME),
+            LOCAL_DATETIME_FORMATTER);
+  }
+
+  public static LocalDateTime convertToLocalDateTimeEndDay(String date) {
+    return StringUtils.isEmpty(date)
+        ? null
+        : LocalDateTime.parse(
+            String.format("%s %s", date, Constants.DEFAULT_DAY_END_TIME), LOCAL_DATETIME_FORMATTER);
   }
 
   public static LocalDate convertToLocalDate(String date) {
@@ -44,5 +61,15 @@ public class Utils {
 
   public static String formatLocalDateToString(LocalDate date) {
     return date == null ? null : LOCAL_DATE_FORMATTER.format(date);
+  }
+
+  public static String generateCode(Long sequence, String className) {
+    var shortYear = String.valueOf(LocalDate.now().getYear()).substring(2);
+    if (className.equals(RuleApproval.class.getSimpleName())) {
+      return "R" + shortYear + StringUtils.leftPad(sequence.toString(), 7);
+    } else if (className.equals(CampaignApproval.class.getSimpleName())) {
+      return "C" + shortYear + StringUtils.leftPad(sequence.toString(), 7);
+    }
+    return null;
   }
 }

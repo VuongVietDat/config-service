@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.config.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,9 @@ import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
+import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
+import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.CampaignService;
 
@@ -39,9 +43,50 @@ public class CampaignController extends BaseController {
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)
-          String sort) {
+          String sort,
+      @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
+          @RequestParam(required = false)
+          Status status,
+      @Parameter(
+              description =
+                  "Trạng thái phê duyệt:</br> WAITING: Chờ duyệt</br> ACCEPTED: Đồng ý</br> REJECTED: Từ chối</br> RECALL: Thu hồi")
+          @RequestParam(required = false)
+          ApprovalStatus approvalStatus,
+      @Parameter(
+              description =
+                  "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
+          @RequestParam(required = false)
+          ApprovalType approvalType,
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String startDate,
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String endDate,
+      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String startApprovedDate,
+      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String endApprovedDate,
+      @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
-        campaignService.getCampaignApprovals(super.pageable(pageNo, pageSize, sort)));
+        campaignService.getCampaignApprovals(
+            status,
+            approvalStatus,
+            approvalType,
+            startDate,
+            endDate,
+            startApprovedDate,
+            endApprovedDate,
+            name,
+            code,
+            super.pageable(pageNo, pageSize, sort)));
   }
 
   @Operation(summary = "Api lấy chi tiết bản ghi duyệt chiến dịch theo id")
@@ -51,13 +96,13 @@ public class CampaignController extends BaseController {
     return ResponseUtils.success(campaignService.getCampaignApproval(id));
   }
 
-  @Operation(summary = "Api cập nhật bản ghi chờ duyệt chiến dịch theo id")
-  @PutMapping("/campaigns/approvals/{id}")
-  public ResponseEntity<ResponseData<Void>> updateCampaignApproval(
-      @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id,
-      @RequestBody CampaignInput campaignInput) {
-    campaignService.updateCampaignApproval(id, campaignInput);
-    return ResponseUtils.success();
+  @Operation(
+      summary =
+          "Api so sánh bản ghi duyệt cập nhật hiện tại với bản ghi đã được phê duyệt trước đó")
+  @GetMapping("/campaigns/approvals/{id}/comparison")
+  public ResponseEntity<ResponseData<List<ComparisonOutput>>> getRuleApprovalComparison(
+      @Parameter(description = "ID bản ghi duyệt cập nhật") @PathVariable Long id) {
+    return ResponseUtils.success(campaignService.geCampaignApprovalComparison(id));
   }
 
   @Operation(summary = "Api thu hồi yêu cầu chờ duyệt chiến dịch theo id")
@@ -80,17 +125,19 @@ public class CampaignController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
-          String endDate) {
+          String endDate,
+      @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
         campaignService.getCampaigns(
-            status, startDate, endDate, super.pageable(pageNo, pageSize, sort)));
+            status, startDate, endDate, name, code, super.pageable(pageNo, pageSize, sort)));
   }
 
   @Operation(summary = "Api lấy chi tiết bản ghi chiến dịch theo id")

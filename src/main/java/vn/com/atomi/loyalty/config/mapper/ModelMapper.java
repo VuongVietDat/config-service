@@ -158,6 +158,8 @@ public interface ModelMapper {
     return null;
   }
 
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
   @Mapping(target = "endDate", source = "ruleEndDate")
   @Mapping(target = "approvalType", source = "approvalType")
@@ -167,7 +169,9 @@ public interface ModelMapper {
       LocalDate ruleStartDate,
       LocalDate ruleEndDate,
       ApprovalStatus approvalStatus,
-      ApprovalType approvalType);
+      ApprovalType approvalType,
+      Long id,
+      String code);
 
   @Mapping(target = "creator", source = "createdBy")
   @Mapping(target = "creationDate", source = "createdAt")
@@ -263,8 +267,8 @@ public interface ModelMapper {
   RuleAllocationApproval convertToRuleAllocationApproval(
       CreateRuleInput.RuleAllocationInput ruleAllocation, Long ruleApprovalId);
 
-  @Mapping(target = "fromDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY)
-  @Mapping(target = "toDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @Mapping(target = "fromDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "toDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleBonusApproval convertToRuleBonusApproval(
       CreateRuleInput.RuleBonusInput ruleBonus, Long ruleApprovalId);

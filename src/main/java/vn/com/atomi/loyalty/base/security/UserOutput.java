@@ -39,7 +39,7 @@ public class UserOutput {
 
   @JsonSerialize(using = LocalDateSerializer.class)
   @JsonDeserialize(using = LocalDateDeserializer.class)
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate birthday;
 
   private String country;

@@ -68,14 +68,24 @@ public class RuleController extends BaseController {
                   "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
           @RequestParam(required = false)
           ApprovalType approvalType,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
-          String endDate) {
+          String endDate,
+      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String startApprovedDate,
+      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)")
+          @DateTimeValidator(required = false)
+          @RequestParam(required = false)
+          String endApprovedDate,
+      @Parameter(description = "Tên công thức") @RequestParam(required = false) String name,
+      @Parameter(description = "Mã quy tắc") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
         ruleService.getRuleApprovals(
             type,
@@ -86,6 +96,10 @@ public class RuleController extends BaseController {
             endDate,
             approvalStatus,
             approvalType,
+            startApprovedDate,
+            endApprovedDate,
+            name,
+            code,
             super.pageable(pageNo, pageSize, sort)));
   }
 
@@ -134,14 +148,16 @@ public class RuleController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
-          String endDate) {
+          String endDate,
+      @Parameter(description = "Tên công thức") @RequestParam(required = false) String name,
+      @Parameter(description = "Mã quy tắc") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
         ruleService.getRules(
             type,
@@ -150,6 +166,8 @@ public class RuleController extends BaseController {
             campaignId,
             startDate,
             endDate,
+            name,
+            code,
             super.pageable(pageNo, pageSize, sort)));
   }
 

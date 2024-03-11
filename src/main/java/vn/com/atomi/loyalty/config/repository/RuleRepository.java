@@ -46,6 +46,8 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "  and (:campaignId is null or r.campaignId = :campaignId) "
               + "  and (:startDate is null or r.startDate >= :startDate) "
               + "  and (:endDate is null or r.endDate <= :endDate) "
+              + "  and (:name is null or r.name like :name) "
+              + "  and (:code is null or r.code like :code) "
               + "order by r.updatedAt desc ")
   Page<RuleProjection> findByCondition(
       String type,
@@ -54,5 +56,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
       Long campaignId,
       LocalDateTime startDate,
       LocalDateTime endDate,
+      String name,
+      String code,
       Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.config.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,9 @@ import vn.com.atomi.loyalty.config.enums.Status;
  */
 @Repository
 public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long> {
+
+  @Query(value = "select cf_rule_arv_id_seq.nextval from DUAL", nativeQuery = true)
+  Long getSequence();
 
   Optional<RuleApproval> findByDeletedFalseAndId(Long id);
 
@@ -63,6 +67,12 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
               + "  and (:campaignId is null or r.campaignId = :campaignId) "
               + "  and (:startDate is null or r.startDate >= :startDate) "
               + "  and (:endDate is null or r.endDate <= :endDate) "
+              + "  and (:name is null or r.name like :name) "
+              + "  and (:code is null or r.code like :code) "
+              + "  and (:startApprovedDate is null or (r.updatedAt >= :startApprovedDate "
+              + "       and r.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
+              + "  and (:endApprovedDate is null or (r.updatedAt >= :endApprovedDate "
+              + "       and r.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
               + "order by r.updatedAt desc ")
   Page<RuleApprovalProjection> findByCondition(
       String type,
@@ -73,5 +83,9 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
       LocalDate endDate,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
+      String name,
+      String code,
+      LocalDateTime startApprovedDate,
+      LocalDateTime endApprovedDate,
       Pageable pageable);
 }

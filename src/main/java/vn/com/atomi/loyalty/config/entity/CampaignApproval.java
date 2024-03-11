@@ -25,10 +25,7 @@ public class CampaignApproval extends BaseEntity {
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = GENERATOR)
-  @SequenceGenerator(
-      name = "cf_campaign_arv_id_seq",
-      sequenceName = "cf_campaign_arv_id_seq",
-      allocationSize = 1)
+  @SequenceGenerator(name = GENERATOR, sequenceName = GENERATOR, allocationSize = 1)
   private Long id;
 
   @Column(name = "name")
@@ -40,8 +37,8 @@ public class CampaignApproval extends BaseEntity {
   @Column(name = "description")
   private String description;
 
-  @Column(name = "customer_group")
-  private String customerGroup;
+  @Column(name = "customer_group_id")
+  private Long customerGroupId;
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)

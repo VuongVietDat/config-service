@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.config.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class CampaignController extends BaseController {
   @Operation(summary = "APi tạo mới chiến dịch (bản ghi chờ duyệt)")
   @PostMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<Void>> createCampaign(
-      @RequestBody CampaignInput campaignInput) {
+      @RequestBody @Valid CampaignInput campaignInput) {
     campaignService.createCampaign(campaignInput);
     return ResponseUtils.success();
   }

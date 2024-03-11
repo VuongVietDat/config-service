@@ -2,7 +2,6 @@ package vn.com.atomi.loyalty.config.service.impl;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import vn.com.atomi.loyalty.base.data.BaseService;
@@ -19,6 +18,7 @@ import vn.com.atomi.loyalty.config.enums.ErrorCode;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.repository.CampaignApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignRepository;
+import vn.com.atomi.loyalty.config.repository.CustomerGroupRepository;
 import vn.com.atomi.loyalty.config.service.CampaignService;
 import vn.com.atomi.loyalty.config.utils.Utils;
 
@@ -30,24 +30,29 @@ import vn.com.atomi.loyalty.config.utils.Utils;
 @RequiredArgsConstructor
 public class CampaignServiceImpl extends BaseService implements CampaignService {
 
+  private final CustomerGroupRepository customerGroupRepository;
   private final CampaignApprovalRepository campaignApprovalRepository;
   private final CampaignRepository campaignRepository;
 
   @Override
   public void createCampaign(CampaignInput campaignInput) {
-    val startDate = Utils.convertToLocalDate(campaignInput.getStartDate());
-    val endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
+    var startDate = Utils.convertToLocalDate(campaignInput.getStartDate());
+    var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
-    // validate
+    // validate thời gian
     if (endDate != null && !endDate.isAfter(startDate))
       throw new BaseException(ErrorCode.ENDDATE_AFTER_STARTDATE);
 
+    // kiểm tra customer group
+    if (!customerGroupRepository.existsByIdAndDeletedFalse(campaignInput.getCustomerGroupId()))
+      throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
+
     // tạo code
-    val id = campaignApprovalRepository.getSequence();
-    val code = Utils.generateCode(id, CampaignApproval.class.getSimpleName());
+    var id = campaignApprovalRepository.getSequence();
+    var code = Utils.generateCode(id, CampaignApproval.class.getSimpleName());
 
     // lưu bản ghi chờ duyệt
-    val approval =
+    var approval =
         modelMapper.convertToCampaignApproval(
             campaignInput,
             startDate,

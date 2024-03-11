@@ -12,6 +12,6 @@ import vn.com.atomi.loyalty.config.entity.CampaignApproval;
 @Repository
 public interface CampaignApprovalRepository extends JpaRepository<CampaignApproval, Long> {
 
-  @Query(value = "select " + CampaignApproval.GENERATOR + ".nextval from DUAL", nativeQuery = true)
+    @Query(value = "select {h-schema}" + CampaignApproval.GENERATOR + ".nextval from DUAL", nativeQuery = true)
   Long getSequence();
 }

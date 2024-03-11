@@ -46,12 +46,12 @@ public class RuleApprovalPreviewOutput {
   @Schema(description = "Tên chiến dịch")
   private String campaignName;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
-  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")

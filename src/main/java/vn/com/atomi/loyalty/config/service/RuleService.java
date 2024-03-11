@@ -29,6 +29,10 @@ public interface RuleService {
       String endDate,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
+      String startApprovedDate,
+      String endApprovedDate,
+      String name,
+      String code,
       Pageable pageable);
 
   RuleApprovalOutput getRuleApproval(Long id);
@@ -42,6 +46,8 @@ public interface RuleService {
       Long campaignId,
       String startDate,
       String endDate,
+      String name,
+      String code,
       Pageable pageable);
 
   RuleOutput getRule(Long id);

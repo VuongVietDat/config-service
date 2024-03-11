@@ -20,11 +20,11 @@ public class UpdateRuleInput {
   @Schema(description = "Tên quy tắc sinh điểm")
   private String name;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
   @NotNull
   private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
   private LocalDate endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
@@ -38,6 +38,6 @@ public class UpdateRuleInput {
 
   @Schema(
       description =
-          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd-MM-yyyy</br> FIRST_DATE_OF_MONTH: number")
+          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd/MM/yyyy</br> FIRST_DATE_OF_MONTH: number")
   private String expirePolicyValue;
 }

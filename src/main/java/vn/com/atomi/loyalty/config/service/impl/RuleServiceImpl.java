@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,6 +105,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                         .contains(bonusInput.getType()))) {
       throw new BaseException(ErrorCode.RULE_BONUS_TYPE_NOT_EXISTED);
     }
+    // tạo code
+    var id = ruleApprovalRepository.getSequence();
+    var code = Utils.generateCode(id, RuleApproval.class.getSimpleName());
     // tạo bản ghi chờ duyệt
     var ruleApproval =
         super.modelMapper.convertToRuleApproval(
@@ -111,7 +115,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             ruleStartDate,
             ruleEndDate,
             ApprovalStatus.WAITING,
-            ApprovalType.CREATE);
+            ApprovalType.CREATE,
+            id,
+            code);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     if (ruleApproval.getConditionType() == null) {
@@ -142,7 +148,20 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       String endDate,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
+      String startApprovedDate,
+      String endApprovedDate,
+      String name,
+      String code,
       Pageable pageable) {
+    LocalDateTime stDate = Utils.convertToLocalDateTimeStartDay(startApprovedDate);
+    LocalDateTime edDate = Utils.convertToLocalDateTimeEndDay(endApprovedDate);
+    // nếu tìm kiếm theo khoảng ngày phê duyệt thì trạng thái phê duyệt phải là đồng ý hoặc từ chối
+    if ((stDate != null || edDate != null)
+        && (ApprovalStatus.WAITING.equals(approvalStatus)
+            || ApprovalStatus.RECALL.equals(approvalStatus))) {
+      return new ResponsePage<>(
+          pageable.getPageNumber(), pageable.getPageSize(), 0, 0, new ArrayList<>());
+    }
     var rulePage =
         ruleApprovalRepository.findByCondition(
             type,
@@ -153,6 +172,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             Utils.convertToLocalDate(endDate),
             approvalStatus,
             approvalType,
+            Utils.makeLikeParameter(name),
+            Utils.makeLikeParameter(code),
+            stDate,
+            edDate,
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc
@@ -214,6 +237,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       Long campaignId,
       String startDate,
       String endDate,
+      String name,
+      String code,
       Pageable pageable) {
     var rulePage =
         ruleRepository.findByCondition(
@@ -223,6 +248,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             campaignId,
             Utils.convertToLocalDateTime(startDate),
             Utils.convertToLocalDateTime(endDate),
+            Utils.makeLikeParameter(name),
+            Utils.makeLikeParameter(code),
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc

@@ -1,9 +1,7 @@
 package vn.com.atomi.loyalty.config.dto.input;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +23,7 @@ public class CreateRuleInput {
 
   @Schema(description = "Tên quy tắc sinh điểm")
   @NotBlank
+  @Size(max = 168)
   private String name;
 
   @Schema(
@@ -42,11 +41,11 @@ public class CreateRuleInput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd-MM-yyyy)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
   @DateTimeValidator
   private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd-MM-yyyy)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
   @DateTimeValidator(required = false)
   private String endDate;
 
@@ -61,7 +60,7 @@ public class CreateRuleInput {
 
   @Schema(
       description =
-          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd-MM-yyyy</br> FIRST_DATE_OF_MONTH: number")
+          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd/MM/yyyy</br> FIRST_DATE_OF_MONTH: number")
   private String expirePolicyValue;
 
   @Schema(description = "Quy tắc chung phân bổ điểm")
@@ -132,12 +131,12 @@ public class CreateRuleInput {
             "Loại giá trị thưởng:</br> PERCENTAGE: Phần trăm base điểm</br> FIX: Số điểm cụ thể")
     private PlusType plusType;
 
-    @Schema(description = "Từ ngày (dd-MM-yyyy)")
-    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+    @Schema(description = "Từ ngày (dd/MM/yyyy)")
+    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private String fromDate;
 
-    @Schema(description = "Đến ngày (dd-MM-yyyy)")
-    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY)
+    @Schema(description = "Đến ngày (dd/MM/yyyy)")
+    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private String toDate;
 
     @Schema(description = "Điều kiện nhận thưởng thêm")

@@ -28,6 +28,9 @@ public class CampaignApproval extends BaseEntity {
   @SequenceGenerator(name = GENERATOR, sequenceName = GENERATOR, allocationSize = 1)
   private Long id;
 
+  @Column(name = "campaign_id")
+  private Long campaignId;
+
   @Column(name = "name")
   private String name;
 

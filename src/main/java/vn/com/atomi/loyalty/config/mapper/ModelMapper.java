@@ -196,6 +196,11 @@ public interface ModelMapper {
   @Mapping(target = "id", ignore = true)
   Rule convertToRule(RuleApproval ruleApproval);
 
+  @Mapping(target = "creator", source = "createdBy")
+  @Mapping(target = "creationDate", source = "createdAt")
+  @Mapping(target = "id", ignore = true)
+  Campaign convertToCampaign(CampaignApproval campaignApproval);
+
   @Mapping(target = "ruleId", source = "ruleId")
   RuleBonus convertToRuleBonus(RuleBonusApproval ruleBonusApproval, Long ruleId);
 
@@ -205,6 +210,15 @@ public interface ModelMapper {
   @Mapping(target = "ruleId", source = "ruleId")
   RuleAllocation convertToRuleAllocation(
       RuleAllocationApproval ruleAllocationApproval, Long ruleId);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "deleted", ignore = true)
+  Campaign convertToCampaign(
+      @MappingTarget Campaign currentCampaign, CampaignApproval campaignApproval);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)

@@ -142,7 +142,38 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public void approveCampaign(ApprovalInput input) {}
+  public void approveCampaign(ApprovalInput input) {
+    // tìm kiếm bản ghi chờ duyệt
+    var campaignApproval =
+        campaignApprovalRepository
+            .findByDeletedFalseAndIdAndApprovalStatus(input.getId(), ApprovalStatus.WAITING)
+            .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
+    if (input.getIsAccepted()) {
+      // trường hợp phê duyệt tạo
+      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
+        // lưu thông tin quy tắc
+        var campaign = super.modelMapper.convertToCampaign(campaignApproval);
+        campaign = campaignRepository.save(campaign);
+        campaignApproval.setCampaignId(campaign.getId());
+      }
+
+      // trường hợp phê duyệt cập nhật
+      if (ApprovalType.UPDATE.equals(campaignApproval.getApprovalType())) {
+        // lấy thông tin quy tắc hiện tại
+        var currentRule =
+            campaignRepository
+                .findByDeletedFalseAndId(campaignApproval.getCampaignId())
+                .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+        currentRule = super.modelMapper.convertToCampaign(currentRule, campaignApproval);
+        campaignRepository.save(currentRule);
+      }
+    }
+    // cập nhật trạng thái bản ghi chờ duyệt
+    campaignApproval.setApprovalStatus(
+        input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
+    campaignApproval.setApprovalComment(input.getComment());
+    campaignApprovalRepository.save(campaignApproval);
+  }
 
   @Override
   public void updateCampaign(Long id, CampaignInput campaignInput) {}

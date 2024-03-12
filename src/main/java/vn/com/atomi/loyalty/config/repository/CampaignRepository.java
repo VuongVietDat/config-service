@@ -17,6 +17,8 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
+  Optional<Campaign> findByDeletedFalseAndId(Long id);
+
   Optional<Campaign> findByDeletedFalseAndIdAndStatus(Long id, Status status);
 
   @Query(

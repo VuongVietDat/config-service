@@ -182,7 +182,20 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public void updateCampaign(Long id, CampaignInput campaignInput) {}
+  public void updateCampaign(Long id, CampaignInput campaignInput) {
+    // lấy record hiện tại
+    var campaign =
+        campaignRepository
+            .findByDeletedFalseAndId(id)
+            .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+    // map data mới vào quy tắc hiện tại
+    var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
+    // tạo bản ghi chờ duyệt
+    var campaignApproval =
+        super.modelMapper.convertToCampaignApproval(
+            newCampaign, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+    campaignApprovalRepository.save(campaignApproval);
+  }
 
   @Override
   public void recallCampaignApproval(Long id) {

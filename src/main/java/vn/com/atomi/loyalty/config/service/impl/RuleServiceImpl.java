@@ -85,7 +85,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     if (dictionaryOutputs.stream()
         .filter(
             v ->
-                v.getType().equals(Constants.DICTIONARY_RULE_TYPE)
+                v.getParentCode().equals(Constants.DICTIONARY_RULE_TYPE)
                     && v.getCode().equals(createRuleInput.getType()))
         .findFirst()
         .isEmpty()) {
@@ -99,11 +99,29 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                     !dictionaryOutputs.stream()
                         .filter(
                             dictionary ->
-                                dictionary.getType().equals(Constants.DICTIONARY_RULE_BONUS_TYPE))
+                                dictionary
+                                    .getParentCode()
+                                    .equals(Constants.DICTIONARY_RULE_BONUS_TYPE))
                         .map(DictionaryOutput::getCode)
                         .toList()
                         .contains(bonusInput.getType()))) {
       throw new BaseException(ErrorCode.RULE_BONUS_TYPE_NOT_EXISTED);
+    }
+    // kiểm tra tồn tại điều kiện áp dụng quy tắc
+    if (!CollectionUtils.isEmpty(createRuleInput.getRuleConditionInputs())
+        && createRuleInput.getRuleConditionInputs().stream()
+            .anyMatch(
+                conditionInput ->
+                    !dictionaryOutputs.stream()
+                        .filter(
+                            dictionary ->
+                                dictionary
+                                    .getParentCode()
+                                    .equals(Constants.DICTIONARY_RULE_CONDITION))
+                        .map(DictionaryOutput::getCode)
+                        .toList()
+                        .contains(conditionInput.getProperties()))) {
+      throw new BaseException(ErrorCode.RULE_CONDITION_NOT_EXISTED);
     }
     // tạo code
     var id = ruleApprovalRepository.getSequence();

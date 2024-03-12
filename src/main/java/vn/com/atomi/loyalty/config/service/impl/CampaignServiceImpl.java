@@ -161,7 +161,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
-        // lưu thông tin quy tắc
+        // lưu thông tin
         var campaign = super.modelMapper.convertToCampaign(campaignApproval);
         campaign = campaignRepository.save(campaign);
         campaignApproval.setCampaignId(campaign.getId());
@@ -169,7 +169,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
 
       // trường hợp phê duyệt cập nhật
       if (ApprovalType.UPDATE.equals(campaignApproval.getApprovalType())) {
-        // lấy thông tin quy tắc hiện tại
+        // lấy thông tin hiện tại
         var currentRule =
             campaignRepository
                 .findByDeletedFalseAndId(campaignApproval.getCampaignId())

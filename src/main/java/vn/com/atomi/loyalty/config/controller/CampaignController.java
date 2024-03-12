@@ -11,6 +11,7 @@ import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
@@ -38,7 +39,7 @@ public class CampaignController extends BaseController {
 
   @Operation(summary = "Api lấy danh sách duyệt chiến dịch")
   @GetMapping("/campaigns/approvals")
-  public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaignApprovals(
+  public ResponseEntity<ResponseData<ResponsePage<CampaignApprovalOutput>>> getCampaignApprovals(
       @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
       @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
           Integer pageSize,

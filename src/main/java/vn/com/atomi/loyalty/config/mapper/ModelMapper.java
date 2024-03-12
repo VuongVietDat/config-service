@@ -11,6 +11,7 @@ import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.CustomerGroupInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.dto.projection.CampaignApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleProjection;
 import vn.com.atomi.loyalty.config.entity.*;
@@ -231,6 +232,8 @@ public interface ModelMapper {
       expression = "java(getApprover(approval.getApprovalStatus(), approval.getUpdatedBy()))")
   RuleApprovalPreviewOutput convertToRuleApprovalPreviewOutput(
       RuleApprovalProjection approval, @Context List<DictionaryOutput> dictionaryOutputs);
+
+  List<CampaignApprovalOutput> convertToCampaignOutputs(List<CampaignApprovalProjection> approvals);
 
   List<RuleApprovalPreviewOutput> convertToRuleApprovalPreviewOutputs(
       List<RuleApprovalProjection> approvals, @Context List<DictionaryOutput> dictionaryOutputs);

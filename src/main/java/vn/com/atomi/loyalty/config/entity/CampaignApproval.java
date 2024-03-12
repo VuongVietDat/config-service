@@ -60,4 +60,7 @@ public class CampaignApproval extends BaseEntity {
 
   @Column(name = "approval_comment")
   private String approvalComment;
+
+  @Column(name = "approver")
+  private String approver;
 }

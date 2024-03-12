@@ -1,14 +1,17 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
 import vn.com.atomi.loyalty.config.entity.CampaignApproval;
@@ -65,7 +68,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public ResponsePage<CampaignOutput> getCampaignApprovals(
+  public ResponsePage<CampaignApprovalOutput> getCampaignApprovals(
       Status status,
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
@@ -76,7 +79,34 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String name,
       String code,
       Pageable pageable) {
-    return null;
+    var stDate = Utils.convertToLocalDateTimeStartDay(startApprovedDate);
+    var edDate = Utils.convertToLocalDateTimeEndDay(endApprovedDate);
+    // nếu tìm kiếm theo khoảng ngày phê duyệt thì trạng thái phê duyệt phải là đồng ý hoặc từ chối
+    if ((stDate != null || edDate != null)
+        && (ApprovalStatus.WAITING.equals(approvalStatus)
+            || ApprovalStatus.RECALL.equals(approvalStatus))) {
+      return new ResponsePage<>(
+          pageable.getPageNumber(), pageable.getPageSize(), 0, 0, new ArrayList<>());
+    }
+
+    var campaignPage =
+        campaignApprovalRepository.findByCondition(
+            status,
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate),
+            approvalStatus,
+            approvalType,
+            Utils.makeLikeParameter(name),
+            Utils.makeLikeParameter(code),
+            stDate,
+            edDate,
+            pageable);
+
+    if (CollectionUtils.isEmpty(campaignPage.getContent()))
+      return new ResponsePage<>(campaignPage, new ArrayList<>());
+
+    return new ResponsePage<>(
+        campaignPage, modelMapper.convertToCampaignOutputs(campaignPage.getContent()));
   }
 
   @Override

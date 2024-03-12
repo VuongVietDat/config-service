@@ -17,6 +17,8 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
+  Optional<Campaign> findByDeletedFalseAndId(Long id);
+
   Optional<Campaign> findByDeletedFalseAndIdAndStatus(Long id, Status status);
 
   @Query(
@@ -32,12 +34,20 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
   @Query(
       value =
           "select c "
-              + "from Campaign c "
-              + "where c.deleted = false "
-              + "  and (:status is null or c.status = :status) "
-              + "  and (:startDate is null or c.startDate >= :startDate) "
-              + "  and (:endDate is null or c.endDate <= :endDate) "
-              + "order by c.updatedAt desc ")
+                  + "from Campaign c "
+                  + "where c.deleted = false "
+                  + "  and (:code is null or c.code = :code) "
+                  + "  and (:name is null or c.code = :name) "
+                  + "  and (:status is null or c.status = :status) "
+                  + "  and (:status is null or c.status = :status) "
+                  + "  and (:startDate is null or c.startDate >= :startDate) "
+                  + "  and (:endDate is null or c.endDate <= :endDate) "
+                  + "order by c.updatedAt desc ")
   Page<Campaign> findByCondition(
-      Status status, LocalDate startDate, LocalDate endDate, Pageable pageable);
+      String code,
+      String name,
+      Status status,
+      LocalDate startDate,
+      LocalDate endDate,
+      Pageable pageable);
 }

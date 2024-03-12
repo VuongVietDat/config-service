@@ -16,6 +16,8 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface CustomerGroupRepository extends JpaRepository<CustomerGroup, Long> {
 
+  boolean existsByIdAndDeletedFalse(long id);
+
   Optional<CustomerGroup> findByDeletedFalseAndId(Long id);
 
   @Query(

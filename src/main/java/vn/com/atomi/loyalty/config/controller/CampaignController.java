@@ -2,14 +2,18 @@ package vn.com.atomi.loyalty.config.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.data.*;
+import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
@@ -27,17 +31,19 @@ public class CampaignController extends BaseController {
 
   private final CampaignService campaignService;
 
+  @PreAuthorize(Authority.Campaign.CREATE_CAMPAIGN)
   @Operation(summary = "APi tạo mới chiến dịch (bản ghi chờ duyệt)")
   @PostMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<Void>> createCampaign(
-      @RequestBody CampaignInput campaignInput) {
+      @RequestBody @Valid CampaignInput campaignInput) {
     campaignService.createCampaign(campaignInput);
     return ResponseUtils.success();
   }
 
+  @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
   @Operation(summary = "Api lấy danh sách duyệt chiến dịch")
   @GetMapping("/campaigns/approvals")
-  public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaignApprovals(
+  public ResponseEntity<ResponseData<ResponsePage<CampaignApprovalOutput>>> getCampaignApprovals(
       @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
       @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
           Integer pageSize,
@@ -89,13 +95,15 @@ public class CampaignController extends BaseController {
             super.pageable(pageNo, pageSize, sort)));
   }
 
+  @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
   @Operation(summary = "Api lấy chi tiết bản ghi duyệt chiến dịch theo id")
   @GetMapping("/campaigns/approvals/{id}")
-  public ResponseEntity<ResponseData<CampaignOutput>> getCampaignApproval(
+  public ResponseEntity<ResponseData<CampaignApprovalOutput>> getCampaignApproval(
       @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
     return ResponseUtils.success(campaignService.getCampaignApproval(id));
   }
 
+  @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
   @Operation(
       summary =
           "Api so sánh bản ghi duyệt cập nhật hiện tại với bản ghi đã được phê duyệt trước đó")
@@ -105,6 +113,7 @@ public class CampaignController extends BaseController {
     return ResponseUtils.success(campaignService.geCampaignApprovalComparison(id));
   }
 
+  @PreAuthorize(Authority.Campaign.UPDATE_CAMPAIGN)
   @Operation(summary = "Api thu hồi yêu cầu chờ duyệt chiến dịch theo id")
   @PutMapping("/campaigns/approvals/{id}/recall")
   public ResponseEntity<ResponseData<Void>> recallCampaignApproval(
@@ -113,6 +122,7 @@ public class CampaignController extends BaseController {
     return ResponseUtils.success();
   }
 
+  @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
   @Operation(summary = "Api lấy danh sách chiến dịch")
   @GetMapping("/campaigns")
   public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaigns(
@@ -140,6 +150,7 @@ public class CampaignController extends BaseController {
             status, startDate, endDate, name, code, super.pageable(pageNo, pageSize, sort)));
   }
 
+  @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
   @Operation(summary = "Api lấy chi tiết bản ghi chiến dịch theo id")
   @GetMapping("/campaigns/{id}")
   public ResponseEntity<ResponseData<CampaignOutput>> getCampaign(
@@ -147,6 +158,7 @@ public class CampaignController extends BaseController {
     return ResponseUtils.success(campaignService.getCampaign(id));
   }
 
+  @PreAuthorize(Authority.Campaign.UPDATE_CAMPAIGN)
   @Operation(
       summary =
           "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
@@ -158,6 +170,7 @@ public class CampaignController extends BaseController {
     return ResponseUtils.success();
   }
 
+  @PreAuthorize(Authority.Campaign.APPROVE_CAMPAIGN)
   @Operation(summary = "Api phê duyệt chiến dịch")
   @PutMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<Void>> approveCampaign(@RequestBody ApprovalInput input) {

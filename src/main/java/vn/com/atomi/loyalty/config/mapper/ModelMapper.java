@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.CustomerGroupInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.dto.projection.CampaignApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleProjection;
 import vn.com.atomi.loyalty.config.entity.*;
@@ -162,6 +164,21 @@ public interface ModelMapper {
 
   @Mapping(target = "id", source = "id")
   @Mapping(target = "code", source = "code")
+  @Mapping(target = "startDate", source = "startDate")
+  @Mapping(target = "endDate", source = "endDate")
+  @Mapping(target = "approvalType", source = "approvalType")
+  @Mapping(target = "approvalStatus", source = "approvalStatus")
+  CampaignApproval convertToCampaignApproval(
+      CampaignInput campaignInput,
+      LocalDate startDate,
+      LocalDate endDate,
+      ApprovalStatus approvalStatus,
+      ApprovalType approvalType,
+      Long id,
+      String code);
+
+  @Mapping(target = "id", source = "id")
+  @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
   @Mapping(target = "endDate", source = "ruleEndDate")
   @Mapping(target = "approvalType", source = "approvalType")
@@ -180,6 +197,11 @@ public interface ModelMapper {
   @Mapping(target = "id", ignore = true)
   Rule convertToRule(RuleApproval ruleApproval);
 
+  @Mapping(target = "creator", source = "createdBy")
+  @Mapping(target = "creationDate", source = "createdAt")
+  @Mapping(target = "id", ignore = true)
+  Campaign convertToCampaign(CampaignApproval campaignApproval);
+
   @Mapping(target = "ruleId", source = "ruleId")
   RuleBonus convertToRuleBonus(RuleBonusApproval ruleBonusApproval, Long ruleId);
 
@@ -189,6 +211,15 @@ public interface ModelMapper {
   @Mapping(target = "ruleId", source = "ruleId")
   RuleAllocation convertToRuleAllocation(
       RuleAllocationApproval ruleAllocationApproval, Long ruleId);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "updatedAt", ignore = true)
+  @Mapping(target = "createdBy", ignore = true)
+  @Mapping(target = "updatedBy", ignore = true)
+  @Mapping(target = "deleted", ignore = true)
+  Campaign convertToCampaign(
+      @MappingTarget Campaign currentCampaign, CampaignApproval campaignApproval);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
@@ -217,8 +248,12 @@ public interface ModelMapper {
   RuleApprovalPreviewOutput convertToRuleApprovalPreviewOutput(
       RuleApprovalProjection approval, @Context List<DictionaryOutput> dictionaryOutputs);
 
+  List<CampaignApprovalOutput> convertToCampaignOutputs(List<CampaignApprovalProjection> approvals);
+
   List<RuleApprovalPreviewOutput> convertToRuleApprovalPreviewOutputs(
       List<RuleApprovalProjection> approvals, @Context List<DictionaryOutput> dictionaryOutputs);
+
+  CampaignOutput convertToCampaignOutput(Campaign campaign);
 
   RuleOutput convertToRuleOutput(Rule rule);
 
@@ -232,6 +267,8 @@ public interface ModelMapper {
 
   RuleApprovalOutput convertToRuleApprovalOutput(RuleApproval ruleApproval);
 
+  CampaignApprovalOutput convertToCampaignApprovalOutput(CampaignApproval campaignApproval);
+
   List<RuleApprovalOutput.RuleConditionApprovalOutput> convertToRuleConditionApprovalOutputs(
       List<RuleConditionApproval> ruleConditionApprovals);
 
@@ -242,6 +279,15 @@ public interface ModelMapper {
       List<RuleBonusApproval> ruleBonusApprovals);
 
   Rule convertToRule(@MappingTarget Rule rule, UpdateRuleInput updateRuleInput);
+
+  Campaign convertToCampaign(@MappingTarget Campaign campaign, CampaignInput campaignInput);
+
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "campaignId", source = "campaign.id")
+  @Mapping(target = "approvalType", source = "approvalType")
+  @Mapping(target = "approvalStatus", source = "approvalStatus")
+  CampaignApproval convertToCampaignApproval(
+      Campaign campaign, ApprovalStatus approvalStatus, ApprovalType approvalType);
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "ruleId", source = "rule.id")

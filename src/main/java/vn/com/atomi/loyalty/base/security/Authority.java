@@ -15,6 +15,13 @@ public class Authority {
     public static final String APPROVE_RULE = "hasAuthority('APPROVE_RULE')";
   }
 
+  public static class Campaign {
+    public static final String CREATE_CAMPAIGN = "hasAuthority('CREATE_CAMPAIGN')";
+    public static final String UPDATE_CAMPAIGN = "hasAuthority('UPDATE_CAMPAIGN')";
+    public static final String READ_CAMPAIGN = "hasAuthority('READ_CAMPAIGN')";
+    public static final String APPROVE_CAMPAIGN = "hasAuthority('APPROVE_CAMPAIGN')";
+  }
+
   public static class CustomerGroup {
     public static final String CREATE_CUSTOMER_GROUP = "hasAuthority('CREATE_CUSTOMER_GROUP')";
     public static final String UPDATE_CUSTOMER_GROUP = "hasAuthority('UPDATE_CUSTOMER_GROUP')";

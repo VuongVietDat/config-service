@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.atomi.loyalty.base.annotations.DateValidator;
+import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -30,11 +31,11 @@ public class CampaignInput {
   private Long customerGroupId;
 
   @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-  @DateValidator
+  @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private String startDate;
 
   @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-  @DateValidator(required = false)
+  @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE, required = false)
   private String endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")

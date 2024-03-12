@@ -128,6 +128,8 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       Pageable pageable) {
     var campaignPage =
         campaignRepository.findByCondition(
+            code,
+            name,
             status,
             Utils.convertToLocalDate(startDate),
             Utils.convertToLocalDate(endDate),

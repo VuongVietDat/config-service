@@ -29,6 +29,9 @@ public class Campaign extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
+  @Column(name = "code")
+  private String code;
+
   @Column(name = "name")
   private String name;
 

@@ -2,7 +2,11 @@ package vn.com.atomi.loyalty.config.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.DiffBuilder;
+import org.apache.commons.lang3.builder.DiffResult;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -214,6 +218,41 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
 
   @Override
   public List<ComparisonOutput> geCampaignApprovalComparison(Long id) {
-    return null;
+    // tìm kiếm bản ghi duyệt cập nhật
+    var newCampaignApproval =
+            campaignApprovalRepository
+                    .findByDeletedFalseAndId(id)
+                    .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+    if (!ApprovalType.UPDATE.equals(newCampaignApproval.getApprovalType())) {
+      throw new BaseException(ErrorCode.APPROVE_TYPE_NOT_MATCH_UPDATE);
+    }
+    // tìm kiếm bản ghi đã phê duyệt gần nhất
+    var oldCampaignApproval =
+            campaignApprovalRepository
+                    .findLatestAcceptedRecord(newCampaignApproval.getCampaignId(), id)
+                    .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
+    // thực hiện so sánh
+    DiffResult<CampaignApproval> diffResult =
+            new DiffBuilder<>(oldCampaignApproval, newCampaignApproval, ToStringStyle.DEFAULT_STYLE)
+                    .append(
+                            "startDate",
+                            Utils.formatLocalDateToString(oldCampaignApproval.getStartDate()),
+                            Utils.formatLocalDateToString(newCampaignApproval.getStartDate()))
+                    .append(
+                            "endDate",
+                            Utils.formatLocalDateToString(oldCampaignApproval.getEndDate()),
+                            Utils.formatLocalDateToString(newCampaignApproval.getEndDate()))
+                    .append("status", oldCampaignApproval.getStatus(), newCampaignApproval.getStatus())
+                    .append("name", oldCampaignApproval.getName(), newCampaignApproval.getName())
+                    .build();
+    return diffResult.getDiffs().stream()
+            .map(
+                    diff ->
+                            ComparisonOutput.builder()
+                                    .fileName(diff.getFieldName())
+                                    .oldValue(diff.getLeft() == null ? null : diff.getLeft().toString())
+                                    .newValue(diff.getRight() == null ? null : diff.getRight().toString())
+                                    .build())
+            .collect(Collectors.toList());
   }
 }

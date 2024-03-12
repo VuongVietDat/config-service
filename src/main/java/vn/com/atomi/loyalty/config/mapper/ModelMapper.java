@@ -282,7 +282,7 @@ public interface ModelMapper {
   Campaign convertToCampaign(@MappingTarget Campaign campaign, CampaignInput campaignInput);
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "ruleId", source = "rule.id")
+  @Mapping(target = "campaignId", source = "campaign.id")
   @Mapping(target = "approvalType", source = "approvalType")
   @Mapping(target = "approvalStatus", source = "approvalStatus")
   CampaignApproval convertToCampaignApproval(

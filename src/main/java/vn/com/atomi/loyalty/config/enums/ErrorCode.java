@@ -27,6 +27,8 @@ public enum ErrorCode implements AbstractError {
   CUSTOMER_GROUP_NOT_EXISTED(1009, "Không tồn tại nhóm khách hàng.", HttpStatus.NOT_FOUND),
   EXISTED_CAMPAIGN_USE_CUSTOMER_GROUP(
       1010, "Nhóm khách hàng này đang được sử dụng ở chiến dịch.", HttpStatus.BAD_REQUEST),
+  RULE_CONDITION_NOT_EXISTED(
+      1011, "Điều kiện áp dụng quy tắc không tồn tại.", HttpStatus.NOT_FOUND),
   ;
 
   private final int code;

@@ -13,6 +13,7 @@ import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.dto.projection.RuleApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleProjection;
 import vn.com.atomi.loyalty.config.entity.*;
+import vn.com.atomi.loyalty.config.entity.Condition;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 
@@ -312,4 +313,9 @@ public interface ModelMapper {
   @Mapping(target = "approvalStatus", source = "approvalStatus")
   CustomerGroupApproval convertToGroupApproval(
       CustomerGroup customerGroup, ApprovalStatus approvalStatus, ApprovalType approvalType);
+
+  List<ConditionOutput> convertToConditionOutputs(List<Condition> conditions);
+
+  List<ConditionOutput.ConditionData> convertToConditionOutputDatas(
+      List<ConditionOutput> conditionOutputs);
 }

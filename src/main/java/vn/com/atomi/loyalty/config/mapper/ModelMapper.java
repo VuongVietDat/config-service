@@ -252,6 +252,8 @@ public interface ModelMapper {
   List<RuleApprovalPreviewOutput> convertToRuleApprovalPreviewOutputs(
       List<RuleApprovalProjection> approvals, @Context List<DictionaryOutput> dictionaryOutputs);
 
+  CampaignOutput convertToCampaignOutput(Campaign campaign);
+
   RuleOutput convertToRuleOutput(Rule rule);
 
   List<RuleOutput.RuleConditionOutput> convertToRuleConditionOutputs(

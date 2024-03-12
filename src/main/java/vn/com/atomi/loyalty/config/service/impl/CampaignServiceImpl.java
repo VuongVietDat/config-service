@@ -140,7 +140,11 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
 
   @Override
   public CampaignOutput getCampaign(Long id) {
-    return null;
+    var campaign =
+        campaignRepository
+            .findByDeletedFalseAndId(id)
+            .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+    return super.modelMapper.convertToCampaignOutput(campaign);
   }
 
   @Override

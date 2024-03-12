@@ -148,7 +148,19 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   public void updateCampaign(Long id, CampaignInput campaignInput) {}
 
   @Override
-  public void recallCampaignApproval(Long id) {}
+  public void recallCampaignApproval(Long id) {
+    // chỉ được thu hồi những bản ghi ở trạng thái chờ duyệt
+    campaignApprovalRepository
+        .findByDeletedFalseAndIdAndApprovalStatus(id, ApprovalStatus.WAITING)
+        .ifPresentOrElse(
+            ruleApproval -> {
+              ruleApproval.setApprovalStatus(ApprovalStatus.RECALL);
+              campaignApprovalRepository.save(ruleApproval);
+            },
+            () -> {
+              throw new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED);
+            });
+  }
 
   @Override
   public List<ComparisonOutput> geCampaignApprovalComparison(Long id) {

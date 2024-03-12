@@ -28,6 +28,9 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
 
   Optional<CampaignApproval> findByDeletedFalseAndId(Long id);
 
+  Optional<CampaignApproval> findByDeletedFalseAndIdAndApprovalStatus(
+      Long id, ApprovalStatus approvalStatus);
+
   @Query(
       value =
           "select cam.id           as id, "

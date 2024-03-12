@@ -18,6 +18,7 @@ import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.CustomerGroupService;
+import vn.com.atomi.loyalty.config.service.MasterDataService;
 
 /**
  * @author haidv
@@ -28,6 +29,8 @@ import vn.com.atomi.loyalty.config.service.CustomerGroupService;
 public class CustomerGroupController extends BaseController {
 
   private final CustomerGroupService customerGroupService;
+
+  private final MasterDataService masterDataService;
 
   @Operation(summary = "Api tạo mới nhóm khách hàng (bản ghi chờ duyệt)")
   @PreAuthorize(Authority.CustomerGroup.CREATE_CUSTOMER_GROUP)
@@ -164,5 +167,17 @@ public class CustomerGroupController extends BaseController {
       @Valid @RequestBody ApprovalInput input) {
     customerGroupService.approveCustomerGroup(input);
     return ResponseUtils.success();
+  }
+
+  @Operation(summary = "Api lấy danh sách điều kiện cho nhóm khách hàng")
+  @PreAuthorize(Authority.CustomerGroup.READ_CUSTOMER_GROUP)
+  @GetMapping("/customer-groups/conditions")
+  public ResponseEntity<ResponseData<List<ConditionOutput>>> getCustomerGroupConditions(
+      @Parameter(
+              description =
+                  "(isView = true) Call khi xem chi tiết sẽ lấy tất cả bản ghi</br>(isView = false) Call khi tạo mới hoặc cập nhật, chỉ lấy những bản ghi hiệu lực")
+          @RequestParam(required = false, defaultValue = "false")
+          Boolean isView) {
+    return ResponseUtils.success(masterDataService.getCustomerGroupConditions(isView));
   }
 }

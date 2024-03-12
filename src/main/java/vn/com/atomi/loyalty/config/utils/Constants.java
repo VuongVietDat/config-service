@@ -10,6 +10,10 @@ public class Constants {
 
   public static final String DICTIONARY_RULE_BONUS_TYPE = "RULE_BONUS_TYPE";
 
+  public static final String DICTIONARY_RULE_CONDITION = "RULE_CONDITION";
+
+  public static final String DICTIONARY_CUSTOMER_GROUP_CONDITION = "CUSTOMER_GROUP_CONDITION";
+
   public static final String DEFAULT_DAY_START_TIME = "00:00:00";
 
   public static final String DEFAULT_DAY_END_TIME = "23:59:59";

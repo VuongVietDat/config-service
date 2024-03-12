@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.entity.CampaignApproval;
+import vn.com.atomi.loyalty.config.entity.CustomerGroupApproval;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
 
 /**
@@ -68,7 +69,9 @@ public class Utils {
     if (className.equals(RuleApproval.class.getSimpleName())) {
       return "R" + shortYear + StringUtils.leftPad(sequence.toString(), 7);
     } else if (className.equals(CampaignApproval.class.getSimpleName())) {
-      return "C" + shortYear + StringUtils.leftPad(sequence.toString(), 7);
+      return "CP" + shortYear + StringUtils.leftPad(sequence.toString(), 6);
+    } else if (className.equals(CustomerGroupApproval.class.getSimpleName())) {
+      return "CG" + shortYear + StringUtils.leftPad(sequence.toString(), 6);
     }
     return null;
   }

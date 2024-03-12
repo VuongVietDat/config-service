@@ -32,7 +32,7 @@ public interface CampaignService {
       String code,
       Pageable pageable);
 
-  CampaignOutput getCampaignApproval(Long id);
+  CampaignApprovalOutput getCampaignApproval(Long id);
 
   ResponsePage<CampaignOutput> getCampaigns(
       Status status, String startDate, String endDate, String name, String code, Pageable pageable);

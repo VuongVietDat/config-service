@@ -93,7 +93,7 @@ public class CampaignController extends BaseController {
 
   @Operation(summary = "Api lấy chi tiết bản ghi duyệt chiến dịch theo id")
   @GetMapping("/campaigns/approvals/{id}")
-  public ResponseEntity<ResponseData<CampaignOutput>> getCampaignApproval(
+  public ResponseEntity<ResponseData<CampaignApprovalOutput>> getCampaignApproval(
       @Parameter(description = "ID bản ghi chờ duyệt") @PathVariable Long id) {
     return ResponseUtils.success(campaignService.getCampaignApproval(id));
   }

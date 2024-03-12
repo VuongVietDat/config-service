@@ -110,8 +110,12 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   }
 
   @Override
-  public CampaignOutput getCampaignApproval(Long id) {
-    return null;
+  public CampaignApprovalOutput getCampaignApproval(Long id) {
+    var campaignApproval =
+        campaignApprovalRepository
+            .findByDeletedFalseAndId(id)
+            .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
+    return super.modelMapper.convertToCampaignApprovalOutput(campaignApproval);
   }
 
   @Override

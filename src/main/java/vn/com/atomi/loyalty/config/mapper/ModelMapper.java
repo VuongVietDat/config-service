@@ -250,6 +250,8 @@ public interface ModelMapper {
 
   RuleApprovalOutput convertToRuleApprovalOutput(RuleApproval ruleApproval);
 
+  CampaignApprovalOutput convertToCampaignApprovalOutput(CampaignApproval campaignApproval);
+
   List<RuleApprovalOutput.RuleConditionApprovalOutput> convertToRuleConditionApprovalOutputs(
       List<RuleConditionApproval> ruleConditionApprovals);
 

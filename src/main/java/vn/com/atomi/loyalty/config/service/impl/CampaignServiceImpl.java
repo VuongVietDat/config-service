@@ -192,7 +192,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
-    // map data mới vào quy tắc hiện tại
+
+    //todo: check các field ảnh hưởng tới rules
+    // map data mới vào chiến dịch hiện tại
     var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
     // tạo bản ghi chờ duyệt
     var campaignApproval =

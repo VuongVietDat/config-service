@@ -48,6 +48,7 @@ public @interface DateRangeValidator {
           context.disableDefaultConstraintViolation();
           context
               .buildConstraintViolationWithTemplate(annotation.message())
+              .addPropertyNode("endDate")
               .addConstraintViolation();
         }
         return success;

@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.config.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,9 +55,26 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
       PointType pointType,
       Status status,
       Long campaignId,
-      LocalDateTime startDate,
-      LocalDateTime endDate,
+      LocalDate startDate,
+      LocalDate endDate,
       String name,
       String code,
       Pageable pageable);
+
+  @Query(
+      value =
+          "select r.code "
+              + "from Rule r "
+              + "         join Campaign c on r.campaignId = c.id "
+              + "where r.deleted = false "
+              + "  and c.deleted = false "
+              + "  and r.type = :type "
+              + "  and r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
+              + "  and r.campaignId = :campaignId "
+              + "  and ((:endDate is null and (r.endDate is null or (r.endDate is not null and r.endDate >= :startDate))) "
+              + "        or (:endDate is not null and ((r.endDate is null and r.startDate <= :endDate) "
+              + "                                       or (r.endDate is not null and r.startDate <= :endDate)))) "
+              + "order by r.updatedAt desc ")
+  List<String> findCodeByOverlapActiveTime(
+      String type, Long campaignId, LocalDate startDate, LocalDate endDate);
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
@@ -68,12 +69,16 @@ public class CustomerGroupController extends BaseController {
                       "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
               @RequestParam(required = false)
               ApprovalType approvalType,
-          @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)")
-              @DateTimeValidator(required = false)
+          @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)", example = "01/01/2024")
+              @DateTimeValidator(
+                  required = false,
+                  pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
               @RequestParam(required = false)
               String startApprovedDate,
-          @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)")
-              @DateTimeValidator(required = false)
+          @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)", example = "31/12/2024")
+              @DateTimeValidator(
+                  required = false,
+                  pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
               @RequestParam(required = false)
               String endApprovedDate,
           @Parameter(description = "Tên nhóm khách hàng") @RequestParam(required = false)

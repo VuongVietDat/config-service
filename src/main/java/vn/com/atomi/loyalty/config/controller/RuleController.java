@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
@@ -43,6 +44,26 @@ public class RuleController extends BaseController {
     return ResponseUtils.success();
   }
 
+  @Operation(
+      summary =
+          "Api kiểm tra trùng quy tắc bằng việc kiểm tra đồng thời 3 điều kiện: Loại quy tắc, Chiến dịch, Thời gian hiệu lực")
+  @PreAuthorize(Authority.Rule.READ_RULE)
+  @GetMapping("/rules/approvals/overlap-active-time")
+  public ResponseEntity<ResponseData<WarringOverlapActiveTimeOutput>> checkOverlapActiveTime(
+      @Parameter(description = "Loại quy tắc sinh điểm") @RequestParam String type,
+      @Parameter(description = "ID chiến dịch") @RequestParam Long campaignId,
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
+          @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+          @RequestParam
+          String startDate,
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+          @RequestParam(required = false)
+          String endDate) {
+    return ResponseUtils.success(
+        ruleService.checkOverlapActiveTime(type, campaignId, startDate, endDate));
+  }
+
   @Operation(summary = "Api lấy danh sách duyệt quy tắc sinh điểm")
   @PreAuthorize(Authority.Rule.READ_RULE)
   @GetMapping("/rules/approvals")
@@ -54,7 +75,7 @@ public class RuleController extends BaseController {
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)
           String sort,
-      @Parameter(description = "Loại qui tắc sinh điểm") @RequestParam(required = false)
+      @Parameter(description = "Loại quy tắc sinh điểm") @RequestParam(required = false)
           String type,
       @Parameter(
               description =
@@ -75,23 +96,23 @@ public class RuleController extends BaseController {
                   "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
           @RequestParam(required = false)
           ApprovalType approvalType,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String endDate,
-      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)", example = "01/01/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String startApprovedDate,
-      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)", example = "31/12/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String endApprovedDate,
-      @Parameter(description = "Tên công thức") @RequestParam(required = false) String name,
+      @Parameter(description = "Tên quy tắc") @RequestParam(required = false) String name,
       @Parameter(description = "Mã quy tắc") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
         ruleService.getRuleApprovals(
@@ -148,7 +169,7 @@ public class RuleController extends BaseController {
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)
           String sort,
-      @Parameter(description = "Loại qui tắc sinh điểm") @RequestParam(required = false)
+      @Parameter(description = "Loại quy tắc sinh điểm") @RequestParam(required = false)
           String type,
       @Parameter(
               description =
@@ -159,15 +180,15 @@ public class RuleController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-          @DateTimeValidator(required = false)
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String endDate,
-      @Parameter(description = "Tên công thức") @RequestParam(required = false) String name,
+      @Parameter(description = "Tên quy tắc") @RequestParam(required = false) String name,
       @Parameter(description = "Mã quy tắc") @RequestParam(required = false) String code) {
     return ResponseUtils.success(
         ruleService.getRules(
@@ -197,7 +218,7 @@ public class RuleController extends BaseController {
   @PutMapping("/rules/{id}")
   public ResponseEntity<ResponseData<Void>> updateRule(
       @Parameter(description = "ID bản ghi quy tắc sinh điểm") @PathVariable Long id,
-      @RequestBody UpdateRuleInput updateRuleInput) {
+      @Valid @RequestBody UpdateRuleInput updateRuleInput) {
     ruleService.updateRule(id, updateRuleInput);
     return ResponseUtils.success();
   }

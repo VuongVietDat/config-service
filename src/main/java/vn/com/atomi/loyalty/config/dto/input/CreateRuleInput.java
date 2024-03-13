@@ -17,7 +17,7 @@ import vn.com.atomi.loyalty.config.enums.*;
 @Getter
 public class CreateRuleInput {
 
-  @Schema(description = "Loại qui tắc sinh điểm")
+  @Schema(description = "Loại quy tắc sinh điểm")
   @NotBlank
   private String type;
 
@@ -41,12 +41,12 @@ public class CreateRuleInput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-  @DateTimeValidator
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
+  @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-  @DateTimeValidator(required = false)
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
+  @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private String endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
@@ -101,7 +101,7 @@ public class CreateRuleInput {
 
     @Schema(
         description =
-            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
     private Frequency frequencyLimitPointPerUser;
 
     @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
@@ -109,11 +109,16 @@ public class CreateRuleInput {
 
     @Schema(
         description =
-            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
     private Frequency frequencyLimitEventPerUser;
 
     @Schema(description = "Thời gian chờ giữa 2 lần")
     private Long timeWait;
+
+    @Schema(
+        description =
+            "Đơn vị thời gian chờ giữa 2 lần:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+    private Frequency frequencyTimeWait;
   }
 
   @Setter
@@ -121,7 +126,7 @@ public class CreateRuleInput {
   public static class RuleBonusInput {
 
     @Schema(description = "Loại thưởng thêm")
-    private String type;
+    private BonusType type;
 
     @Schema(description = "Giá trị thưởng")
     private String value;
@@ -139,8 +144,11 @@ public class CreateRuleInput {
     @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private String toDate;
 
-    @Schema(description = "Điều kiện nhận thưởng thêm")
+    @Schema(description = "Điều kiện cha nhận thưởng thêm")
     private String condition;
+
+    @Schema(description = "Điều kiện con nhận thưởng thêm")
+    private String childCondition;
   }
 
   @Setter

@@ -105,26 +105,26 @@ public class RuleApprovalOutput {
     private Long id;
 
     @Schema(description = "Số điểm cố định")
-    private Long fixPointAmount;
+    private long fixPointAmount;
 
     @Schema(description = "Giá trị quy đổi (VND)")
-    private Long exchangeValue;
+    private long exchangeValue;
 
     @Schema(description = "Giá trị điểm")
-    private Long exchangePoint;
+    private long exchangePoint;
 
     @Schema(description = "Giá trị giao dịch tối thiểu")
-    private Long minTransaction;
+    private long minTransaction;
 
     @Schema(
         description = "Tích điểm với số tiền thực khách hàng thanh toán (sau khi trừ khuyến mãi)")
     private Boolean isNetValue;
 
     @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một giao dịch")
-    private Long limitPointPerTransaction;
+    private long limitPointPerTransaction;
 
     @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một khách hàng")
-    private Long limitPointPerUser;
+    private long limitPointPerUser;
 
     @Schema(
         description =
@@ -132,7 +132,7 @@ public class RuleApprovalOutput {
     private Frequency frequencyLimitPointPerUser;
 
     @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
-    private Long limitEventPerUser;
+    private long limitEventPerUser;
 
     @Schema(
         description =
@@ -140,7 +140,7 @@ public class RuleApprovalOutput {
     private Frequency frequencyLimitEventPerUser;
 
     @Schema(description = "Thời gian chờ giữa 2 lần")
-    private Long timeWait;
+    private long timeWait;
 
     @Schema(
         description =

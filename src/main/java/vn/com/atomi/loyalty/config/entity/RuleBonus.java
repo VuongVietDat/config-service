@@ -37,7 +37,7 @@ public class RuleBonus extends BaseEntity {
   private BonusType type;
 
   @Column(name = "value")
-  private String value;
+  private double value;
 
   @Column(name = "plus_type")
   @Enumerated(EnumType.STRING)

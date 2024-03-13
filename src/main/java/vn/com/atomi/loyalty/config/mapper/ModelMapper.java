@@ -192,10 +192,11 @@ public interface ModelMapper {
       Long id,
       String code);
 
-  @Mapping(target = "creator", source = "createdBy")
-  @Mapping(target = "creationDate", source = "createdAt")
+  @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
+  @Mapping(target = "creator", source = "ruleApproval.createdBy")
+  @Mapping(target = "creationDate", source = "ruleApproval.createdAt")
   @Mapping(target = "id", ignore = true)
-  Rule convertToRule(RuleApproval ruleApproval);
+  Rule convertToRule(RuleApproval ruleApproval, LocalDateTime creationApprovalDate);
 
   @Mapping(target = "creator", source = "createdBy")
   @Mapping(target = "creationDate", source = "createdAt")

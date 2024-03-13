@@ -57,6 +57,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
 
   private final MasterDataService masterDataService;
 
+  @Transactional(isolation = Isolation.READ_COMMITTED)
   @Override
   public void createRule(CreateRuleInput createRuleInput) {
     LocalDate ruleStartDate = Utils.convertToLocalDate(createRuleInput.getStartDate());
@@ -71,7 +72,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       throw new BaseException(ErrorCode.CAMPAIGN_INACTIVE);
     }
     // so sánh ngày bắt đầu quy tắc và ngày bắt đầu chiến dịch
-    if (campaign.getStartDate().isBefore(ruleStartDate)) {
+    if (campaign.getStartDate().isAfter(ruleStartDate)) {
       throw new BaseException(ErrorCode.RULE_STARTDATE_GREAT_THAN_CAMPAIGN_STARTDATE);
     }
     // so sánh ngày kết thúc quy tắc và ngày kết thúc chiến dịch
@@ -122,7 +123,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             code);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() == null) {
+    if (ruleApproval.getConditionType() != null) {
       var ruleConditionApprovals =
           super.modelMapper.convertToRuleConditionApprovalsFromInput(
               createRuleInput.getRuleConditionInputs(), ruleApproval.getId());
@@ -137,7 +138,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     var ruleBonusApprovals =
         super.modelMapper.convertToRuleBonusApprovalsFromInput(
             createRuleInput.getRuleBonusInputs(), ruleApproval.getId());
-    ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    if (!CollectionUtils.isEmpty(ruleBonusApprovals)) {
+      ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    }
   }
 
   @Override
@@ -198,7 +201,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleApprovalOutput = super.modelMapper.convertToRuleApprovalOutput(ruleApproval);
     // lấy điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApprovalOutput.getConditionType() == null) {
+    if (ruleApprovalOutput.getConditionType() != null) {
       var ruleConditionApprovals =
           ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
       ruleApprovalOutput.setRuleConditionApprovalOutputs(
@@ -271,7 +274,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleOutput = super.modelMapper.convertToRuleOutput(rule);
     // lấy điều kiện áp dụng quy tắc
-    if (ruleOutput.getConditionType() == null) {
+    if (ruleOutput.getConditionType() != null) {
       var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
       ruleOutput.setRuleConditionOutputs(
           super.modelMapper.convertToRuleConditionOutputs(ruleConditions));
@@ -303,7 +306,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             newRule, approvalId, ApprovalStatus.WAITING, ApprovalType.UPDATE);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() == null) {
+    if (ruleApproval.getConditionType() != null) {
       var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
       var ruleConditionApprovals =
           super.modelMapper.convertToRuleConditionApprovals(ruleConditions, ruleApproval.getId());
@@ -316,9 +319,11 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     ruleAllocationApprovalRepository.saveAll(ruleAllocationApprovals);
     // lưu quy tắc tặng thêm điểm của bản ghi chờ duyệt
     var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleId(id);
-    var ruleBonusApprovals =
-        super.modelMapper.convertToRuleBonusApprovals(ruleBonuses, ruleApproval.getId());
-    ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    if (!CollectionUtils.isEmpty(ruleBonuses)) {
+      var ruleBonusApprovals =
+          super.modelMapper.convertToRuleBonusApprovals(ruleBonuses, ruleApproval.getId());
+      ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    }
   }
 
   @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -333,7 +338,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(ruleApproval.getApprovalType())) {
         // lưu thông tin quy tắc
-        var rule = super.modelMapper.convertToRule(ruleApproval);
+        var rule = super.modelMapper.convertToRule(ruleApproval, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
         // lưu quy tắc chung phân bổ điểm
@@ -344,17 +349,22 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             super.modelMapper.convertToRuleAllocations(ruleAllocationApprovals, rule.getId());
         ruleAllocationRepository.saveAll(ruleAllocations);
         // lưu điều kiện áp dụng quy tắc
-        var ruleConditionApprovals =
-            ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
-                ruleApproval.getId());
-        var ruleConditions =
-            super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
-        ruleConditionRepository.saveAll(ruleConditions);
+        if (ruleApproval.getConditionType() != null) {
+          var ruleConditionApprovals =
+              ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
+                  ruleApproval.getId());
+          var ruleConditions =
+              super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
+          ruleConditionRepository.saveAll(ruleConditions);
+        }
         // lưu quy tắc tặng thêm điểm
         var ruleBonusApprovals =
             ruleBonusApprovalRepository.findByDeletedFalseAndRuleApprovalId(ruleApproval.getId());
-        var ruleBonuses = super.modelMapper.convertToRuleBonuses(ruleBonusApprovals, rule.getId());
-        ruleBonusRepository.saveAll(ruleBonuses);
+        if (!CollectionUtils.isEmpty(ruleBonusApprovals)) {
+          var ruleBonuses =
+              super.modelMapper.convertToRuleBonuses(ruleBonusApprovals, rule.getId());
+          ruleBonusRepository.saveAll(ruleBonuses);
+        }
       }
 
       // trường hợp phê duyệt cập nhật

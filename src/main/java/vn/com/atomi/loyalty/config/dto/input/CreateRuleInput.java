@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.base.annotations.DateRangeValidator;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.enums.*;
@@ -15,7 +16,8 @@ import vn.com.atomi.loyalty.config.enums.*;
  */
 @Setter
 @Getter
-public class CreateRuleInput {
+@DateRangeValidator
+public class CreateRuleInput implements IDateInput {
 
   @Schema(description = "Loại qui tắc sinh điểm")
   @NotBlank

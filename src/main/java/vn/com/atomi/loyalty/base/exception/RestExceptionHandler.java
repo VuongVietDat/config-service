@@ -407,6 +407,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
               fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
       subErrors.add(subError);
     }
+
+    e.getBindingResult()
+        .getGlobalErrors()
+        .forEach(
+            error ->
+                subErrors.add(
+                    new SubError(error.getObjectName(), "{Object}", error.getDefaultMessage())));
     return subErrors;
   }
 

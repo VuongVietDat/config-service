@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.base.annotations.DateRangeValidator;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.enums.Status;
@@ -16,7 +17,8 @@ import vn.com.atomi.loyalty.config.enums.Status;
  */
 @Setter
 @Getter
-public class CampaignInput {
+@DateRangeValidator
+public class CampaignInput implements IDateInput {
   @Schema(description = "Tên chiến dịch")
   @NotBlank
   @Size(max = 168)

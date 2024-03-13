@@ -19,7 +19,7 @@ public class CustomerGroupOutput {
   @Schema(description = "ID bản ghi")
   private Long id;
 
-  @Schema(description = "Mã qui tắc sinh điểm")
+  @Schema(description = "Mã quy tắc sinh điểm")
   private String code;
 
   @Schema(description = "Tên quy tắc sinh điểm")

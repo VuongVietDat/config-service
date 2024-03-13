@@ -30,11 +30,11 @@ public class CampaignInput {
   @NotNull
   private Long customerGroupId;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
   @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE, required = false)
   private String endDate;
 

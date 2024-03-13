@@ -91,22 +91,6 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         .isEmpty()) {
       throw new BaseException(ErrorCode.RULE_TYPE_NOT_EXISTED);
     }
-    // kiểm tra tồn tại loại thưởng thêm
-    if (!CollectionUtils.isEmpty(createRuleInput.getRuleBonusInputs())
-        && createRuleInput.getRuleBonusInputs().stream()
-            .anyMatch(
-                bonusInput ->
-                    !dictionaryOutputs.stream()
-                        .filter(
-                            dictionary ->
-                                dictionary
-                                    .getParentCode()
-                                    .equals(Constants.DICTIONARY_RULE_BONUS_TYPE))
-                        .map(DictionaryOutput::getCode)
-                        .toList()
-                        .contains(bonusInput.getType()))) {
-      throw new BaseException(ErrorCode.RULE_BONUS_TYPE_NOT_EXISTED);
-    }
     // kiểm tra tồn tại điều kiện áp dụng quy tắc
     if (!CollectionUtils.isEmpty(createRuleInput.getRuleConditionInputs())
         && createRuleInput.getRuleConditionInputs().stream()
@@ -264,8 +248,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pointType,
             status,
             campaignId,
-            Utils.convertToLocalDateTime(startDate),
-            Utils.convertToLocalDateTime(endDate),
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate),
             Utils.makeLikeParameter(name),
             Utils.makeLikeParameter(code),
             pageable);
@@ -313,9 +297,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // map data mới vào quy tắc hiện tại
     var newRule = super.modelMapper.convertToRule(rule, updateRuleInput);
     // tạo bản ghi chờ duyệt
+    var approvalId = ruleApprovalRepository.getSequence();
     var ruleApproval =
         super.modelMapper.convertToRuleApproval(
-            newRule, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+            newRule, approvalId, ApprovalStatus.WAITING, ApprovalType.UPDATE);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     if (ruleApproval.getConditionType() == null) {
@@ -436,5 +421,27 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                     .newValue(diff.getRight() == null ? null : diff.getRight().toString())
                     .build())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public WarringOverlapActiveTimeOutput checkOverlapActiveTime(
+      String type, Long campaignId, String startDate, String endDate) {
+    List<String> codes =
+        ruleRepository.findCodeByOverlapActiveTime(
+            type,
+            campaignId,
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate));
+    // nếu nhiều hơn 3 quy tắc thì chỉ trả về mã của 3 quy tắc đầu tiên
+    var varCode =
+        CollectionUtils.isEmpty(codes)
+            ? null
+            : (codes.size() <= 3
+                ? String.join(",", codes)
+                : String.format("%s...", String.join(",", codes.subList(0, 3))));
+    return WarringOverlapActiveTimeOutput.builder()
+        .existed(!CollectionUtils.isEmpty(codes))
+        .message(String.format(ErrorCode.OVERLAP_ACTIVE_TIME.getMessage(), varCode))
+        .build();
   }
 }

@@ -278,6 +278,8 @@ public interface ModelMapper {
   List<RuleApprovalOutput.RuleBonusApprovalOutput> convertToRuleBonusApprovalOutputs(
       List<RuleBonusApproval> ruleBonusApprovals);
 
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   Rule convertToRule(@MappingTarget Rule rule, UpdateRuleInput updateRuleInput);
 
   Campaign convertToCampaign(@MappingTarget Campaign campaign, CampaignInput campaignInput);
@@ -289,12 +291,12 @@ public interface ModelMapper {
   CampaignApproval convertToCampaignApproval(
       Campaign campaign, ApprovalStatus approvalStatus, ApprovalType approvalType);
 
-  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "id", source = "approvalId")
   @Mapping(target = "ruleId", source = "rule.id")
   @Mapping(target = "approvalType", source = "approvalType")
   @Mapping(target = "approvalStatus", source = "approvalStatus")
   RuleApproval convertToRuleApproval(
-      Rule rule, ApprovalStatus approvalStatus, ApprovalType approvalType);
+      Rule rule, Long approvalId, ApprovalStatus approvalStatus, ApprovalType approvalType);
 
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleBonusApproval convertToRuleBonusApproval(RuleBonus ruleBonus, Long ruleApprovalId);

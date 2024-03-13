@@ -24,10 +24,10 @@ public class RuleOutput {
   @Schema(description = "ID bản ghi")
   private Long id;
 
-  @Schema(description = "Loại qui tắc sinh điểm")
+  @Schema(description = "Loại quy tắc sinh điểm")
   private String type;
 
-  @Schema(description = "Mã qui tắc sinh điểm")
+  @Schema(description = "Mã quy tắc sinh điểm")
   private String code;
 
   @Schema(description = "Tên quy tắc sinh điểm")
@@ -46,11 +46,11 @@ public class RuleOutput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate endDate;
 
@@ -108,7 +108,7 @@ public class RuleOutput {
 
     @Schema(
         description =
-            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
     private Frequency frequencyLimitPointPerUser;
 
     @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
@@ -116,11 +116,16 @@ public class RuleOutput {
 
     @Schema(
         description =
-            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
     private Frequency frequencyLimitEventPerUser;
 
     @Schema(description = "Thời gian chờ giữa 2 lần")
     private Long timeWait;
+
+    @Schema(
+        description =
+            "Đơn vị thời gian chờ giữa 2 lần:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+    private Frequency frequencyTimeWait;
   }
 
   @Setter
@@ -149,8 +154,11 @@ public class RuleOutput {
     @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private LocalDate toDate;
 
-    @Schema(description = "Điều kiện nhận thưởng thêm")
+    @Schema(description = "Điều kiện cha nhận thưởng thêm")
     private String condition;
+
+    @Schema(description = "Điều kiện con nhận thưởng thêm")
+    private String childCondition;
   }
 
   @Setter

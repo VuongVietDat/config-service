@@ -64,4 +64,8 @@ public class RuleAllocation extends BaseEntity {
 
   @Column(name = "time_wait")
   private Long timeWait;
+
+  @Column(name = "frequency_time_wait")
+  @Enumerated(EnumType.STRING)
+  private Frequency frequencyTimeWait;
 }

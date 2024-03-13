@@ -25,5 +25,6 @@ public interface LoyaltyCommonClient {
   ResponseData<List<DictionaryOutput>> getDictionaries(
       @RequestHeader(RequestConstant.REQUEST_ID) String requestId,
       @RequestParam(required = false) String type,
-      @RequestParam(required = false) Status status);
+      @RequestParam(required = false) Status status,
+      @RequestParam(required = false) Boolean isSubLeaf);
 }

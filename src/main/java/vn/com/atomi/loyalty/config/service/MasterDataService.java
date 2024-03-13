@@ -13,11 +13,16 @@ public interface MasterDataService {
 
   List<DictionaryOutput> getDictionary();
 
-  List<DictionaryOutput> getDictionary(String type);
+  List<DictionaryOutput> getDictionary(String type, boolean isSubLeaf);
 
   List<DictionaryOutput> getDictionary(Status status);
 
-  List<DictionaryOutput> getDictionary(String type, Status status);
+  List<DictionaryOutput> getDictionary(String type, Status status, boolean isSubLeaf);
+
+  List<DictionaryOutput> getDictionary(List<DictionaryOutput> node, String type, boolean isSubLeaf);
+
+  List<DictionaryOutput> getDictionary(
+      List<DictionaryOutput> node, String type, Status status, boolean isSubLeaf);
 
   List<ConditionOutput> getRuleConditions(boolean isView);
 

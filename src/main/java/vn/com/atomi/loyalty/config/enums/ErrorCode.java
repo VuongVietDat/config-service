@@ -29,7 +29,6 @@ public enum ErrorCode implements AbstractError {
       1010, "Nhóm khách hàng này đang được sử dụng ở chiến dịch.", HttpStatus.BAD_REQUEST),
   RULE_CONDITION_NOT_EXISTED(
       1011, "Điều kiện áp dụng quy tắc không tồn tại.", HttpStatus.NOT_FOUND),
-  ENDDATE_AFTER_STARTDATE(1020, "Ngày kết thúc phải sau ngày bắt đầu.", HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

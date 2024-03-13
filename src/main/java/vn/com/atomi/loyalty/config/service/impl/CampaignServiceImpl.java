@@ -46,9 +46,6 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var startDate = Utils.convertToLocalDate(campaignInput.getStartDate());
     var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
-    // validate thời gian
-//    if (endDate != null && !endDate.isAfter(startDate))
-//      throw new BaseException(ErrorCode.ENDDATE_AFTER_STARTDATE);
 
     // kiểm tra customer group
     if (!customerGroupRepository.existsByIdAndDeletedFalse(campaignInput.getCustomerGroupId()))

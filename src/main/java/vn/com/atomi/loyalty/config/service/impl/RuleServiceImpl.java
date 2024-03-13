@@ -83,11 +83,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // lấy master data để map loại quy tắc
     var dictionaryOutputs = masterDataService.getDictionary(Status.ACTIVE);
     // kiểm tra tồn tại loại quy tắc sinh điểm
-    if (dictionaryOutputs.stream()
-        .filter(
-            v ->
-                v.getParentCode().equals(Constants.DICTIONARY_RULE_TYPE)
-                    && v.getCode().equals(createRuleInput.getType()))
+    if (masterDataService
+        .getDictionary(dictionaryOutputs, Constants.DICTIONARY_RULE_TYPE, true)
+        .stream()
+        .filter(v -> v.getCode().equals(createRuleInput.getType()))
         .findFirst()
         .isEmpty()) {
       throw new BaseException(ErrorCode.RULE_TYPE_NOT_EXISTED);
@@ -184,7 +183,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc
-      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE);
+      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE, true);
       return new ResponsePage<>(
           rulePage,
           super.modelMapper.convertToRuleApprovalPreviewOutputs(
@@ -216,6 +215,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     var ruleBonusApprovals = ruleBonusApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
     ruleApprovalOutput.setRuleBonusApprovalOutputs(
         super.modelMapper.convertToRuleBonusApprovalOutputs(ruleBonusApprovals));
+    //  lấy lịch sử phê duyệt
+    ruleApprovalOutput.setHistoryOutputs(this.buildHistoryOutputs(List.of(ruleApproval)));
     return ruleApprovalOutput;
   }
 
@@ -258,7 +259,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc
-      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE);
+      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE, true);
       return new ResponsePage<>(
           rulePage,
           super.modelMapper.convertToRulePreviewOutputs(rulePage.getContent(), dictionaryOutputs));
@@ -286,6 +287,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // lấy quy tắc tặng thêm điểm
     var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleId(id);
     ruleOutput.setRuleBonusOutputs(super.modelMapper.convertToRuleBonusOutputs(ruleBonuses));
+    //  lấy lịch sử phê duyệt
+    var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndRuleId(id);
+    ruleOutput.setHistoryOutputs(this.buildHistoryOutputs(ruleApprovals));
     return ruleOutput;
   }
 
@@ -453,5 +457,44 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         .existed(!CollectionUtils.isEmpty(codes))
         .message(String.format(ErrorCode.OVERLAP_ACTIVE_TIME.getMessage(), varCode))
         .build();
+  }
+
+  private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {
+    List<HistoryOutput> historyOutputs = new ArrayList<>();
+    long recordNo = 0L;
+    for (RuleApproval ruleApproval : ruleApprovals) {
+      if (ruleApproval.getApprovalStatus().equals(ApprovalStatus.WAITING)) {
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalStatus(ruleApproval.getApprovalStatus())
+                .actionAt(ruleApproval.getCreatedAt())
+                .userAction(ruleApproval.getCreatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+      } else {
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalStatus(ApprovalStatus.WAITING)
+                .actionAt(ruleApproval.getCreatedAt())
+                .userAction(ruleApproval.getCreatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalComment(ruleApproval.getApprovalComment())
+                .approvalStatus(ruleApproval.getApprovalStatus())
+                .actionAt(ruleApproval.getUpdatedAt())
+                .userAction(ruleApproval.getUpdatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+      }
+    }
+    return historyOutputs;
   }
 }

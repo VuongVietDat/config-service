@@ -45,24 +45,24 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     var out = masterDataRepository.getDictionary();
     if (CollectionUtils.isEmpty(out)) {
       return loyaltyCommonClient
-          .getDictionaries(RequestUtils.extractRequestId(), null, null)
+          .getDictionaries(RequestUtils.extractRequestId(), null, null, null)
           .getData();
     }
     return out;
   }
 
   @Override
-  public List<DictionaryOutput> getDictionary(String type) {
+  public List<DictionaryOutput> getDictionary(String type, boolean isSubLeaf) {
     if (StringUtils.isEmpty(type)) {
       return this.getDictionary();
     }
-    var out = masterDataRepository.getDictionary();
-    if (CollectionUtils.isEmpty(out)) {
+    var node = masterDataRepository.getDictionary();
+    if (CollectionUtils.isEmpty(node)) {
       return loyaltyCommonClient
-          .getDictionaries(RequestUtils.extractRequestId(), type, null)
+          .getDictionaries(RequestUtils.extractRequestId(), type, null, isSubLeaf)
           .getData();
     }
-    return out.stream().filter(v -> type.equals(v.getParentCode())).collect(Collectors.toList());
+    return this.getDictionary(node, type, isSubLeaf);
   }
 
   @Override
@@ -73,19 +73,19 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     var out = masterDataRepository.getDictionary();
     if (CollectionUtils.isEmpty(out)) {
       return loyaltyCommonClient
-          .getDictionaries(RequestUtils.extractRequestId(), null, status)
+          .getDictionaries(RequestUtils.extractRequestId(), null, status, null)
           .getData();
     }
     return out.stream().filter(v -> v.getStatus().equals(status)).collect(Collectors.toList());
   }
 
   @Override
-  public List<DictionaryOutput> getDictionary(String type, Status status) {
+  public List<DictionaryOutput> getDictionary(String type, Status status, boolean isSubLeaf) {
     if (StringUtils.isEmpty(type) && status == null) {
       return this.getDictionary();
     }
     if (!StringUtils.isEmpty(type) && status == null) {
-      return this.getDictionary(type);
+      return this.getDictionary(type, isSubLeaf);
     }
     if (StringUtils.isEmpty(type) && status != null) {
       return this.getDictionary(status);
@@ -93,12 +93,28 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     var out = masterDataRepository.getDictionary();
     if (CollectionUtils.isEmpty(out)) {
       return loyaltyCommonClient
-          .getDictionaries(RequestUtils.extractRequestId(), type, status)
+          .getDictionaries(RequestUtils.extractRequestId(), type, status, isSubLeaf)
           .getData();
     }
-    return out.stream()
-        .filter(v -> type.equals(v.getParentCode()) && v.getStatus().equals(status))
-        .collect(Collectors.toList());
+    return this.getDictionary(out, type, status, isSubLeaf);
+  }
+
+  @Override
+  public List<DictionaryOutput> getDictionary(
+      List<DictionaryOutput> node, String type, boolean isSubLeaf) {
+    List<DictionaryOutput> leafs =
+        node.stream().filter(v -> type.equals(v.getParentCode())).collect(Collectors.toList());
+    return this.appendSubLeaf(node, isSubLeaf, leafs);
+  }
+
+  @Override
+  public List<DictionaryOutput> getDictionary(
+      List<DictionaryOutput> node, String type, Status status, boolean isSubLeaf) {
+    List<DictionaryOutput> leafs =
+        node.stream()
+            .filter(v -> type.equals(v.getParentCode()) && v.getStatus().equals(status))
+            .collect(Collectors.toList());
+    return this.appendSubLeaf(node, isSubLeaf, leafs);
   }
 
   @Override
@@ -127,6 +143,16 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
       masterDataRepository.putRuleCondition(out);
     }
     return out;
+  }
+
+  private List<DictionaryOutput> appendSubLeaf(
+      List<DictionaryOutput> node, boolean isSubLeaf, List<DictionaryOutput> leafs) {
+    if (isSubLeaf) {
+      List<String> leafCode = leafs.stream().map(DictionaryOutput::getCode).toList();
+      var subLeaf = node.stream().filter(v -> leafCode.contains(v.getParentCode())).toList();
+      leafs.addAll(subLeaf);
+    }
+    return leafs;
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

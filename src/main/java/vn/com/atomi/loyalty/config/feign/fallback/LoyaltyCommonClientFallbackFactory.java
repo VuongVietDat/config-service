@@ -25,7 +25,7 @@ public class LoyaltyCommonClientFallbackFactory implements FallbackFactory<Loyal
     return new LoyaltyCommonClient() {
       @Override
       public ResponseData<List<DictionaryOutput>> getDictionaries(
-          String requestId, String type, Status status) {
+          String requestId, String type, Status status, Boolean isSubLeaf) {
         throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
       }
     };

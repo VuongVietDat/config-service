@@ -77,6 +77,9 @@ public class RuleOutput {
   @Schema(description = "Điều kiện áp dụng quy tắc")
   private List<RuleConditionOutput> ruleConditionOutputs;
 
+  @Schema(description = "Lịch sử phê duyệt")
+  private List<HistoryOutput> historyOutputs;
+
   @Setter
   @Getter
   public static class RuleAllocationOutput {

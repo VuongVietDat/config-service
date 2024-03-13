@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
@@ -78,15 +77,6 @@ public class RuleApprovalOutput {
           "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
   private ApprovalType approvalType;
 
-  @Schema(description = "Lý do đồng ý hoặc từ chối")
-  private String approvalComment;
-
-  @Schema(description = "Người duyệt")
-  private String approver;
-
-  @Schema(description = "Ngày duyệt")
-  private LocalDateTime approveDate;
-
   @Schema(description = "Quy tắc chung phân bổ điểm")
   @NotEmpty
   private List<RuleAllocationApprovalOutput> ruleAllocationApprovalOutputs;
@@ -96,6 +86,9 @@ public class RuleApprovalOutput {
 
   @Schema(description = "Điều kiện áp dụng quy tắc")
   private List<RuleConditionApprovalOutput> ruleConditionApprovalOutputs;
+
+  @Schema(description = "Lịch sử phê duyệt")
+  private List<HistoryOutput> historyOutputs;
 
   @Setter
   @Getter

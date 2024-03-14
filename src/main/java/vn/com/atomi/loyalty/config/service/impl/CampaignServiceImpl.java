@@ -46,9 +46,6 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var startDate = Utils.convertToLocalDate(campaignInput.getStartDate());
     var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
-    // validate thời gian
-    if (endDate != null && !endDate.isAfter(startDate))
-      throw new BaseException(ErrorCode.ENDDATE_AFTER_STARTDATE);
 
     // kiểm tra customer group
     if (!customerGroupRepository.existsByIdAndDeletedFalse(campaignInput.getCustomerGroupId()))
@@ -192,7 +189,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
-    // map data mới vào quy tắc hiện tại
+
+    //todo: check các field ảnh hưởng tới rules
+    // map data mới vào chiến dịch hiện tại
     var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
     // tạo bản ghi chờ duyệt
     var campaignApproval =

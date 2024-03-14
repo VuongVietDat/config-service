@@ -16,7 +16,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
  */
 @Setter
 @Getter
-public class CampaignInput {
+public class CampaignInput implements IDateInput {
   @Schema(description = "Tên chiến dịch")
   @NotBlank
   @Size(max = 168)

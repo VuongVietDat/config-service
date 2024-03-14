@@ -33,7 +33,6 @@ public enum ErrorCode implements AbstractError {
       1012,
       "Tập khách hàng quy định trong thời gian hiệu lực đã tồn tại quy tắc [%s]. Bạn có muốn tiếp tục!",
       HttpStatus.BAD_REQUEST),
-  ENDDATE_AFTER_STARTDATE(1020, "Ngày kết thúc phải sau ngày bắt đầu.", HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

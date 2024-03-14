@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.config.annotations.CreateRuleValidator;
 import vn.com.atomi.loyalty.config.enums.*;
 
 /**
@@ -14,6 +15,7 @@ import vn.com.atomi.loyalty.config.enums.*;
  */
 @Setter
 @Getter
+@CreateRuleValidator
 public class CreateRuleInput {
 
   @Schema(description = "Loại quy tắc sinh điểm", example = "TRANSACTION")

@@ -16,11 +16,11 @@ public enum ErrorCode implements AbstractError {
   CAMPAIGN_INACTIVE(1004, "Chiến dịch đã hết thời gian hiệu lực.", HttpStatus.BAD_REQUEST),
   RULE_STARTDATE_GREAT_THAN_CAMPAIGN_STARTDATE(
       1005,
-      "Ngày bắt đầu hiệu lực của quy tắc phải lớn hơn hoặc bằng ngày bắt đầu hiệu lực của chiến dịch.",
+      "Thời gian hiệu lực của quy tắc phải nằm trong thời gian hiệu lực của chiến dịch.",
       HttpStatus.BAD_REQUEST),
   RULE_ENDDATE_LESS_THAN_CAMPAIGN_ENDDATE(
       1006,
-      "Ngày kết thúc hiệu lực của quy tắc phải nhỏ hơn hoặc bằng ngày kết thúc hiệu lực của chiến dịch.",
+      "Thời gian hiệu lực của quy tắc phải nằm trong thời gian hiệu lực của chiến dịch.",
       HttpStatus.BAD_REQUEST),
   RULE_TYPE_NOT_EXISTED(1007, "Không tồn tại loại quy tắc sinh điểm.", HttpStatus.NOT_FOUND),
   RULE_BONUS_TYPE_NOT_EXISTED(1008, "Không tồn tại loại thưởng thêm.", HttpStatus.NOT_FOUND),
@@ -29,6 +29,10 @@ public enum ErrorCode implements AbstractError {
       1010, "Nhóm khách hàng này đang được sử dụng ở chiến dịch.", HttpStatus.BAD_REQUEST),
   RULE_CONDITION_NOT_EXISTED(
       1011, "Điều kiện áp dụng quy tắc không tồn tại.", HttpStatus.NOT_FOUND),
+  OVERLAP_ACTIVE_TIME(
+      1012,
+      "Tập khách hàng quy định trong thời gian hiệu lực đã tồn tại quy tắc [%s]. Bạn có muốn tiếp tục!",
+      HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

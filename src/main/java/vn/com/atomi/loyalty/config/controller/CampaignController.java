@@ -63,19 +63,19 @@ public class CampaignController extends BaseController {
                   "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
           @RequestParam(required = false)
           ApprovalType approvalType,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endDate,
-      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)")
+      @Parameter(description = "Thời gian duyệt từ ngày (dd/MM/yyyy)", example = "01/01/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startApprovedDate,
-      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)")
+      @Parameter(description = "Thời gian duyệt đến ngày (dd/MM/yyyy)", example = "31/12/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endApprovedDate,
@@ -135,11 +135,11 @@ public class CampaignController extends BaseController {
       @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
           @RequestParam(required = false)
           Status status,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
           @DateTimeValidator(required = false)
           @RequestParam(required = false)
           String endDate,

@@ -23,13 +23,13 @@ public class RuleApprovalPreviewOutput {
   @Schema(description = "ID bản ghi")
   private Long id;
 
-  @Schema(description = "Loại qui tắc sinh điểm")
+  @Schema(description = "Loại quy tắc sinh điểm")
   private String type;
 
-  @Schema(description = "Tên loại qui tắc sinh điểm")
+  @Schema(description = "Tên loại quy tắc sinh điểm")
   private String typeName;
 
-  @Schema(description = "Mã qui tắc sinh điểm")
+  @Schema(description = "Mã quy tắc sinh điểm")
   private String code;
 
   @Schema(description = "Tên quy tắc sinh điểm")
@@ -46,11 +46,11 @@ public class RuleApprovalPreviewOutput {
   @Schema(description = "Tên chiến dịch")
   private String campaignName;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate endDate;
 
@@ -65,10 +65,12 @@ public class RuleApprovalPreviewOutput {
   @Schema(description = "Người tạo")
   private String creator;
 
-  @Schema(description = "Ngày tạo")
+  @Schema(description = "Ngày tạo (dd/MM/yyyy HH:mm:ss)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime creationDate;
 
-  @Schema(description = "Ngày duyệt")
+  @Schema(description = "Ngày duyệt (dd/MM/yyyy HH:mm:ss)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime approveDate;
 
   @Schema(

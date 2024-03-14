@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.config.enums.BonusType;
 import vn.com.atomi.loyalty.config.enums.PlusType;
 
 /**
@@ -32,10 +33,11 @@ public class RuleBonusApproval extends BaseEntity {
   private Long ruleApprovalId;
 
   @Column(name = "type")
-  private String type;
+  @Enumerated(EnumType.STRING)
+  private BonusType type;
 
   @Column(name = "value")
-  private String value;
+  private double value;
 
   @Column(name = "plus_type")
   @Enumerated(EnumType.STRING)
@@ -49,4 +51,7 @@ public class RuleBonusApproval extends BaseEntity {
 
   @Column(name = "condition")
   private String condition;
+
+  @Column(name = "child_condition")
+  private String childCondition;
 }

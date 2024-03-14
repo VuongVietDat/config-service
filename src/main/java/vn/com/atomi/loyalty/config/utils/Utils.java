@@ -67,11 +67,11 @@ public class Utils {
   public static String generateCode(Long sequence, String className) {
     var shortYear = String.valueOf(LocalDate.now().getYear()).substring(2);
     if (className.equals(RuleApproval.class.getSimpleName())) {
-      return "R" + shortYear + StringUtils.leftPad(sequence.toString(), 7);
+      return "R" + shortYear + StringUtils.leftPad(sequence.toString(), 7, "0");
     } else if (className.equals(CampaignApproval.class.getSimpleName())) {
-      return "CP" + shortYear + StringUtils.leftPad(sequence.toString(), 6);
+      return "CP" + shortYear + StringUtils.leftPad(sequence.toString(), 6, "0");
     } else if (className.equals(CustomerGroupApproval.class.getSimpleName())) {
-      return "CG" + shortYear + StringUtils.leftPad(sequence.toString(), 6);
+      return "CG" + shortYear + StringUtils.leftPad(sequence.toString(), 6, "0");
     }
     return null;
   }

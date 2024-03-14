@@ -3,9 +3,10 @@ package vn.com.atomi.loyalty.config.dto.input;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.enums.*;
 
 /**
@@ -20,12 +21,13 @@ public class UpdateRuleInput {
   @Schema(description = "Tên quy tắc sinh điểm")
   private String name;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-  @NotNull
-  private LocalDate startDate;
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
+  @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-  private LocalDate endDate;
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
+  @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  private String endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   @NotNull

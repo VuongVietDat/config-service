@@ -2,6 +2,7 @@ package vn.com.atomi.loyalty.config.repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long> {
 
-  @Query(value = "select cf_rule_arv_id_seq.nextval from DUAL", nativeQuery = true)
+  @Query(value = "select {h-schema}cf_rule_arv_id_seq.nextval from DUAL", nativeQuery = true)
   Long getSequence();
 
   Optional<RuleApproval> findByDeletedFalseAndId(Long id);
@@ -40,21 +41,22 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
 
   @Query(
       value =
-          "select r.id           as id, "
-              + "       r.type         as type, "
-              + "       r.code         as code, "
-              + "       r.name         as name, "
-              + "       r.pointType    as pointType, "
-              + "       c.id           as campaignId, "
-              + "       c.name         as campaignName, "
-              + "       r.startDate    as startDate, "
-              + "       r.endDate      as endDate, "
-              + "       r.status       as status, "
-              + "       r.createdAt    as createdAt, "
-              + "       r.createdBy    as createdBy, "
-              + "       r.updatedBy    as updatedBy, "
-              + "       r.approvalType as approvalType, "
-              + "       r.updatedAt    as updatedAt "
+          "select r.id             as id, "
+              + "       r.type           as type, "
+              + "       r.code           as code, "
+              + "       r.name           as name, "
+              + "       r.pointType      as pointType, "
+              + "       c.id             as campaignId, "
+              + "       c.name           as campaignName, "
+              + "       r.startDate      as startDate, "
+              + "       r.endDate        as endDate, "
+              + "       r.status         as status, "
+              + "       r.createdAt      as createdAt, "
+              + "       r.createdBy      as createdBy, "
+              + "       r.updatedBy      as updatedBy, "
+              + "       r.approvalType   as approvalType, "
+              + "       r.approvalStatus as approvalStatus, "
+              + "       r.updatedAt      as updatedAt "
               + "from RuleApproval r "
               + "         join Campaign c on r.campaignId = c.id "
               + "where r.deleted = false "
@@ -71,7 +73,7 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
               + "  and (:code is null or r.code like :code) "
               + "  and (:startApprovedDate is null or (r.updatedAt >= :startApprovedDate "
               + "       and r.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
-              + "  and (:endApprovedDate is null or (r.updatedAt >= :endApprovedDate "
+              + "  and (:endApprovedDate is null or (r.updatedAt <= :endApprovedDate "
               + "       and r.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
               + "order by r.updatedAt desc ")
   Page<RuleApprovalProjection> findByCondition(
@@ -88,4 +90,6 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
       LocalDateTime startApprovedDate,
       LocalDateTime endApprovedDate,
       Pageable pageable);
+
+  List<RuleApproval> findByDeletedFalseAndRuleId(Long ruleId);
 }

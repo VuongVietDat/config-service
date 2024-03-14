@@ -1,13 +1,11 @@
 package vn.com.atomi.loyalty.config.dto.input;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import vn.com.atomi.loyalty.base.annotations.DateRangeValidator;
-import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
-import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.enums.*;
 
 /**
@@ -16,14 +14,13 @@ import vn.com.atomi.loyalty.config.enums.*;
  */
 @Setter
 @Getter
-@DateRangeValidator
-public class CreateRuleInput implements IDateInput {
+public class CreateRuleInput {
 
-  @Schema(description = "Loại qui tắc sinh điểm")
+  @Schema(description = "Loại quy tắc sinh điểm", example = "TRANSACTION")
   @NotBlank
   private String type;
 
-  @Schema(description = "Tên quy tắc sinh điểm")
+  @Schema(description = "Tên quy tắc sinh điểm", example = "Giao dịch")
   @NotBlank
   @Size(max = 168)
   private String name;
@@ -43,12 +40,10 @@ public class CreateRuleInput implements IDateInput {
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
   private ConditionType conditionType;
 
-  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)")
-  @DateTimeValidator
+  @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   private String startDate;
 
-  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)")
-  @DateTimeValidator(required = false)
+  @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
   private String endDate;
 
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
@@ -57,16 +52,19 @@ public class CreateRuleInput implements IDateInput {
 
   @Schema(
       description =
-          "Loại chính sách hết hạn điểm:</br> AFTER_DAY: Sau số ngày</br> AFTER_DATE: Sau ngày</br> FIRST_DATE_OF_MONTH: Ngày đầu tiên của tháng thứ N +")
+          "Loại chính sách hết hạn điểm:</br> AFTER_DAY: Sau số ngày</br> AFTER_DATE: Sau ngày</br> FIRST_DATE_OF_MONTH: Ngày đầu tiên của tháng thứ N +",
+      example = "AFTER_DAY")
   private ExpirePolicyType expirePolicyType;
 
   @Schema(
       description =
-          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd/MM/yyyy</br> FIRST_DATE_OF_MONTH: number")
+          "Giá trị của chính sách hết hạn điểm:</br> AFTER_DAY: number</br> AFTER_DATE: dd/MM/yyyy</br> FIRST_DATE_OF_MONTH: number",
+      example = "180")
   private String expirePolicyValue;
 
   @Schema(description = "Quy tắc chung phân bổ điểm")
   @NotEmpty
+  @Valid
   private List<RuleAllocationInput> allocationInputs;
 
   @Schema(description = "Quy tắc tặng thêm điểm")
@@ -80,42 +78,51 @@ public class CreateRuleInput implements IDateInput {
   public static class RuleAllocationInput {
 
     @Schema(description = "Số điểm cố định")
-    private Long fixPointAmount;
+    private long fixPointAmount;
 
-    @Schema(description = "Giá trị quy đổi (VND)")
-    private Long exchangeValue;
+    @Schema(description = "Giá trị quy đổi (VND)", example = "1000")
+    private long exchangeValue;
 
-    @Schema(description = "Giá trị điểm")
-    private Long exchangePoint;
+    @Schema(description = "Giá trị điểm", example = "1")
+    private long exchangePoint;
 
-    @Schema(description = "Giá trị giao dịch tối thiểu")
-    private Long minTransaction;
+    @Schema(description = "Giá trị giao dịch tối thiểu", example = "50000")
+    @Min(0)
+    private long minTransaction;
 
     @Schema(
-        description = "Tích điểm với số tiền thực khách hàng thanh toán (sau khi trừ khuyến mãi)")
+        description = "Tích điểm với số tiền thực khách hàng thanh toán (sau khi trừ khuyến mãi)",
+        example = "true")
+    @NotNull
     private Boolean isNetValue;
 
-    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một giao dịch")
-    private Long limitPointPerTransaction;
+    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một giao dịch", example = "10000")
+    private long limitPointPerTransaction;
 
-    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một khách hàng")
-    private Long limitPointPerUser;
+    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một khách hàng", example = "1000")
+    private long limitPointPerUser;
 
     @Schema(
         description =
-            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm",
+        example = "DAY")
     private Frequency frequencyLimitPointPerUser;
 
     @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
-    private Long limitEventPerUser;
+    private long limitEventPerUser;
 
     @Schema(
         description =
-            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
     private Frequency frequencyLimitEventPerUser;
 
     @Schema(description = "Thời gian chờ giữa 2 lần")
-    private Long timeWait;
+    private long timeWait;
+
+    @Schema(
+        description =
+            "Đơn vị thời gian chờ giữa 2 lần:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
+    private Frequency frequencyTimeWait;
   }
 
   @Setter
@@ -123,10 +130,10 @@ public class CreateRuleInput implements IDateInput {
   public static class RuleBonusInput {
 
     @Schema(description = "Loại thưởng thêm")
-    private String type;
+    private BonusType type;
 
     @Schema(description = "Giá trị thưởng")
-    private String value;
+    private Double value;
 
     @Schema(
         description =
@@ -134,15 +141,16 @@ public class CreateRuleInput implements IDateInput {
     private PlusType plusType;
 
     @Schema(description = "Từ ngày (dd/MM/yyyy)")
-    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private String fromDate;
 
     @Schema(description = "Đến ngày (dd/MM/yyyy)")
-    @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
     private String toDate;
 
-    @Schema(description = "Điều kiện nhận thưởng thêm")
+    @Schema(description = "Điều kiện cha nhận thưởng thêm")
     private String condition;
+
+    @Schema(description = "Điều kiện con nhận thưởng thêm")
+    private String childCondition;
   }
 
   @Setter

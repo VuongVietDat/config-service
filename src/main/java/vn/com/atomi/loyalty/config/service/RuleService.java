@@ -57,4 +57,7 @@ public interface RuleService {
   void approveRule(ApprovalInput input);
 
   List<ComparisonOutput> getRuleApprovalComparison(Long id);
+
+  WarringOverlapActiveTimeOutput checkOverlapActiveTime(
+      String type, Long campaignId, String startDate, String endDate);
 }

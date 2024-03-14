@@ -57,6 +57,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
 
   private final MasterDataService masterDataService;
 
+  @Transactional(isolation = Isolation.READ_COMMITTED)
   @Override
   public void createRule(CreateRuleInput createRuleInput) {
     LocalDate ruleStartDate = Utils.convertToLocalDate(createRuleInput.getStartDate());
@@ -71,7 +72,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       throw new BaseException(ErrorCode.CAMPAIGN_INACTIVE);
     }
     // so sánh ngày bắt đầu quy tắc và ngày bắt đầu chiến dịch
-    if (campaign.getStartDate().isBefore(ruleStartDate)) {
+    if (campaign.getStartDate().isAfter(ruleStartDate)) {
       throw new BaseException(ErrorCode.RULE_STARTDATE_GREAT_THAN_CAMPAIGN_STARTDATE);
     }
     // so sánh ngày kết thúc quy tắc và ngày kết thúc chiến dịch
@@ -82,30 +83,13 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // lấy master data để map loại quy tắc
     var dictionaryOutputs = masterDataService.getDictionary(Status.ACTIVE);
     // kiểm tra tồn tại loại quy tắc sinh điểm
-    if (dictionaryOutputs.stream()
-        .filter(
-            v ->
-                v.getParentCode().equals(Constants.DICTIONARY_RULE_TYPE)
-                    && v.getCode().equals(createRuleInput.getType()))
+    if (masterDataService
+        .getDictionary(dictionaryOutputs, Constants.DICTIONARY_RULE_TYPE, true)
+        .stream()
+        .filter(v -> v.getCode().equals(createRuleInput.getType()))
         .findFirst()
         .isEmpty()) {
       throw new BaseException(ErrorCode.RULE_TYPE_NOT_EXISTED);
-    }
-    // kiểm tra tồn tại loại thưởng thêm
-    if (!CollectionUtils.isEmpty(createRuleInput.getRuleBonusInputs())
-        && createRuleInput.getRuleBonusInputs().stream()
-            .anyMatch(
-                bonusInput ->
-                    !dictionaryOutputs.stream()
-                        .filter(
-                            dictionary ->
-                                dictionary
-                                    .getParentCode()
-                                    .equals(Constants.DICTIONARY_RULE_BONUS_TYPE))
-                        .map(DictionaryOutput::getCode)
-                        .toList()
-                        .contains(bonusInput.getType()))) {
-      throw new BaseException(ErrorCode.RULE_BONUS_TYPE_NOT_EXISTED);
     }
     // kiểm tra tồn tại điều kiện áp dụng quy tắc
     if (!CollectionUtils.isEmpty(createRuleInput.getRuleConditionInputs())
@@ -138,7 +122,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             code);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() == null) {
+    if (ruleApproval.getConditionType() != null) {
       var ruleConditionApprovals =
           super.modelMapper.convertToRuleConditionApprovalsFromInput(
               createRuleInput.getRuleConditionInputs(), ruleApproval.getId());
@@ -153,7 +137,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     var ruleBonusApprovals =
         super.modelMapper.convertToRuleBonusApprovalsFromInput(
             createRuleInput.getRuleBonusInputs(), ruleApproval.getId());
-    ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    if (!CollectionUtils.isEmpty(ruleBonusApprovals)) {
+      ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    }
   }
 
   @Override
@@ -197,7 +183,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc
-      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE);
+      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE, true);
       return new ResponsePage<>(
           rulePage,
           super.modelMapper.convertToRuleApprovalPreviewOutputs(
@@ -214,7 +200,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleApprovalOutput = super.modelMapper.convertToRuleApprovalOutput(ruleApproval);
     // lấy điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApprovalOutput.getConditionType() == null) {
+    if (ruleApprovalOutput.getConditionType() != null) {
       var ruleConditionApprovals =
           ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
       ruleApprovalOutput.setRuleConditionApprovalOutputs(
@@ -229,6 +215,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     var ruleBonusApprovals = ruleBonusApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
     ruleApprovalOutput.setRuleBonusApprovalOutputs(
         super.modelMapper.convertToRuleBonusApprovalOutputs(ruleBonusApprovals));
+    //  lấy lịch sử phê duyệt
+    ruleApprovalOutput.setHistoryOutputs(this.buildHistoryOutputs(List.of(ruleApproval)));
     return ruleApprovalOutput;
   }
 
@@ -264,14 +252,14 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             pointType,
             status,
             campaignId,
-            Utils.convertToLocalDateTime(startDate),
-            Utils.convertToLocalDateTime(endDate),
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate),
             Utils.makeLikeParameter(name),
             Utils.makeLikeParameter(code),
             pageable);
     if (!CollectionUtils.isEmpty(rulePage.getContent())) {
       // lấy master data để map tên loại quy tắc
-      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE);
+      var dictionaryOutputs = masterDataService.getDictionary(Constants.DICTIONARY_RULE_TYPE, true);
       return new ResponsePage<>(
           rulePage,
           super.modelMapper.convertToRulePreviewOutputs(rulePage.getContent(), dictionaryOutputs));
@@ -287,7 +275,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleOutput = super.modelMapper.convertToRuleOutput(rule);
     // lấy điều kiện áp dụng quy tắc
-    if (ruleOutput.getConditionType() == null) {
+    if (ruleOutput.getConditionType() != null) {
       var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
       ruleOutput.setRuleConditionOutputs(
           super.modelMapper.convertToRuleConditionOutputs(ruleConditions));
@@ -299,6 +287,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // lấy quy tắc tặng thêm điểm
     var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleId(id);
     ruleOutput.setRuleBonusOutputs(super.modelMapper.convertToRuleBonusOutputs(ruleBonuses));
+    //  lấy lịch sử phê duyệt
+    var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndRuleId(id);
+    ruleOutput.setHistoryOutputs(this.buildHistoryOutputs(ruleApprovals));
     return ruleOutput;
   }
 
@@ -313,12 +304,13 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     // map data mới vào quy tắc hiện tại
     var newRule = super.modelMapper.convertToRule(rule, updateRuleInput);
     // tạo bản ghi chờ duyệt
+    var approvalId = ruleApprovalRepository.getSequence();
     var ruleApproval =
         super.modelMapper.convertToRuleApproval(
-            newRule, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+            newRule, approvalId, ApprovalStatus.WAITING, ApprovalType.UPDATE);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() == null) {
+    if (ruleApproval.getConditionType() != null) {
       var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
       var ruleConditionApprovals =
           super.modelMapper.convertToRuleConditionApprovals(ruleConditions, ruleApproval.getId());
@@ -331,9 +323,11 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     ruleAllocationApprovalRepository.saveAll(ruleAllocationApprovals);
     // lưu quy tắc tặng thêm điểm của bản ghi chờ duyệt
     var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleId(id);
-    var ruleBonusApprovals =
-        super.modelMapper.convertToRuleBonusApprovals(ruleBonuses, ruleApproval.getId());
-    ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    if (!CollectionUtils.isEmpty(ruleBonuses)) {
+      var ruleBonusApprovals =
+          super.modelMapper.convertToRuleBonusApprovals(ruleBonuses, ruleApproval.getId());
+      ruleBonusApprovalRepository.saveAll(ruleBonusApprovals);
+    }
   }
 
   @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -348,7 +342,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(ruleApproval.getApprovalType())) {
         // lưu thông tin quy tắc
-        var rule = super.modelMapper.convertToRule(ruleApproval);
+        var rule = super.modelMapper.convertToRule(ruleApproval, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
         // lưu quy tắc chung phân bổ điểm
@@ -359,17 +353,22 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             super.modelMapper.convertToRuleAllocations(ruleAllocationApprovals, rule.getId());
         ruleAllocationRepository.saveAll(ruleAllocations);
         // lưu điều kiện áp dụng quy tắc
-        var ruleConditionApprovals =
-            ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
-                ruleApproval.getId());
-        var ruleConditions =
-            super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
-        ruleConditionRepository.saveAll(ruleConditions);
+        if (ruleApproval.getConditionType() != null) {
+          var ruleConditionApprovals =
+              ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
+                  ruleApproval.getId());
+          var ruleConditions =
+              super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
+          ruleConditionRepository.saveAll(ruleConditions);
+        }
         // lưu quy tắc tặng thêm điểm
         var ruleBonusApprovals =
             ruleBonusApprovalRepository.findByDeletedFalseAndRuleApprovalId(ruleApproval.getId());
-        var ruleBonuses = super.modelMapper.convertToRuleBonuses(ruleBonusApprovals, rule.getId());
-        ruleBonusRepository.saveAll(ruleBonuses);
+        if (!CollectionUtils.isEmpty(ruleBonusApprovals)) {
+          var ruleBonuses =
+              super.modelMapper.convertToRuleBonuses(ruleBonusApprovals, rule.getId());
+          ruleBonusRepository.saveAll(ruleBonuses);
+        }
       }
 
       // trường hợp phê duyệt cập nhật
@@ -436,5 +435,66 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                     .newValue(diff.getRight() == null ? null : diff.getRight().toString())
                     .build())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public WarringOverlapActiveTimeOutput checkOverlapActiveTime(
+      String type, Long campaignId, String startDate, String endDate) {
+    List<String> codes =
+        ruleRepository.findCodeByOverlapActiveTime(
+            type,
+            campaignId,
+            Utils.convertToLocalDate(startDate),
+            Utils.convertToLocalDate(endDate));
+    // nếu nhiều hơn 3 quy tắc thì chỉ trả về mã của 3 quy tắc đầu tiên
+    var varCode =
+        CollectionUtils.isEmpty(codes)
+            ? null
+            : (codes.size() <= 3
+                ? String.join(",", codes)
+                : String.format("%s...", String.join(",", codes.subList(0, 3))));
+    return WarringOverlapActiveTimeOutput.builder()
+        .existed(!CollectionUtils.isEmpty(codes))
+        .message(String.format(ErrorCode.OVERLAP_ACTIVE_TIME.getMessage(), varCode))
+        .build();
+  }
+
+  private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {
+    List<HistoryOutput> historyOutputs = new ArrayList<>();
+    long recordNo = 0L;
+    for (RuleApproval ruleApproval : ruleApprovals) {
+      if (ruleApproval.getApprovalStatus().equals(ApprovalStatus.WAITING)) {
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalStatus(ruleApproval.getApprovalStatus())
+                .actionAt(ruleApproval.getCreatedAt())
+                .userAction(ruleApproval.getCreatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+      } else {
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalStatus(ApprovalStatus.WAITING)
+                .actionAt(ruleApproval.getCreatedAt())
+                .userAction(ruleApproval.getCreatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+        historyOutputs.add(
+            HistoryOutput.builder()
+                .id(++recordNo)
+                .approvalComment(ruleApproval.getApprovalComment())
+                .approvalStatus(ruleApproval.getApprovalStatus())
+                .actionAt(ruleApproval.getUpdatedAt())
+                .userAction(ruleApproval.getUpdatedBy())
+                .approvalId(ruleApproval.getId())
+                .approvalType(ruleApproval.getApprovalType())
+                .build());
+      }
+    }
+    return historyOutputs;
   }
 }

@@ -78,6 +78,9 @@ public class CreateRuleInput {
   @Setter
   @Getter
   public static class RuleAllocationInput {
+    @Schema(description = "true = Quy đổi theo giá trị giao dịch / false = Quy đổi theo số lần giao dịch")
+    @NotNull
+    private Boolean isExchangeByValue;
 
     @Schema(description = "Số điểm cố định")
     private long fixPointAmount;

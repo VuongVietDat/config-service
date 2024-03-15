@@ -30,6 +30,9 @@ public class RuleAllocation extends BaseEntity {
   @Column(name = "rule_id")
   private Long ruleId;
 
+  @Column(name = "is_exchange_by_value")
+  private Boolean isExchangeByValue;
+
   @Column(name = "fix_point_amount")
   private long fixPointAmount;
 

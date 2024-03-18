@@ -325,4 +325,6 @@ public interface ModelMapper {
 
   List<ConditionOutput.ConditionData> convertToConditionOutputDatas(
       List<ConditionOutput> conditionOutputs);
+
+  List<RankOutput> convertToRankOutputs(List<Rank> ranks);
 }

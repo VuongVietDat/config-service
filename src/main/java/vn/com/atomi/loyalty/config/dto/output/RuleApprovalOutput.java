@@ -79,117 +79,14 @@ public class RuleApprovalOutput {
 
   @Schema(description = "Quy tắc chung phân bổ điểm")
   @NotEmpty
-  private List<RuleAllocationApprovalOutput> ruleAllocationApprovalOutputs;
+  private List<RuleAllocationOutput> ruleAllocationApprovalOutputs;
 
   @Schema(description = "Quy tắc tặng thêm điểm")
-  private List<RuleBonusApprovalOutput> ruleBonusApprovalOutputs;
+  private List<RuleBonusOutput> ruleBonusApprovalOutputs;
 
   @Schema(description = "Điều kiện áp dụng quy tắc")
-  private List<RuleConditionApprovalOutput> ruleConditionApprovalOutputs;
+  private List<RuleConditionOutput> ruleConditionApprovalOutputs;
 
   @Schema(description = "Lịch sử phê duyệt")
   private List<HistoryOutput> historyOutputs;
-
-  @Setter
-  @Getter
-  public static class RuleAllocationApprovalOutput {
-
-    @Schema(description = "ID bản ghi")
-    private Long id;
-
-    @Schema(description = "Số điểm cố định")
-    private long fixPointAmount;
-
-    @Schema(description = "Giá trị quy đổi (VND)")
-    private long exchangeValue;
-
-    @Schema(description = "Giá trị điểm")
-    private long exchangePoint;
-
-    @Schema(description = "Giá trị giao dịch tối thiểu")
-    private long minTransaction;
-
-    @Schema(
-        description = "Tích điểm với số tiền thực khách hàng thanh toán (sau khi trừ khuyến mãi)")
-    private Boolean isNetValue;
-
-    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một giao dịch")
-    private long limitPointPerTransaction;
-
-    @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một khách hàng")
-    private long limitPointPerUser;
-
-    @Schema(
-        description =
-            "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
-    private Frequency frequencyLimitPointPerUser;
-
-    @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
-    private long limitEventPerUser;
-
-    @Schema(
-        description =
-            "Tần suất giới hạn số lần tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
-    private Frequency frequencyLimitEventPerUser;
-
-    @Schema(description = "Thời gian chờ giữa 2 lần")
-    private long timeWait;
-
-    @Schema(
-        description =
-            "Đơn vị thời gian chờ giữa 2 lần:</br> MINUTE: Phút</br>HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
-    private Frequency frequencyTimeWait;
-  }
-
-  @Setter
-  @Getter
-  public static class RuleBonusApprovalOutput {
-
-    @Schema(description = "ID bản ghi")
-    private Long id;
-
-    @Schema(description = "Loại thưởng thêm")
-    private String type;
-
-    @Schema(description = "Giá trị thưởng")
-    private String value;
-
-    @Schema(
-        description =
-            "Loại giá trị thưởng:</br> PERCENTAGE: Phần trăm base điểm</br> FIX: Số điểm cụ thể")
-    private PlusType plusType;
-
-    @Schema(description = "Từ ngày (dd/MM/yyyy)")
-    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-    private LocalDate fromDate;
-
-    @Schema(description = "Đến ngày (dd/MM/yyyy)")
-    @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-    private LocalDate toDate;
-
-    @Schema(description = "Điều kiện cha nhận thưởng thêm")
-    private String condition;
-
-    @Schema(description = "Điều kiện con nhận thưởng thêm")
-    private String childCondition;
-  }
-
-  @Setter
-  @Getter
-  public static class RuleConditionApprovalOutput {
-
-    @Schema(description = "ID bản ghi")
-    private Long id;
-
-    @Schema(description = "Thuộc tính điều kiện áp dụng quy tắc")
-    private String properties;
-
-    @Schema(
-        description =
-            "Điều kiện:</br> EQUAL: Bằng</br> LESS_THAN: Nhỏ hơn</br> LESS_THAN_EQUAL: Nhỏ hơn hoặc bằng</br> GREATER_THAN: Lớn hơn</br> GREATER_THAN_EQUAL: Lớn hơn hoặc bằng</br> CONTAIN: Chứa</br> START_WITH: Bắt đầu bằng</br> END_WITH: Kết thúc bằng</br> IN: Nằm trong</br> NOT_IN: Không nằm trong")
-    private Operators operators;
-
-    @Schema(description = "Giá trị thuộc tính")
-    private String value;
-  }
 }

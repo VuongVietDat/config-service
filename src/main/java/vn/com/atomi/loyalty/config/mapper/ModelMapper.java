@@ -258,25 +258,23 @@ public interface ModelMapper {
 
   RuleOutput convertToRuleOutput(Rule rule);
 
-  List<RuleOutput.RuleConditionOutput> convertToRuleConditionOutputs(
-      List<RuleCondition> ruleConditions);
+  List<RuleConditionOutput> convertToRuleConditionOutputs(List<RuleCondition> ruleConditions);
 
-  List<RuleOutput.RuleAllocationOutput> convertToRuleAllocationOutputs(
-      List<RuleAllocation> ruleAllocations);
+  List<RuleAllocationOutput> convertToRuleAllocationOutputs(List<RuleAllocation> ruleAllocations);
 
-  List<RuleOutput.RuleBonusOutput> convertToRuleBonusOutputs(List<RuleBonus> ruleBonuses);
+  List<RuleBonusOutput> convertToRuleBonusOutputs(List<RuleBonus> ruleBonuses);
 
   RuleApprovalOutput convertToRuleApprovalOutput(RuleApproval ruleApproval);
 
   CampaignApprovalOutput convertToCampaignApprovalOutput(CampaignApproval campaignApproval);
 
-  List<RuleApprovalOutput.RuleConditionApprovalOutput> convertToRuleConditionApprovalOutputs(
+  List<RuleConditionOutput> convertToRuleConditionApprovalOutputs(
       List<RuleConditionApproval> ruleConditionApprovals);
 
-  List<RuleApprovalOutput.RuleAllocationApprovalOutput> convertToRuleAllocationApprovalOutputs(
+  List<RuleAllocationOutput> convertToRuleAllocationApprovalOutputs(
       List<RuleAllocationApproval> ruleAllocationApprovals);
 
-  List<RuleApprovalOutput.RuleBonusApprovalOutput> convertToRuleBonusApprovalOutputs(
+  List<RuleBonusOutput> convertToRuleBonusApprovalOutputs(
       List<RuleBonusApproval> ruleBonusApprovals);
 
   @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
@@ -318,8 +316,6 @@ public interface ModelMapper {
   RuleAllocationApproval convertToRuleAllocationApproval(
       CreateRuleInput.RuleAllocationInput ruleAllocation, Long ruleApprovalId);
 
-  @Mapping(target = "fromDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-  @Mapping(target = "toDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleBonusApproval convertToRuleBonusApproval(
       CreateRuleInput.RuleBonusInput ruleBonus, Long ruleApprovalId);

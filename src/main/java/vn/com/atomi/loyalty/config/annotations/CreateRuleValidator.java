@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
+import vn.com.atomi.loyalty.config.enums.BonusType;
 import vn.com.atomi.loyalty.config.enums.ExpirePolicyType;
 import vn.com.atomi.loyalty.config.utils.Utils;
 
@@ -196,6 +197,95 @@ public @interface CreateRuleValidator {
                 .addPropertyNode(String.format("ruleBonusInputs[%s].type", i))
                 .addConstraintViolation();
             isValid = false;
+          } else {
+            if (ruleBonusInput.getType().equals(BonusType.BONUS_RANK)
+                || ruleBonusInput.getType().equals(BonusType.BONUS_PRODUCT)
+                || ruleBonusInput.getType().equals(BonusType.BONUS_EXCEED_THRESHOLD)) {
+              if (StringUtils.isBlank(ruleBonusInput.getCondition())) {
+                context
+                    .buildConstraintViolationWithTemplate("must not be blank")
+                    .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                    .addConstraintViolation();
+                isValid = false;
+              } else {
+                ruleBonusInput.setChildCondition(null);
+              }
+            }
+            if (ruleBonusInput.getType().equals(BonusType.BONUS_EXCEED_THRESHOLD)
+                && !StringUtils.isBlank(ruleBonusInput.getCondition())) {
+              try {
+                Long.parseLong(ruleBonusInput.getCondition());
+              } catch (Exception e) {
+                context.disableDefaultConstraintViolation();
+                context
+                    .buildConstraintViolationWithTemplate(
+                        String.format(
+                            "Text '%s' could not be match style number",
+                            ruleBonusInput.getCondition()))
+                    .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                    .addConstraintViolation();
+                isValid = false;
+              }
+            }
+            if (ruleBonusInput.getType().equals(BonusType.BONUS_SPECIAL_DATE)) {
+              if (StringUtils.isBlank(ruleBonusInput.getCondition())) {
+                context.disableDefaultConstraintViolation();
+                context
+                    .buildConstraintViolationWithTemplate("must not be blank")
+                    .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                    .addConstraintViolation();
+                isValid = false;
+              }
+              if (StringUtils.isBlank(ruleBonusInput.getChildCondition())) {
+                context.disableDefaultConstraintViolation();
+                context
+                    .buildConstraintViolationWithTemplate("must not be blank")
+                    .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
+                    .addConstraintViolation();
+                isValid = false;
+              }
+              if (!StringUtils.isBlank(ruleBonusInput.getChildCondition())
+                  && !StringUtils.isBlank(ruleBonusInput.getCondition())) {
+                LocalDate fromDate = null;
+                try {
+                  fromDate = Utils.convertToLocalDate(ruleBonusInput.getCondition());
+                } catch (DateTimeParseException e) {
+                  context.disableDefaultConstraintViolation();
+                  context
+                      .buildConstraintViolationWithTemplate(
+                          String.format(
+                              "Text '%s' could not be match format %s",
+                              ruleBonusInput.getCondition(),
+                              DateConstant.STR_PLAN_DD_MM_YYYY_STROKE))
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                LocalDate toDate = null;
+                try {
+                  toDate = Utils.convertToLocalDate(ruleBonusInput.getChildCondition());
+                } catch (DateTimeParseException e) {
+                  context.disableDefaultConstraintViolation();
+                  context
+                      .buildConstraintViolationWithTemplate(
+                          String.format(
+                              "Text '%s' could not be match format %s",
+                              ruleBonusInput.getChildCondition(),
+                              DateConstant.STR_PLAN_DD_MM_YYYY_STROKE))
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+                  context.disableDefaultConstraintViolation();
+                  context
+                      .buildConstraintViolationWithTemplate("toDate must be after fromDate")
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+              }
+            }
           }
           if (ruleBonusInput.getValue() == null || ruleBonusInput.getValue() <= 0) {
             context
@@ -210,64 +300,6 @@ public @interface CreateRuleValidator {
                 .addPropertyNode(String.format("ruleBonusInputs[%s].plusType", i))
                 .addConstraintViolation();
             isValid = false;
-          }
-
-          if (StringUtils.isBlank(ruleBonusInput.getFromDate())
-              && !StringUtils.isBlank(ruleBonusInput.getToDate())) {
-            context.disableDefaultConstraintViolation();
-            context
-                .buildConstraintViolationWithTemplate("must not be blank")
-                .addPropertyNode(String.format("ruleBonusInputs[%s].fromDate", i))
-                .addConstraintViolation();
-            isValid = false;
-          }
-          if (!StringUtils.isBlank(ruleBonusInput.getFromDate())
-              && StringUtils.isBlank(ruleBonusInput.getToDate())) {
-            context.disableDefaultConstraintViolation();
-            context
-                .buildConstraintViolationWithTemplate("must not be blank")
-                .addPropertyNode(String.format("ruleBonusInputs[%s].toDate", i))
-                .addConstraintViolation();
-            isValid = false;
-          }
-          if (!StringUtils.isBlank(ruleBonusInput.getFromDate())
-              && !StringUtils.isBlank(ruleBonusInput.getToDate())) {
-            LocalDate fromDate = null;
-            try {
-              fromDate = Utils.convertToLocalDate(ruleBonusInput.getFromDate());
-            } catch (DateTimeParseException e) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate(
-                      String.format(
-                          "Text '%s' could not be match format %s",
-                          ruleBonusInput.getFromDate(), DateConstant.STR_PLAN_DD_MM_YYYY_STROKE))
-                  .addPropertyNode(String.format("ruleBonusInputs[%s].fromDate", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
-            LocalDate toDate = null;
-            try {
-              toDate = Utils.convertToLocalDate(ruleBonusInput.getToDate());
-            } catch (DateTimeParseException e) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate(
-                      String.format(
-                          "Text '%s' could not be match format %s",
-                          ruleBonusInput.getToDate(), DateConstant.STR_PLAN_DD_MM_YYYY_STROKE))
-                  .addPropertyNode(String.format("ruleBonusInputs[%s].toDate", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
-            if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate("toDate must be after fromDate")
-                  .addPropertyNode(String.format("ruleBonusInputs[%s].toDate", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
           }
         }
       }

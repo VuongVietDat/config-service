@@ -142,12 +142,6 @@ public class CreateRuleInput {
             "Loại giá trị thưởng:</br> PERCENTAGE: Phần trăm base điểm</br> FIX: Số điểm cụ thể")
     private PlusType plusType;
 
-    @Schema(description = "Từ ngày (dd/MM/yyyy)")
-    private String fromDate;
-
-    @Schema(description = "Đến ngày (dd/MM/yyyy)")
-    private String toDate;
-
     @Schema(description = "Điều kiện cha nhận thưởng thêm")
     private String condition;
 

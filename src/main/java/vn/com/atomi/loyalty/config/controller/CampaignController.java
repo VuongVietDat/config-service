@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
@@ -176,5 +177,19 @@ public class CampaignController extends BaseController {
   public ResponseEntity<ResponseData<Void>> approveCampaign(@RequestBody ApprovalInput input) {
     campaignService.approveCampaign(input);
     return ResponseUtils.success();
+  }
+
+  @Operation(summary = "Api (nội bộ) kiểm tra chiến dịch hiệu lực theo groupId")
+  @PreAuthorize(Authority.ROLE_SYSTEM)
+  @GetMapping("/internal/campaigns/active-by-group")
+  public ResponseEntity<ResponseData<Boolean>> checkCampaignActive(
+      @Parameter(
+              description = "Chuỗi xác thực khi gọi api nội bộ",
+              example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+          @RequestHeader(RequestConstant.SECURE_API_KEY)
+          @SuppressWarnings("unused")
+          String apiKey,
+      @RequestParam Long customerGroupId) {
+    return ResponseUtils.success(campaignService.checkCampaignActive(customerGroupId));
   }
 }

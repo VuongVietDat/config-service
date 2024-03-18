@@ -20,7 +20,6 @@ import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.PointType;
 import vn.com.atomi.loyalty.config.enums.Status;
-import vn.com.atomi.loyalty.config.service.MasterDataService;
 import vn.com.atomi.loyalty.config.service.RuleService;
 
 /**
@@ -32,8 +31,6 @@ import vn.com.atomi.loyalty.config.service.RuleService;
 public class RuleController extends BaseController {
 
   private final RuleService ruleService;
-
-  private final MasterDataService masterDataService;
 
   @Operation(summary = "Api tạo mới quy tắc sinh điểm (bản ghi chờ duyệt)")
   @PreAuthorize(Authority.Rule.CREATE_RULE)
@@ -229,17 +226,5 @@ public class RuleController extends BaseController {
   public ResponseEntity<ResponseData<Void>> approveRule(@Valid @RequestBody ApprovalInput input) {
     ruleService.approveRule(input);
     return ResponseUtils.success();
-  }
-
-  @Operation(summary = "Api lấy danh sách điều kiện cho quy tắc")
-  @PreAuthorize(Authority.Rule.READ_RULE)
-  @GetMapping("/rules/conditions")
-  public ResponseEntity<ResponseData<List<ConditionOutput>>> getRuleConditions(
-      @Parameter(
-              description =
-                  "(isView = true) Call khi xem chi tiết sẽ lấy tất cả bản ghi</br>(isView = false) Call khi tạo mới hoặc cập nhật, chỉ lấy những bản ghi hiệu lực")
-          @RequestParam(required = false, defaultValue = "false")
-          Boolean isView) {
-    return ResponseUtils.success(masterDataService.getRuleConditions(isView));
   }
 }

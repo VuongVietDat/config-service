@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +24,6 @@ public interface RankRepository extends JpaRepository<Rank, Long> {
               + "  and (:status is null or r.status = :status) "
               + "order by r.updatedAt desc ")
   Page<Rank> findByCondition(Status status, Pageable pageable);
+
+  List<Rank> findByDeletedFalse();
 }

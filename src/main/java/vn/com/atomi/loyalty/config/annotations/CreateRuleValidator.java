@@ -207,8 +207,6 @@ public @interface CreateRuleValidator {
                     .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
                     .addConstraintViolation();
                 isValid = false;
-              } else {
-                ruleBonusInput.setChildCondition(null);
               }
             }
             if (ruleBonusInput.getType().equals(BonusType.BONUS_EXCEED_THRESHOLD)

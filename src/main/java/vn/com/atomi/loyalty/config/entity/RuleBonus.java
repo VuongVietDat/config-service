@@ -16,7 +16,7 @@ import vn.com.atomi.loyalty.config.enums.PlusType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_RULE_BONUS")
+@Table(name = "cf_rule_bonus")
 public class RuleBonus extends BaseEntity {
 
   @Id

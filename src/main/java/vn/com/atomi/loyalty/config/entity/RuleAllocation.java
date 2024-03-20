@@ -15,7 +15,7 @@ import vn.com.atomi.loyalty.config.enums.Frequency;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_RULE_ALLOCATION")
+@Table(name = "cf_rule_allocation")
 public class RuleAllocation extends BaseEntity {
 
   @Id

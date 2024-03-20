@@ -14,10 +14,14 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.output.ConditionOutput;
 import vn.com.atomi.loyalty.config.dto.output.DictionaryOutput;
+import vn.com.atomi.loyalty.config.dto.output.TransactionGroupOutput;
+import vn.com.atomi.loyalty.config.dto.output.TransactionTypeOutput;
 import vn.com.atomi.loyalty.config.enums.SourceType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCommonClient;
 import vn.com.atomi.loyalty.config.repository.ConditionRepository;
+import vn.com.atomi.loyalty.config.repository.TransactionGroupRepository;
+import vn.com.atomi.loyalty.config.repository.TransactionTypeRepository;
 import vn.com.atomi.loyalty.config.repository.redis.MasterDataRepository;
 import vn.com.atomi.loyalty.config.service.MasterDataService;
 import vn.com.atomi.loyalty.config.utils.Constants;
@@ -35,6 +39,10 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   private final MasterDataRepository masterDataRepository;
 
   private final ConditionRepository conditionRepository;
+
+  private final TransactionGroupRepository transactionGroupRepository;
+
+  private final TransactionTypeRepository transactionTypeRepository;
 
   private final ApplicationContext applicationContext;
 
@@ -143,6 +151,28 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
       masterDataRepository.putRuleCondition(out);
     }
     return out;
+  }
+
+  @Override
+  public List<TransactionGroupOutput> getTransactionGroups(String customerType, Boolean isView) {
+    if (isView) {
+      return super.modelMapper.convertToTransactionGroupOutputs(
+          transactionGroupRepository.findByDeletedFalseAndCustomerType(customerType));
+    }
+    return super.modelMapper.convertToTransactionGroupOutputs(
+        transactionGroupRepository.findByDeletedFalseAndStatusAndCustomerType(
+            Status.ACTIVE, customerType));
+  }
+
+  @Override
+  public List<TransactionTypeOutput> getTransactionTypes(String transactionGroup, Boolean isView) {
+    if (isView) {
+      return super.modelMapper.convertToTransactionTypeOutputs(
+          transactionTypeRepository.findByDeletedFalseAndGroupCode(transactionGroup));
+    }
+    return super.modelMapper.convertToTransactionTypeOutputs(
+        transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCode(
+            Status.ACTIVE, transactionGroup));
   }
 
   private List<DictionaryOutput> appendSubLeaf(

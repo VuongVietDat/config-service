@@ -15,7 +15,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_RANK")
+@Table(name = "cf_rank")
 public class Rank extends BaseEntity {
 
   @Id

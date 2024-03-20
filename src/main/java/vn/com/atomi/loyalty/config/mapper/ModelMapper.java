@@ -333,4 +333,10 @@ public interface ModelMapper {
       List<ConditionOutput> conditionOutputs);
 
   List<RankOutput> convertToRankOutputs(List<Rank> ranks);
+
+  List<TransactionGroupOutput> convertToTransactionGroupOutputs(
+      List<TransactionGroup> transactionGroups);
+
+  List<TransactionTypeOutput> convertToTransactionTypeOutputs(
+      List<TransactionType> transactionTypes);
 }

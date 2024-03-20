@@ -17,7 +17,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_CAMPAIGN")
+@Table(name = "cf_campaign")
 public class Campaign extends BaseEntity {
 
   @Id

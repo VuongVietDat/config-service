@@ -15,7 +15,7 @@ import vn.com.atomi.loyalty.config.enums.Operators;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_RULE_CONDITION_APPROVAL")
+@Table(name = "cf_rule_condition_approval")
 public class RuleConditionApproval extends BaseEntity {
 
   @Id

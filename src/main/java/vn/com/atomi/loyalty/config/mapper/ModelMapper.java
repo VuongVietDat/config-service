@@ -321,6 +321,12 @@ public interface ModelMapper {
 
   List<CampaignOutput> convertToCampaignOutput(List<Campaign> campaigns);
 
+  @Mapping(
+      target = "dependsIn",
+      expression =
+          "java(condition.getDependsIn() == null ? null : List.of(condition.getDependsIn().split(\"|\")))")
+  ConditionOutput convertToConditionOutput(Condition condition);
+
   List<ConditionOutput> convertToConditionOutputs(List<Condition> conditions);
 
   List<ConditionOutput.ConditionData> convertToConditionOutputDatas(

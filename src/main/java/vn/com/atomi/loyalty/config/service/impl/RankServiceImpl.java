@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,10 @@ public class RankServiceImpl extends BaseService implements RankService {
       return new ResponsePage<>(rankPage, new ArrayList<>());
 
     return new ResponsePage<>(rankPage, modelMapper.convertToRankOutputs(rankPage.getContent()));
+  }
+
+  @Override
+  public List<RankOutput> getAllRanks() {
+    return modelMapper.convertToRankOutputs(rankRepository.findByDeletedFalse());
   }
 }

@@ -46,4 +46,6 @@ public interface CampaignService {
   void recallCampaignApproval(Long id);
 
   List<ComparisonOutput> geCampaignApprovalComparison(Long id);
+
+  Boolean checkCampaignActive(Long groupId);
 }

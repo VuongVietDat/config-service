@@ -99,9 +99,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                     !dictionaryOutputs.stream()
                         .filter(
                             dictionary ->
-                                dictionary
-                                    .getParentCode()
-                                    .equals(Constants.DICTIONARY_RULE_CONDITION))
+                                Constants.DICTIONARY_RULE_CONDITION.equals(
+                                    dictionary.getParentCode()))
                         .map(DictionaryOutput::getCode)
                         .toList()
                         .contains(conditionInput.getProperties()))) {

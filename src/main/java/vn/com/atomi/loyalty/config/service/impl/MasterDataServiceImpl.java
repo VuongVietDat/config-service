@@ -161,14 +161,24 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     var conditions = conditionRepository.findByDeletedFalseAndStatus(Status.ACTIVE);
     List<ConditionOutput> rawOutput = super.modelMapper.convertToConditionOutputs(conditions);
     var dictionaries = this.getDictionary(isView ? null : Status.ACTIVE);
-    var activeConfig =
+    List<DictionaryOutput> groupProperties = new ArrayList<>();
+    if (Constants.DICTIONARY_RULE_CONDITION.equals(type)) {
+      groupProperties =
+          dictionaries.stream()
+              .filter(
+                  dictionaryOutput ->
+                      Constants.DICTIONARY_RULE_INDICATOR.equals(dictionaryOutput.getParentCode())
+                          && (isView || dictionaryOutput.getStatus().equals(Status.ACTIVE)))
+              .toList();
+    }
+    var typeDictionary =
         dictionaries.stream()
             .filter(
                 dictionaryOutput ->
                     type.equals(dictionaryOutput.getParentCode())
                         && (isView || dictionaryOutput.getStatus().equals(Status.ACTIVE)))
             .toList();
-    var activeConfigCode = activeConfig.stream().map(DictionaryOutput::getCode).toList();
+    var activeConfigCode = typeDictionary.stream().map(DictionaryOutput::getCode).toList();
     rawOutput =
         rawOutput.stream().filter(v -> activeConfigCode.contains(v.getProperties())).toList();
     for (ConditionOutput conditionOutput : rawOutput) {
@@ -180,7 +190,10 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
                     v ->
                         conditionOutput.getSourceValue().equals(v.getParentCode())
                             && v.getStatus().equals(Status.ACTIVE))
-                .map(v -> new ConditionOutput.ConditionSourceValue(v.getCode(), v.getName()))
+                .map(
+                    v ->
+                        new ConditionOutput.ConditionSourceValue(
+                            v.getCode(), v.getName(), null, null))
                 .collect(Collectors.toList()));
       }
       // nếu nguồn là SQL thì thực thi câu SQL và lấy data từ database, trả về 2 trường theo thứ tự
@@ -193,7 +206,10 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
                 .map(
                     object ->
                         new ConditionOutput.ConditionSourceValue(
-                            (String) object[0], (String) object[1]))
+                            (String) object[0],
+                            (String) object[1],
+                            object.length == 4 ? (String) object[2] : null,
+                            object.length == 4 ? (Long) object[3] : null))
                 .collect(Collectors.toList()));
       }
       // nếu nguồn là API thì call api để lấy data
@@ -222,7 +238,10 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
                               .map(
                                   object ->
                                       new ConditionOutput.ConditionSourceValue(
-                                          (String) object.get(str[2]), (String) object.get(str[3])))
+                                          (String) object.get(str[2]),
+                                          (String) object.get(str[3]),
+                                          str.length == 6 ? (String) object.get(str[4]) : null,
+                                          str.length == 6 ? (Long) object.get(str[5]) : null))
                               .collect(Collectors.toList()));
                     } catch (IllegalAccessException | InvocationTargetException e) {
                       LOGGER.error(e.getMessage(), e);
@@ -239,17 +258,25 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     for (Map.Entry<String, List<ConditionOutput>> entry : map.entrySet()) {
       String k = entry.getKey();
       List<ConditionOutput> v = entry.getValue();
-      out.add(
+      ConditionOutput output =
           ConditionOutput.builder()
               .properties(k)
               .propertiesName(
-                  activeConfig.stream()
+                  typeDictionary.stream()
                       .filter(dic -> dic.getCode().equals(k))
                       .findFirst()
                       .orElse(new DictionaryOutput())
                       .getName())
+              .groupCode(v.get(0).getGroupCode())
               .data(super.modelMapper.convertToConditionOutputDatas(v))
-              .build());
+              .build();
+      output.setGroupName(
+          groupProperties.stream()
+              .filter(groupPropertie -> groupPropertie.getCode().equals(output.getGroupCode()))
+              .findFirst()
+              .orElse(new DictionaryOutput())
+              .getName());
+      out.add(output);
     }
     return out;
   }

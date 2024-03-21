@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
+import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
@@ -23,9 +25,9 @@ import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.ErrorCode;
 import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.feign.LoyaltyCoreClient;
 import vn.com.atomi.loyalty.config.repository.CampaignApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignRepository;
-import vn.com.atomi.loyalty.config.repository.CustomerGroupRepository;
 import vn.com.atomi.loyalty.config.service.CampaignService;
 import vn.com.atomi.loyalty.config.utils.Utils;
 
@@ -37,19 +39,21 @@ import vn.com.atomi.loyalty.config.utils.Utils;
 @RequiredArgsConstructor
 public class CampaignServiceImpl extends BaseService implements CampaignService {
 
-  private final CustomerGroupRepository customerGroupRepository;
   private final CampaignApprovalRepository campaignApprovalRepository;
   private final CampaignRepository campaignRepository;
+  private final LoyaltyCoreClient loyaltyCoreClient;
 
   @Override
   public void createCampaign(CampaignInput campaignInput) {
     var startDate = Utils.convertToLocalDate(campaignInput.getStartDate());
     var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
-
     // kiểm tra customer group
-    if (!customerGroupRepository.existsByIdAndDeletedFalse(campaignInput.getCustomerGroupId()))
-      throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
+    if (Boolean.FALSE.equals(
+        loyaltyCoreClient
+            .checkCustomerGroupExisted(
+                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
+            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
 
     // tạo code
     var id = campaignApprovalRepository.getSequence();
@@ -190,7 +194,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
 
-    //todo: check các field ảnh hưởng tới rules
+    // todo: check các field ảnh hưởng tới rules
     // map data mới vào chiến dịch hiện tại
     var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
     // tạo bản ghi chờ duyệt
@@ -219,39 +223,44 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   public List<ComparisonOutput> geCampaignApprovalComparison(Long id) {
     // tìm kiếm bản ghi duyệt cập nhật
     var newCampaignApproval =
-            campaignApprovalRepository
-                    .findByDeletedFalseAndId(id)
-                    .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+        campaignApprovalRepository
+            .findByDeletedFalseAndId(id)
+            .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
     if (!ApprovalType.UPDATE.equals(newCampaignApproval.getApprovalType())) {
       throw new BaseException(ErrorCode.APPROVE_TYPE_NOT_MATCH_UPDATE);
     }
     // tìm kiếm bản ghi đã phê duyệt gần nhất
     var oldCampaignApproval =
-            campaignApprovalRepository
-                    .findLatestAcceptedRecord(newCampaignApproval.getCampaignId(), id)
-                    .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
+        campaignApprovalRepository
+            .findLatestAcceptedRecord(newCampaignApproval.getCampaignId(), id)
+            .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     // thực hiện so sánh
     DiffResult<CampaignApproval> diffResult =
-            new DiffBuilder<>(oldCampaignApproval, newCampaignApproval, ToStringStyle.DEFAULT_STYLE)
-                    .append(
-                            "startDate",
-                            Utils.formatLocalDateToString(oldCampaignApproval.getStartDate()),
-                            Utils.formatLocalDateToString(newCampaignApproval.getStartDate()))
-                    .append(
-                            "endDate",
-                            Utils.formatLocalDateToString(oldCampaignApproval.getEndDate()),
-                            Utils.formatLocalDateToString(newCampaignApproval.getEndDate()))
-                    .append("status", oldCampaignApproval.getStatus(), newCampaignApproval.getStatus())
-                    .append("name", oldCampaignApproval.getName(), newCampaignApproval.getName())
-                    .build();
+        new DiffBuilder<>(oldCampaignApproval, newCampaignApproval, ToStringStyle.DEFAULT_STYLE)
+            .append(
+                "startDate",
+                Utils.formatLocalDateToString(oldCampaignApproval.getStartDate()),
+                Utils.formatLocalDateToString(newCampaignApproval.getStartDate()))
+            .append(
+                "endDate",
+                Utils.formatLocalDateToString(oldCampaignApproval.getEndDate()),
+                Utils.formatLocalDateToString(newCampaignApproval.getEndDate()))
+            .append("status", oldCampaignApproval.getStatus(), newCampaignApproval.getStatus())
+            .append("name", oldCampaignApproval.getName(), newCampaignApproval.getName())
+            .build();
     return diffResult.getDiffs().stream()
-            .map(
-                    diff ->
-                            ComparisonOutput.builder()
-                                    .fileName(diff.getFieldName())
-                                    .oldValue(diff.getLeft() == null ? null : diff.getLeft().toString())
-                                    .newValue(diff.getRight() == null ? null : diff.getRight().toString())
-                                    .build())
-            .collect(Collectors.toList());
+        .map(
+            diff ->
+                ComparisonOutput.builder()
+                    .fileName(diff.getFieldName())
+                    .oldValue(diff.getLeft() == null ? null : diff.getLeft().toString())
+                    .newValue(diff.getRight() == null ? null : diff.getRight().toString())
+                    .build())
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Boolean checkCampaignActive(Long groupId) {
+    return campaignRepository.existsByActiveCampaign(groupId, LocalDate.now());
   }
 }

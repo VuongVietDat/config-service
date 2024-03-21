@@ -1,7 +1,6 @@
 package vn.com.atomi.loyalty.config.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
 import vn.com.atomi.loyalty.config.enums.BonusType;
@@ -42,12 +41,6 @@ public class RuleBonus extends BaseEntity {
   @Column(name = "plus_type")
   @Enumerated(EnumType.STRING)
   private PlusType plusType;
-
-  @Column(name = "from_date")
-  private LocalDate fromDate;
-
-  @Column(name = "to_date")
-  private LocalDate toDate;
 
   @Column(name = "condition")
   private String condition;

@@ -27,8 +27,14 @@ public class Condition extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
+  @Column(name = "group_code")
+  private String groupCode;
+
   @Column(name = "properties")
   private String properties;
+
+  @Column(name = "depends_in")
+  private String dependsIn;
 
   @Column(name = "operators")
   @Enumerated(EnumType.STRING)

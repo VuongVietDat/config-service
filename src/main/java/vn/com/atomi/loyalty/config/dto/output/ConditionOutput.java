@@ -26,6 +26,15 @@ public class ConditionOutput {
   @Schema(description = "Tên thuộc tính")
   private String propertiesName;
 
+  @Schema(description = "Mã nhóm tiêu chí")
+  private String groupCode;
+
+  @Schema(description = "Tên nhóm tiêu chí")
+  private String groupName;
+
+  @Schema(description = "Danh sách mã code của thuộc tính bị phụ thuộc")
+  private List<String> dependsIn;
+
   private List<ConditionData> data;
 
   @JsonIgnore private Operators operators;
@@ -85,5 +94,11 @@ public class ConditionOutput {
 
     @Schema(description = "Tên hiển thị")
     private String displayName;
+
+    @Schema(description = "Mã code bị phụ thuộc")
+    private String dependCode;
+
+    @Schema(description = "Thứ tự")
+    private Long orderNo;
   }
 }

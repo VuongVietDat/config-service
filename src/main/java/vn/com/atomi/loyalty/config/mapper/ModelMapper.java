@@ -8,7 +8,6 @@ import org.mapstruct.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
-import vn.com.atomi.loyalty.config.dto.input.CustomerGroupInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.dto.projection.CampaignApprovalProjection;
@@ -258,25 +257,23 @@ public interface ModelMapper {
 
   RuleOutput convertToRuleOutput(Rule rule);
 
-  List<RuleOutput.RuleConditionOutput> convertToRuleConditionOutputs(
-      List<RuleCondition> ruleConditions);
+  List<RuleConditionOutput> convertToRuleConditionOutputs(List<RuleCondition> ruleConditions);
 
-  List<RuleOutput.RuleAllocationOutput> convertToRuleAllocationOutputs(
-      List<RuleAllocation> ruleAllocations);
+  List<RuleAllocationOutput> convertToRuleAllocationOutputs(List<RuleAllocation> ruleAllocations);
 
-  List<RuleOutput.RuleBonusOutput> convertToRuleBonusOutputs(List<RuleBonus> ruleBonuses);
+  List<RuleBonusOutput> convertToRuleBonusOutputs(List<RuleBonus> ruleBonuses);
 
   RuleApprovalOutput convertToRuleApprovalOutput(RuleApproval ruleApproval);
 
   CampaignApprovalOutput convertToCampaignApprovalOutput(CampaignApproval campaignApproval);
 
-  List<RuleApprovalOutput.RuleConditionApprovalOutput> convertToRuleConditionApprovalOutputs(
+  List<RuleConditionOutput> convertToRuleConditionApprovalOutputs(
       List<RuleConditionApproval> ruleConditionApprovals);
 
-  List<RuleApprovalOutput.RuleAllocationApprovalOutput> convertToRuleAllocationApprovalOutputs(
+  List<RuleAllocationOutput> convertToRuleAllocationApprovalOutputs(
       List<RuleAllocationApproval> ruleAllocationApprovals);
 
-  List<RuleApprovalOutput.RuleBonusApprovalOutput> convertToRuleBonusApprovalOutputs(
+  List<RuleBonusOutput> convertToRuleBonusApprovalOutputs(
       List<RuleBonusApproval> ruleBonusApprovals);
 
   @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
@@ -318,53 +315,22 @@ public interface ModelMapper {
   RuleAllocationApproval convertToRuleAllocationApproval(
       CreateRuleInput.RuleAllocationInput ruleAllocation, Long ruleApprovalId);
 
-  @Mapping(target = "fromDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-  @Mapping(target = "toDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleBonusApproval convertToRuleBonusApproval(
       CreateRuleInput.RuleBonusInput ruleBonus, Long ruleApprovalId);
 
   List<CampaignOutput> convertToCampaignOutput(List<Campaign> campaigns);
 
-  @Mapping(target = "creator", source = "createdBy")
-  @Mapping(target = "creationDate", source = "createdAt")
   @Mapping(
-      target = "approveDate",
-      expression = "java(getApproveDate(approval.getApprovalStatus(), approval.getUpdatedAt()))")
-  @Mapping(
-      target = "approver",
-      expression = "java(getApprover(approval.getApprovalStatus(), approval.getUpdatedBy()))")
-  CustomerGroupApprovalPreviewOutput convertToCustomerGroupApprovalPreviewOutput(
-      CustomerGroupApproval approval);
-
-  List<CustomerGroupApprovalPreviewOutput> convertToCustomerGroupApprovalPreviewOutputs(
-      List<CustomerGroupApproval> customerGroupApprovals);
-
-  List<CustomerGroupPreviewOutput> convertToCustomerGroupPreviewOutputs(
-      List<CustomerGroup> content);
-
-  CustomerGroupApprovalOutput convertCustomerGroupApprovalOutput(
-      CustomerGroupApproval customerGroupApproval);
-
-  CustomerGroupOutput convertCustomerGroupOutput(CustomerGroup customerGroup);
-
-  CustomerGroup convertToCustomerGroup(CustomerGroupApproval customerGroupApproval);
-
-  CustomerGroup convertToCustomerGroup(
-      @MappingTarget CustomerGroup currentGroup, CustomerGroupApproval customerGroupApproval);
-
-  CustomerGroup convertToCustomerGroup(
-      @MappingTarget CustomerGroup customerGroup, CustomerGroupInput customerGroupInput);
-
-  @Mapping(target = "id", ignore = true)
-  @Mapping(target = "customerGroupId", source = "customerGroup.id")
-  @Mapping(target = "approvalType", source = "approvalType")
-  @Mapping(target = "approvalStatus", source = "approvalStatus")
-  CustomerGroupApproval convertToGroupApproval(
-      CustomerGroup customerGroup, ApprovalStatus approvalStatus, ApprovalType approvalType);
+      target = "dependsIn",
+      expression =
+          "java(condition.getDependsIn() == null ? null : List.of(condition.getDependsIn().split(\"|\")))")
+  ConditionOutput convertToConditionOutput(Condition condition);
 
   List<ConditionOutput> convertToConditionOutputs(List<Condition> conditions);
 
   List<ConditionOutput.ConditionData> convertToConditionOutputDatas(
       List<ConditionOutput> conditionOutputs);
+
+  List<RankOutput> convertToRankOutputs(List<Rank> ranks);
 }

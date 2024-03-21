@@ -15,26 +15,26 @@ import vn.com.atomi.loyalty.config.enums.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_transaction_group")
-public class TransactionGroup extends BaseEntity {
+@Table(name = "cf_transaction_type")
+public class TransactionType extends BaseEntity {
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_transaction_group_id_seq")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_transaction_type_id_seq")
   @SequenceGenerator(
-      name = "cf_transaction_group_id_seq",
-      sequenceName = "cf_transaction_group_id_seq",
+      name = "cf_transaction_type_id_seq",
+      sequenceName = "cf_transaction_type_id_seq",
       allocationSize = 1)
   private Long id;
-
-  @Column(name = "customer_type")
-  private String customerType;
 
   @Column(name = "group_code")
   private String groupCode;
 
-  @Column(name = "group_name")
-  private String groupName;
+  @Column(name = "type_code")
+  private String typeCode;
+
+  @Column(name = "type_name")
+  private String typeName;
 
   @Column(name = "order_no")
   private Long orderNo;

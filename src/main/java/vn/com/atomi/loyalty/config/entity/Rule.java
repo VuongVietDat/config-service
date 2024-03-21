@@ -20,7 +20,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_RULE")
+@Table(name = "cf_rule")
 public class Rule extends BaseEntity {
 
   @Id

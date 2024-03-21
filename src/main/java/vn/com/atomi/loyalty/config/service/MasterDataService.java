@@ -3,6 +3,8 @@ package vn.com.atomi.loyalty.config.service;
 import java.util.List;
 import vn.com.atomi.loyalty.config.dto.output.ConditionOutput;
 import vn.com.atomi.loyalty.config.dto.output.DictionaryOutput;
+import vn.com.atomi.loyalty.config.dto.output.TransactionGroupOutput;
+import vn.com.atomi.loyalty.config.dto.output.TransactionTypeOutput;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -27,4 +29,8 @@ public interface MasterDataService {
   List<ConditionOutput> getRuleConditions(boolean isView);
 
   List<ConditionOutput> getCustomerGroupConditions(boolean isView);
+
+  List<TransactionGroupOutput> getTransactionGroups(String customerType, Boolean isView);
+
+  List<TransactionTypeOutput> getTransactionTypes(String transactionGroup, Boolean isView);
 }

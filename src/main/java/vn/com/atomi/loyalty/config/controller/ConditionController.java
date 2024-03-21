@@ -34,6 +34,34 @@ public class ConditionController extends BaseController {
     return ResponseUtils.success(masterDataService.getRuleConditions(isView));
   }
 
+  @Operation(summary = "Api lấy danh sách nhóm giao dịch")
+  @PreAuthorize(Authority.Rule.READ_RULE)
+  @GetMapping("/master-data/transaction-groups")
+  public ResponseEntity<ResponseData<List<TransactionGroupOutput>>> getTransactionGroups(
+      @Parameter(
+              description =
+                  "(isView = true) Call khi xem chi tiết sẽ lấy tất cả bản ghi</br>(isView = false) Call khi tạo mới hoặc cập nhật, chỉ lấy những bản ghi hiệu lực")
+          @RequestParam(required = false, defaultValue = "false")
+          Boolean isView,
+      @Parameter(description = "Loại khách hàng", example = "INDIVIDUAL") @RequestParam
+          String customerType) {
+    return ResponseUtils.success(masterDataService.getTransactionGroups(customerType, isView));
+  }
+
+  @Operation(summary = "Api lấy danh sách loại giao dịch")
+  @PreAuthorize(Authority.Rule.READ_RULE)
+  @GetMapping("/master-data/transaction-types")
+  public ResponseEntity<ResponseData<List<TransactionTypeOutput>>> getTransactionType(
+      @Parameter(
+              description =
+                  "(isView = true) Call khi xem chi tiết sẽ lấy tất cả bản ghi</br>(isView = false) Call khi tạo mới hoặc cập nhật, chỉ lấy những bản ghi hiệu lực")
+          @RequestParam(required = false, defaultValue = "false")
+          Boolean isView,
+      @Parameter(description = "Nhóm giao dịch", example = "CREDITCARD") @RequestParam
+          String transactionGroup) {
+    return ResponseUtils.success(masterDataService.getTransactionTypes(transactionGroup, isView));
+  }
+
   @Operation(summary = "Api lấy danh sách điều kiện cho nhóm khách hàng")
   @PreAuthorize(Authority.CustomerGroup.READ_CUSTOMER_GROUP)
   @GetMapping("/customer-groups/conditions")

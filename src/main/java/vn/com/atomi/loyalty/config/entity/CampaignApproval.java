@@ -18,7 +18,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CF_CAMPAIGN_APPROVAL")
+@Table(name = "cf_campaign_approval")
 public class CampaignApproval extends BaseEntity {
   public static final String GENERATOR = "cf_campaign_arv_id_seq";
 

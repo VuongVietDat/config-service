@@ -166,13 +166,13 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
 
   @Override
   public List<TransactionTypeOutput> getTransactionTypes(String transactionGroup, Boolean isView) {
-    if (isView) {
-      return super.modelMapper.convertToTransactionTypeOutputs(
-          transactionTypeRepository.findByDeletedFalseAndGroupCode(transactionGroup));
-    }
+    var list = Arrays.asList(transactionGroup.split(","));
+
     return super.modelMapper.convertToTransactionTypeOutputs(
-        transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCode(
-            Status.ACTIVE, transactionGroup));
+        isView
+            ? transactionTypeRepository.findByDeletedFalseAndGroupCodeIn((list))
+            : transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCodeIn(
+                Status.ACTIVE, list));
   }
 
   private List<DictionaryOutput> appendSubLeaf(

@@ -287,7 +287,7 @@ public @interface CreateRuleValidator {
           }
           if (ruleBonusInput.getValue() == null || ruleBonusInput.getValue() <= 0) {
             context
-                .buildConstraintViolationWithTemplate("must be greater than or equal to 0")
+                .buildConstraintViolationWithTemplate("must be greater than to 0")
                 .addPropertyNode(String.format("ruleBonusInputs[%s].value", i))
                 .addConstraintViolation();
             isValid = false;

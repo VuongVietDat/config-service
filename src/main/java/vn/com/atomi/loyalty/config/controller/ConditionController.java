@@ -57,9 +57,10 @@ public class ConditionController extends BaseController {
                   "(isView = true) Call khi xem chi tiết sẽ lấy tất cả bản ghi</br>(isView = false) Call khi tạo mới hoặc cập nhật, chỉ lấy những bản ghi hiệu lực")
           @RequestParam(required = false, defaultValue = "false")
           Boolean isView,
-      @Parameter(description = "Nhóm giao dịch", example = "CREDITCARD") @RequestParam
-          String transactionGroup) {
-    return ResponseUtils.success(masterDataService.getTransactionTypes(transactionGroup, isView));
+      @Parameter(description = "Danh sách Nhóm giao dịch", example = "CREDITCARD,LOAN,SAVING")
+          @RequestParam
+          String transactionGroups) {
+    return ResponseUtils.success(masterDataService.getTransactionTypes(transactionGroups, isView));
   }
 
   @Operation(summary = "Api lấy danh sách điều kiện cho nhóm khách hàng")

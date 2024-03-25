@@ -21,9 +21,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface CampaignApprovalRepository extends JpaRepository<CampaignApproval, Long> {
 
-  @Query(
-      value = "select {h-schema}" + CampaignApproval.GENERATOR + ".nextval from DUAL",
-      nativeQuery = true)
+  @Query(value = "select " + CampaignApproval.GENERATOR + ".nextval from DUAL", nativeQuery = true)
   Long getSequence();
 
   Optional<CampaignApproval> findByDeletedFalseAndId(Long id);

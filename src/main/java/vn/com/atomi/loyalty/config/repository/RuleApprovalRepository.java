@@ -23,7 +23,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @Repository
 public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long> {
 
-  @Query(value = "select {h-schema}cf_rule_arv_id_seq.nextval from DUAL", nativeQuery = true)
+  @Query(value = "select CF_RULE_ARV_ID_SEQ.nextval from DUAL", nativeQuery = true)
   Long getSequence();
 
   Optional<RuleApproval> findByDeletedFalseAndId(Long id);

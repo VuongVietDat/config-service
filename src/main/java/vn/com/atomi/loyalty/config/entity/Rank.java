@@ -15,22 +15,25 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_rank")
+@Table(name = "CF_RANK")
 public class Rank extends BaseEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_rank_id_seq")
-  @SequenceGenerator(name = "cf_rank_id_seq", sequenceName = "cf_rank_id_seq", allocationSize = 1)
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CF_RANK_ID_SEQ")
+  @SequenceGenerator(name = "CF_RANK_ID_SEQ", sequenceName = "CF_RANK_ID_SEQ", allocationSize = 1)
   private Long id;
 
-  @Column(name = "code")
+  @Column(name = "CODE")
   private String code;
 
-  @Column(name = "name")
+  @Column(name = "NAME")
   private String name;
 
-  @Column(name = "status")
+  @Column(name = "ORDER_NO")
+  private int orderNo;
+
+  @Column(name = "STATUS")
   @Enumerated(EnumType.STRING)
   private Status status;
 }

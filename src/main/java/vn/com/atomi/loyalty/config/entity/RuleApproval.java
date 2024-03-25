@@ -16,61 +16,61 @@ import vn.com.atomi.loyalty.config.enums.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_rule_approval")
+@Table(name = "CF_RULE_APPROVAL")
 public class RuleApproval extends BaseEntity {
 
   @Id
-  @Column(name = "id")
+  @Column(name = "ID")
   private Long id;
 
-  @Column(name = "rule_id")
+  @Column(name = "RULE_ID")
   private Long ruleId;
 
-  @Column(name = "type")
+  @Column(name = "TYPE")
   private String type;
 
-  @Column(name = "code")
+  @Column(name = "CODE")
   private String code;
 
-  @Column(name = "name")
+  @Column(name = "NAME")
   private String name;
 
-  @Column(name = "point_type")
+  @Column(name = "POINT_TYPE")
   @Enumerated(EnumType.STRING)
   private PointType pointType;
 
-  @Column(name = "campaign_id")
+  @Column(name = "CAMPAIGN_ID")
   private Long campaignId;
 
-  @Column(name = "condition_type")
+  @Column(name = "CONDITION_TYPE")
   @Enumerated(EnumType.STRING)
   private ConditionType conditionType;
 
-  @Column(name = "start_date")
+  @Column(name = "START_DATE")
   private LocalDate startDate;
 
-  @Column(name = "end_date")
+  @Column(name = "END_DATE")
   private LocalDate endDate;
 
-  @Column(name = "status")
-  @Enumerated(EnumType.STRING)
-  private Status status;
-
-  @Column(name = "expire_policy_type")
+  @Column(name = "EXPIRE_POLICY_TYPE")
   @Enumerated(EnumType.STRING)
   private ExpirePolicyType expirePolicyType;
 
-  @Column(name = "expire_policy_value")
+  @Column(name = "EXPIRE_POLICY_VALUE")
   private String expirePolicyValue;
 
-  @Column(name = "approval_status")
+  @Column(name = "APPROVAL_STATUS")
   @Enumerated(EnumType.STRING)
   private ApprovalStatus approvalStatus;
 
-  @Column(name = "approval_type")
+  @Column(name = "APPROVAL_TYPE")
   @Enumerated(EnumType.STRING)
   private ApprovalType approvalType;
 
-  @Column(name = "approval_comment")
+  @Column(name = "APPROVAL_COMMENT")
   private String approvalComment;
+
+  @Column(name = "STATUS")
+  @Enumerated(EnumType.STRING)
+  private Status status;
 }

@@ -18,5 +18,7 @@ public class RankOutput {
 
   private String name;
 
+  private int orderNo;
+
   private Status status;
 }

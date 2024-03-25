@@ -20,58 +20,58 @@ import vn.com.atomi.loyalty.config.enums.Status;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_rule")
+@Table(name = "CF_RULE")
 public class Rule extends BaseEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_rule_id_seq")
-  @SequenceGenerator(name = "cf_rule_id_seq", sequenceName = "cf_rule_id_seq", allocationSize = 1)
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CF_RULE_ID_SEQ")
+  @SequenceGenerator(name = "CF_RULE_ID_SEQ", sequenceName = "CF_RULE_ID_SEQ", allocationSize = 1)
   private Long id;
 
-  @Column(name = "type")
+  @Column(name = "TYPE")
   private String type;
 
-  @Column(name = "code")
+  @Column(name = "CODE")
   private String code;
 
-  @Column(name = "name")
+  @Column(name = "NAME")
   private String name;
 
-  @Column(name = "point_type")
+  @Column(name = "POINT_TYPE")
   @Enumerated(EnumType.STRING)
   private PointType pointType;
 
-  @Column(name = "campaign_id")
+  @Column(name = "CAMPAIGN_ID")
   private Long campaignId;
 
-  @Column(name = "condition_type")
+  @Column(name = "CONDITION_TYPE")
   @Enumerated(EnumType.STRING)
   private ConditionType conditionType;
 
-  @Column(name = "start_date")
+  @Column(name = "START_DATE")
   private LocalDate startDate;
 
-  @Column(name = "end_date")
+  @Column(name = "END_DATE")
   private LocalDate endDate;
 
-  @Column(name = "status")
+  @Column(name = "STATUS")
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  @Column(name = "expire_policy_type")
+  @Column(name = "EXPIRE_POLICY_TYPE")
   @Enumerated(EnumType.STRING)
   private ExpirePolicyType expirePolicyType;
 
-  @Column(name = "expire_policy_value")
+  @Column(name = "EXPIRE_POLICY_VALUE")
   private String expirePolicyValue;
 
-  @Column(name = "creator")
+  @Column(name = "CREATOR")
   private String creator;
 
-  @Column(name = "creation_date")
+  @Column(name = "CREATION_DATE")
   private LocalDateTime creationDate;
 
-  @Column(name = "creation_approval_date")
+  @Column(name = "CREATION_APPROVAL_DATE")
   private LocalDateTime creationApprovalDate;
 }

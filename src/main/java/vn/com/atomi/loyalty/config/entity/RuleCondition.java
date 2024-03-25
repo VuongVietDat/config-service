@@ -15,28 +15,28 @@ import vn.com.atomi.loyalty.config.enums.Operators;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_rule_condition")
+@Table(name = "CF_RULE_CONDITION")
 public class RuleCondition extends BaseEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_rule_condition_id_seq")
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CF_RULE_CONDITION_ID_SEQ")
   @SequenceGenerator(
-      name = "cf_rule_condition_id_seq",
-      sequenceName = "cf_rule_condition_id_seq",
+      name = "CF_RULE_CONDITION_ID_SEQ",
+      sequenceName = "CF_RULE_CONDITION_ID_SEQ",
       allocationSize = 1)
   private Long id;
 
-  @Column(name = "rule_id")
+  @Column(name = "RULE_ID")
   private Long ruleId;
 
-  @Column(name = "properties")
+  @Column(name = "PROPERTIES")
   private String properties;
 
-  @Column(name = "operators")
+  @Column(name = "OPERATORS")
   @Enumerated(EnumType.STRING)
   private Operators operators;
 
-  @Column(name = "value")
+  @Column(name = "VALUE")
   private String value;
 }

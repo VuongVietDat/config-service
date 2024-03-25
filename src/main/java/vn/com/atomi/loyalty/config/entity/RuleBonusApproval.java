@@ -16,35 +16,35 @@ import vn.com.atomi.loyalty.config.enums.PlusType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cf_rule_bonus_approval")
+@Table(name = "CF_RULE_BONUS_APPROVAL")
 public class RuleBonusApproval extends BaseEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cf_rule_bonus_arv_id_seq")
+  @Column(name = "ID")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CF_RULE_BONUS_ARV_ID_SEQ")
   @SequenceGenerator(
-      name = "cf_rule_bonus_arv_id_seq",
-      sequenceName = "cf_rule_bonus_arv_id_seq",
+      name = "CF_RULE_BONUS_ARV_ID_SEQ",
+      sequenceName = "CF_RULE_BONUS_ARV_ID_SEQ",
       allocationSize = 1)
   private Long id;
 
-  @Column(name = "rule_approval_id")
+  @Column(name = "RULE_APPROVAL_ID")
   private Long ruleApprovalId;
 
-  @Column(name = "type")
+  @Column(name = "TYPE")
   @Enumerated(EnumType.STRING)
   private BonusType type;
 
-  @Column(name = "value")
+  @Column(name = "VALUE")
   private double value;
 
-  @Column(name = "plus_type")
+  @Column(name = "PLUS_TYPE")
   @Enumerated(EnumType.STRING)
   private PlusType plusType;
 
-  @Column(name = "condition")
+  @Column(name = "CONDITION")
   private String condition;
 
-  @Column(name = "child_condition")
+  @Column(name = "CHILD_CONDITION")
   private String childCondition;
 }

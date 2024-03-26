@@ -307,6 +307,11 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         ruleRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
+    // kiểm tra xem có bản ghi chờ duyệt nào hay không
+    if (ruleApprovalRepository.existsByDeletedFalseAndRuleIdAndApprovalStatus(
+        id, ApprovalStatus.WAITING)) {
+      throw new BaseException(ErrorCode.EXISTED_UPDATE_RULE_WAITING);
+    }
     // map data mới vào quy tắc hiện tại
     var newRule = super.modelMapper.convertToRule(rule, updateRuleInput);
     // tạo bản ghi chờ duyệt

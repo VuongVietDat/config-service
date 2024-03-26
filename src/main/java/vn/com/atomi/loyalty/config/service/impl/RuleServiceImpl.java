@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -215,7 +216,13 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     ruleApprovalOutput.setRuleBonusApprovalOutputs(
         super.modelMapper.convertToRuleBonusApprovalOutputs(ruleBonusApprovals));
     //  lấy lịch sử phê duyệt
-    ruleApprovalOutput.setHistoryOutputs(this.buildHistoryOutputs(List.of(ruleApproval)));
+    if (ruleApproval.getApprovalType().equals(ApprovalType.CREATE)) {
+      ruleApprovalOutput.setHistoryOutputs(this.buildHistoryOutputs(List.of(ruleApproval)));
+    } else {
+      ruleApprovalOutput.setHistoryOutputs(
+          this.buildHistoryOutputs(
+              ruleApprovalRepository.findByDeletedFalseAndRuleId(ruleApproval.getRuleId())));
+    }
     return ruleApprovalOutput;
   }
 
@@ -494,6 +501,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                 .build());
       }
     }
+    historyOutputs.sort(Comparator.comparing(HistoryOutput::getActionAt));
     return historyOutputs;
   }
 }

@@ -50,6 +50,7 @@ public @interface CreateRuleValidator {
     @Override
     public boolean isValid(CreateRuleInput value, ConstraintValidatorContext context) {
       LocalDate startDateRule = null;
+      LocalDate endDateRule = null;
       boolean isValid = true;
       if (StringUtils.isBlank(value.getStartDate())) {
         context.disableDefaultConstraintViolation();
@@ -75,8 +76,8 @@ public @interface CreateRuleValidator {
       }
       if (!StringUtils.isBlank(value.getEndDate())) {
         try {
-          var endDate = Utils.convertToLocalDate(value.getEndDate());
-          if (startDateRule != null && startDateRule.isAfter(endDate)) {
+          endDateRule = Utils.convertToLocalDate(value.getEndDate());
+          if (startDateRule != null && startDateRule.isAfter(endDateRule)) {
             context.disableDefaultConstraintViolation();
             context
                 .buildConstraintViolationWithTemplate("endDate must be after startDate")
@@ -278,6 +279,34 @@ public @interface CreateRuleValidator {
                   context.disableDefaultConstraintViolation();
                   context
                       .buildConstraintViolationWithTemplate("toDate must be after fromDate")
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                if (fromDate != null && startDateRule != null && fromDate.isBefore(startDateRule)) {
+                  context
+                      .buildConstraintViolationWithTemplate("fromDate must be after startDate")
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                if (fromDate != null && endDateRule != null && fromDate.isAfter(endDateRule)) {
+                  context
+                      .buildConstraintViolationWithTemplate("fromDate must be before endDate")
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].condition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                if (toDate != null && startDateRule != null && toDate.isBefore(startDateRule)) {
+                  context
+                      .buildConstraintViolationWithTemplate("toDate must be after fromDate")
+                      .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
+                      .addConstraintViolation();
+                  isValid = false;
+                }
+                if (toDate != null && endDateRule != null && toDate.isAfter(endDateRule)) {
+                  context
+                      .buildConstraintViolationWithTemplate("toDate must be before endDate")
                       .addPropertyNode(String.format("ruleBonusInputs[%s].childCondition", i))
                       .addConstraintViolation();
                   isValid = false;

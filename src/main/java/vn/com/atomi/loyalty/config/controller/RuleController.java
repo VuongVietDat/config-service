@@ -15,6 +15,7 @@ import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
@@ -45,20 +46,10 @@ public class RuleController extends BaseController {
       summary =
           "Api kiểm tra trùng quy tắc bằng việc kiểm tra đồng thời 3 điều kiện: Loại quy tắc, Chiến dịch, Thời gian hiệu lực")
   @PreAuthorize(Authority.Rule.READ_RULE)
-  @GetMapping("/rules/approvals/overlap-active-time")
+  @PostMapping("/rules/approvals/overlap-active-time")
   public ResponseEntity<ResponseData<WarringOverlapActiveTimeOutput>> checkOverlapActiveTime(
-      @Parameter(description = "Loại quy tắc sinh điểm") @RequestParam String type,
-      @Parameter(description = "ID chiến dịch") @RequestParam Long campaignId,
-      @Parameter(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
-          @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-          @RequestParam
-          String startDate,
-      @Parameter(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
-          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-          @RequestParam(required = false)
-          String endDate) {
-    return ResponseUtils.success(
-        ruleService.checkOverlapActiveTime(type, campaignId, startDate, endDate));
+      @RequestBody WarringOverlapActiveTimeInput warringOverlapActiveTimeInput) {
+    return ResponseUtils.success(ruleService.checkOverlapActiveTime(warringOverlapActiveTimeInput));
   }
 
   @Operation(summary = "Api lấy danh sách duyệt quy tắc sinh điểm")

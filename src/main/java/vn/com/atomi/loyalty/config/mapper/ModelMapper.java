@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.mapstruct.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
-import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
-import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
-import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.*;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.dto.projection.CampaignApprovalProjection;
 import vn.com.atomi.loyalty.config.dto.projection.RuleApprovalProjection;
@@ -112,36 +110,36 @@ public interface ModelMapper {
   }
 
   default List<RuleConditionApproval> convertToRuleConditionApprovalsFromInput(
-      List<CreateRuleInput.RuleConditionInput> ruleConditionInputs, Long ruleApprovalId) {
+      List<RuleConditionInput> ruleConditionInputs, Long ruleApprovalId) {
     if (ruleConditionInputs == null) {
       return null;
     }
     List<RuleConditionApproval> list = new ArrayList<>(ruleConditionInputs.size());
-    for (CreateRuleInput.RuleConditionInput ruleCondition : ruleConditionInputs) {
+    for (RuleConditionInput ruleCondition : ruleConditionInputs) {
       list.add(convertToRuleConditionApproval(ruleCondition, ruleApprovalId));
     }
     return list;
   }
 
   default List<RuleAllocationApproval> convertToRuleAllocationApprovalsFromInput(
-      List<CreateRuleInput.RuleAllocationInput> allocationInputs, Long ruleApprovalId) {
+      List<RuleAllocationInput> allocationInputs, Long ruleApprovalId) {
     if (allocationInputs == null) {
       return null;
     }
     List<RuleAllocationApproval> list = new ArrayList<>(allocationInputs.size());
-    for (CreateRuleInput.RuleAllocationInput ruleAllocationInput : allocationInputs) {
+    for (RuleAllocationInput ruleAllocationInput : allocationInputs) {
       list.add(convertToRuleAllocationApproval(ruleAllocationInput, ruleApprovalId));
     }
     return list;
   }
 
   default List<RuleBonusApproval> convertToRuleBonusApprovalsFromInput(
-      List<CreateRuleInput.RuleBonusInput> ruleBonusInputs, Long ruleApprovalId) {
+      List<RuleBonusInput> ruleBonusInputs, Long ruleApprovalId) {
     if (ruleBonusInputs == null) {
       return null;
     }
     List<RuleBonusApproval> list = new ArrayList<>(ruleBonusInputs.size());
-    for (CreateRuleInput.RuleBonusInput ruleBonusInput : ruleBonusInputs) {
+    for (RuleBonusInput ruleBonusInput : ruleBonusInputs) {
       list.add(convertToRuleBonusApproval(ruleBonusInput, ruleApprovalId));
     }
     return list;
@@ -309,15 +307,14 @@ public interface ModelMapper {
 
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleConditionApproval convertToRuleConditionApproval(
-      CreateRuleInput.RuleConditionInput ruleCondition, Long ruleApprovalId);
+      RuleConditionInput ruleCondition, Long ruleApprovalId);
 
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
   RuleAllocationApproval convertToRuleAllocationApproval(
-      CreateRuleInput.RuleAllocationInput ruleAllocation, Long ruleApprovalId);
+      RuleAllocationInput ruleAllocation, Long ruleApprovalId);
 
   @Mapping(target = "ruleApprovalId", source = "ruleApprovalId")
-  RuleBonusApproval convertToRuleBonusApproval(
-      CreateRuleInput.RuleBonusInput ruleBonus, Long ruleApprovalId);
+  RuleBonusApproval convertToRuleBonusApproval(RuleBonusInput ruleBonus, Long ruleApprovalId);
 
   List<CampaignOutput> convertToCampaignOutput(List<Campaign> campaigns);
 

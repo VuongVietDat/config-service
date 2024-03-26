@@ -6,6 +6,7 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
@@ -59,5 +60,5 @@ public interface RuleService {
   List<ComparisonOutput> getRuleApprovalComparison(Long id);
 
   WarringOverlapActiveTimeOutput checkOverlapActiveTime(
-      String type, Long campaignId, String startDate, String endDate);
+      WarringOverlapActiveTimeInput warringOverlapActiveTimeInput);
 }

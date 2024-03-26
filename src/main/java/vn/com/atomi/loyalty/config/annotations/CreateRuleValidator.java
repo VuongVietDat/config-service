@@ -17,6 +17,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.RuleAllocationInput;
+import vn.com.atomi.loyalty.config.dto.input.RuleBonusInput;
+import vn.com.atomi.loyalty.config.dto.input.RuleConditionInput;
 import vn.com.atomi.loyalty.config.enums.BonusType;
 import vn.com.atomi.loyalty.config.enums.ExpirePolicyType;
 import vn.com.atomi.loyalty.config.utils.Utils;
@@ -132,7 +135,7 @@ public @interface CreateRuleValidator {
       }
       if (!CollectionUtils.isEmpty(value.getAllocationInputs())) {
         for (int i = 0; i < value.getAllocationInputs().size(); i++) {
-          CreateRuleInput.RuleAllocationInput allocationInput = value.getAllocationInputs().get(i);
+          RuleAllocationInput allocationInput = value.getAllocationInputs().get(i);
           if (allocationInput.getExchangePoint() <= 0
               && allocationInput.getExchangeValue() <= 0
               && allocationInput.getFixPointAmount() <= 0) {
@@ -191,7 +194,7 @@ public @interface CreateRuleValidator {
       }
       if (!CollectionUtils.isEmpty(value.getRuleBonusInputs())) {
         for (int i = 0; i < value.getRuleBonusInputs().size(); i++) {
-          CreateRuleInput.RuleBonusInput ruleBonusInput = value.getRuleBonusInputs().get(i);
+          RuleBonusInput ruleBonusInput = value.getRuleBonusInputs().get(i);
           if (ruleBonusInput.getType() == null) {
             context
                 .buildConstraintViolationWithTemplate("must not be null")
@@ -340,8 +343,7 @@ public @interface CreateRuleValidator {
           isValid = false;
         } else {
           for (int i = 0; i < value.getRuleConditionInputs().size(); i++) {
-            CreateRuleInput.RuleConditionInput ruleConditionInput =
-                value.getRuleConditionInputs().get(i);
+            RuleConditionInput ruleConditionInput = value.getRuleConditionInputs().get(i);
             if (StringUtils.isBlank(ruleConditionInput.getProperties())) {
               context.disableDefaultConstraintViolation();
               context

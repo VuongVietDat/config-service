@@ -21,6 +21,7 @@ import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
+import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
 import vn.com.atomi.loyalty.config.enums.*;
@@ -450,13 +451,13 @@ public class RuleServiceImpl extends BaseService implements RuleService {
 
   @Override
   public WarringOverlapActiveTimeOutput checkOverlapActiveTime(
-      String type, Long campaignId, String startDate, String endDate) {
+      WarringOverlapActiveTimeInput warringOverlapActiveTimeInput) {
     List<String> codes =
         ruleRepository.findCodeByOverlapActiveTime(
-            type,
-            campaignId,
-            Utils.convertToLocalDate(startDate),
-            Utils.convertToLocalDate(endDate));
+            warringOverlapActiveTimeInput.getType(),
+            warringOverlapActiveTimeInput.getCampaignId(),
+            Utils.convertToLocalDate(warringOverlapActiveTimeInput.getStartDate()),
+            Utils.convertToLocalDate(warringOverlapActiveTimeInput.getEndDate()));
     // nếu nhiều hơn 3 quy tắc thì chỉ trả về mã của 3 quy tắc đầu tiên
     var varCode =
         CollectionUtils.isEmpty(codes)

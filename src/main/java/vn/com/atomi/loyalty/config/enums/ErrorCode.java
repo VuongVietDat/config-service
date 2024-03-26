@@ -33,6 +33,8 @@ public enum ErrorCode implements AbstractError {
       1012,
       "Tập khách hàng quy định trong thời gian hiệu lực đã tồn tại quy tắc [%s]. Bạn có muốn tiếp tục!",
       HttpStatus.BAD_REQUEST),
+  EXISTED_UPDATE_RULE_WAITING(
+      1013, "Quy tắc đang có bản ghi cập nhật chờ duyệt.", HttpStatus.NOT_FOUND),
   ;
 
   private final int code;

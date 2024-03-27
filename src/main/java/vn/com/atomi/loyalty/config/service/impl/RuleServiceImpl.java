@@ -458,17 +458,23 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             warringOverlapActiveTimeInput.getCampaignId(),
             Utils.convertToLocalDate(warringOverlapActiveTimeInput.getStartDate()),
             Utils.convertToLocalDate(warringOverlapActiveTimeInput.getEndDate()));
-    // nếu nhiều hơn 3 quy tắc thì chỉ trả về mã của 3 quy tắc đầu tiên
-    var varCode =
-        CollectionUtils.isEmpty(codes)
-            ? null
-            : (codes.size() <= 3
-                ? String.join(",", codes)
-                : String.format("%s...", String.join(",", codes.subList(0, 3))));
-    return WarringOverlapActiveTimeOutput.builder()
-        .existed(!CollectionUtils.isEmpty(codes))
-        .message(String.format(ErrorCode.OVERLAP_ACTIVE_TIME.getMessage(), varCode))
-        .build();
+    if (!CollectionUtils.isEmpty(codes)) {
+      // nếu nhiều hơn 3 quy tắc thì chỉ trả về mã của 3 quy tắc đầu tiên
+      var varCode =
+          codes.size() <= 3
+              ? String.join(",", codes)
+              : String.format("%s...", String.join(",", codes.subList(0, 3)));
+      return WarringOverlapActiveTimeOutput.builder()
+          .existed(!CollectionUtils.isEmpty(codes))
+          .message(String.format(ErrorCode.OVERLAP_ACTIVE_TIME.getMessage(), varCode))
+          .build();
+    }
+    return WarringOverlapActiveTimeOutput.builder().existed(false).build();
+  }
+
+  @Override
+  public void automaticallyExpiresRule() {
+    ruleRepository.automaticallyExpiresRule(LocalDate.now());
   }
 
   private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {

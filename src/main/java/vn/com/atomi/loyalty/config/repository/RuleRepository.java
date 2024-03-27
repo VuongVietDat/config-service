@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.config.dto.projection.RuleProjection;
 import vn.com.atomi.loyalty.config.entity.Rule;
 import vn.com.atomi.loyalty.config.enums.PointType;
@@ -71,10 +73,18 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "  and r.type = :type "
               + "  and r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
               + "  and r.campaignId = :campaignId "
-              + "  and ((:endDate is null and (r.endDate is null or (r.endDate is not null and r.endDate >= :startDate))) "
-              + "        or (:endDate is not null and ((r.endDate is null and r.startDate <= :endDate) "
-              + "                                       or (r.endDate is not null and r.startDate <= :endDate)))) "
-              + "order by r.updatedAt desc ")
+              + "  and ((:endDate is not null and ((r.endDate is not null and "
+              + "                                   (:startDate <= r.startDate and :endDate >= r.startDate) or "
+              + "                                   (:startDate >= r.startDate and :startDate <= r.endDate)) or "
+              + "                                  (r.endDate is null and :endDate >= r.startDate))) "
+              + "    or (:endDate is null and ((r.endDate is not null and (r.endDate >= : startDate)) or r.endDate is null))) "
+              + "order by r.updatedAt desc")
   List<String> findCodeByOverlapActiveTime(
       String type, Long campaignId, LocalDate startDate, LocalDate endDate);
+
+  @Transactional
+  @Modifying
+  @Query(
+      "update Rule r set r.status = vn.com.atomi.loyalty.config.enums.Status.INACTIVE where r.endDate < :endDate")
+  void automaticallyExpiresRule(LocalDate endDate);
 }

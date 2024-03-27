@@ -85,7 +85,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
   @Transactional
   @Modifying
   @Query(
-      "update Rule r set r.status = vn.com.atomi.loyalty.config.enums.Status.INACTIVE where r.endDate < :endDate")
+      "update Rule r set r.status = vn.com.atomi.loyalty.config.enums.Status.INACTIVE, r.inactiveBySystem = true where r.endDate < :endDate")
   void automaticallyExpiresRule(LocalDate endDate);
 
   @Query(
@@ -94,7 +94,8 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "from Rule r "
               + "where r.deleted = false "
               + "  and r.type = :type "
-              + "  and r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
+              + "  and (r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
+              + "    or (r.status = vn.com.atomi.loyalty.config.enums.Status.INACTIVE and r.inactiveBySystem = true)) "
               + "  and ((r.endDate is not null and :now >= r.startDate and :now <= r.endDate) "
               + "    or (r.endDate is null and :now >= r.startDate)) "
               + "order by r.updatedAt desc")

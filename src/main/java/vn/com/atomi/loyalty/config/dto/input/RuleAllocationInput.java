@@ -14,6 +14,7 @@ import vn.com.atomi.loyalty.config.enums.Frequency;
 @Setter
 @Getter
 public class RuleAllocationInput {
+
   @Schema(
       description = "true = Quy đổi theo giá trị giao dịch / false = Quy đổi theo số lần giao dịch")
   @NotNull

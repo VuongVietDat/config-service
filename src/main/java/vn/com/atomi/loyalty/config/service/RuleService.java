@@ -64,5 +64,5 @@ public interface RuleService {
 
   void automaticallyExpiresRule();
 
-  List<RuleOutput> getAllActiveRule(String type);
+  List<RuleOutput> getAllActiveRule(String type, String transactionAt);
 }

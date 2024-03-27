@@ -248,7 +248,11 @@ public class RuleController extends BaseController {
           @SuppressWarnings("unused")
           String apiKey,
       @Parameter(description = "Loại quy tắc sinh điểm", example = "TRANSACTION") @RequestParam
-          String type) {
-    return ResponseUtils.success(ruleService.getAllActiveRule(type));
+          String type,
+      @Parameter(description = "Ngày giao dịch", example = "01/01/2024")
+          @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+          @RequestParam(required = false)
+          String transactionAt) {
+    return ResponseUtils.success(ruleService.getAllActiveRule(type, transactionAt));
   }
 }

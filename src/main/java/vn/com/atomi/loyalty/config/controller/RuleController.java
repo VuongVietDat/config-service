@@ -218,4 +218,13 @@ public class RuleController extends BaseController {
     ruleService.approveRule(input);
     return ResponseUtils.success();
   }
+
+  @Operation(
+      summary = "Api (nội bộ) tự động chuyển trạng thái hết hiệu lực quy tắc khi hết ngày kết thúc")
+  @PreAuthorize(Authority.ROLE_SYSTEM)
+  @PutMapping("/internal/rules/automatically-expires")
+  public ResponseEntity<ResponseData<Void>> automaticallyExpiresRule() {
+    ruleService.automaticallyExpiresRule();
+    return ResponseUtils.success();
+  }
 }

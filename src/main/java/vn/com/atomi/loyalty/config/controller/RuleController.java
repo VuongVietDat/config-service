@@ -247,7 +247,8 @@ public class RuleController extends BaseController {
           @RequestHeader(RequestConstant.SECURE_API_KEY)
           @SuppressWarnings("unused")
           String apiKey,
-      @Parameter(description = "Loại quy tắc sinh điểm", example = "TRANSACTION") String type) {
+      @Parameter(description = "Loại quy tắc sinh điểm", example = "TRANSACTION") @RequestParam
+          String type) {
     return ResponseUtils.success(ruleService.getAllActiveRule(type));
   }
 }

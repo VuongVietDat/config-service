@@ -63,4 +63,6 @@ public interface RuleService {
       WarringOverlapActiveTimeInput warringOverlapActiveTimeInput);
 
   void automaticallyExpiresRule();
+
+  List<RuleOutput> getAllActiveRule(String type);
 }

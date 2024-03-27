@@ -23,6 +23,7 @@ import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.entity.Rule;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
 import vn.com.atomi.loyalty.config.enums.*;
 import vn.com.atomi.loyalty.config.repository.*;
@@ -475,6 +476,43 @@ public class RuleServiceImpl extends BaseService implements RuleService {
   @Override
   public void automaticallyExpiresRule() {
     ruleRepository.automaticallyExpiresRule(LocalDate.now());
+  }
+
+  @Override
+  public List<RuleOutput> getAllActiveRule(String type) {
+    var rules = ruleRepository.findAllActiveRule(type, LocalDate.now());
+    var ruleOutputs = super.modelMapper.convertToRuleOutputs(rules);
+    if (CollectionUtils.isEmpty(ruleOutputs)) {
+      return new ArrayList<>();
+    }
+    var ids = rules.stream().map(Rule::getId).toList();
+    // lấy điều kiện áp dụng quy tắc
+    var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleIdIn(ids);
+    // lấy quy tắc chung phân bổ điểm
+    var ruleAllocations = ruleAllocationRepository.findByDeletedFalseAndRuleIdIn(ids);
+    // lấy quy tắc tặng thêm điểm
+    var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleIdIn(ids);
+    // map vào danh sách trả về
+    for (RuleOutput ruleOutput : ruleOutputs) {
+      if (ruleOutput.getConditionType() != null) {
+        ruleOutput.setRuleConditionOutputs(
+            super.modelMapper.convertToRuleConditionOutputs(
+                ruleConditions.stream()
+                    .filter(ruleCondition -> ruleCondition.getRuleId().equals(ruleOutput.getId()))
+                    .toList()));
+      }
+      ruleOutput.setRuleAllocationOutputs(
+          super.modelMapper.convertToRuleAllocationOutputs(
+              ruleAllocations.stream()
+                  .filter(ruleAllocation -> ruleAllocation.getRuleId().equals(ruleOutput.getId()))
+                  .toList()));
+      ruleOutput.setRuleBonusOutputs(
+          super.modelMapper.convertToRuleBonusOutputs(
+              ruleBonuses.stream()
+                  .filter(ruleBonus -> ruleBonus.getRuleId().equals(ruleOutput.getId()))
+                  .toList()));
+    }
+    return ruleOutputs;
   }
 
   private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {

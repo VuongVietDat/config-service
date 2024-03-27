@@ -87,4 +87,16 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
   @Query(
       "update Rule r set r.status = vn.com.atomi.loyalty.config.enums.Status.INACTIVE where r.endDate < :endDate")
   void automaticallyExpiresRule(LocalDate endDate);
+
+  @Query(
+      value =
+          "select r "
+              + "from Rule r "
+              + "where r.deleted = false "
+              + "  and r.type = :type "
+              + "  and r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
+              + "  and ((r.endDate is not null and :now >= r.startDate and :now <= r.endDate) "
+              + "    or (r.endDate is null and :now >= r.startDate)) "
+              + "order by r.updatedAt desc")
+  List<Rule> findAllActiveRule(String type, LocalDate now);
 }

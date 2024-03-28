@@ -344,13 +344,13 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         id, ApprovalStatus.WAITING)) {
       throw new BaseException(ErrorCode.EXISTED_UPDATE_RULE_WAITING);
     }
-    // map data mới vào quy tắc hiện tại
-    var newRule = super.modelMapper.convertToRule(rule, updateRuleInput);
     // tạo bản ghi chờ duyệt
     var approvalId = ruleApprovalRepository.getSequence();
     var ruleApproval =
         super.modelMapper.convertToRuleApproval(
-            newRule, approvalId, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+            rule, approvalId, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+    // map data mới vào quy tắc hiện tại
+    ruleApproval = super.modelMapper.convertToRuleApproval(ruleApproval, updateRuleInput);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     if (ruleApproval.getConditionType() != null) {

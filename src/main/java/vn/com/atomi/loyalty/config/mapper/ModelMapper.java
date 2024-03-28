@@ -276,7 +276,8 @@ public interface ModelMapper {
 
   @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
-  Rule convertToRule(@MappingTarget Rule rule, UpdateRuleInput updateRuleInput);
+  RuleApproval convertToRuleApproval(
+      @MappingTarget RuleApproval rule, UpdateRuleInput updateRuleInput);
 
   Campaign convertToCampaign(@MappingTarget Campaign campaign, CampaignInput campaignInput);
 

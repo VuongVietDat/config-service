@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.dto.output;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.config.enums.BonusType;
 import vn.com.atomi.loyalty.config.enums.PlusType;
 
 /**
@@ -17,7 +18,7 @@ public class RuleBonusOutput {
   private Long id;
 
   @Schema(description = "Loại thưởng thêm")
-  private String type;
+  private BonusType type;
 
   @Schema(description = "Giá trị thưởng")
   private String value;

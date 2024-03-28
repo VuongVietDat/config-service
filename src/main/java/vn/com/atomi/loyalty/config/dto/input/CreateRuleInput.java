@@ -54,7 +54,7 @@ public class CreateRuleInput {
 
   @Schema(
       description =
-          "Loại chính sách hết hạn điểm:</br> AFTER_DAY: Sau số ngày</br> AFTER_DATE: Sau ngày</br> FIRST_DATE_OF_MONTH: Ngày đầu tiên của tháng thứ N +",
+          "Loại chính sách hết hạn điểm:</br> AFTER_DAY: Sau số ngày</br> AFTER_DATE: Sau ngày</br> FIRST_DATE_OF_MONTH: Ngày đầu tiên của tháng thứ N +</br>NEVER: Vĩnh viễn",
       example = "AFTER_DAY")
   private ExpirePolicyType expirePolicyType;
 

@@ -74,4 +74,7 @@ public class Rule extends BaseEntity {
 
   @Column(name = "CREATION_APPROVAL_DATE")
   private LocalDateTime creationApprovalDate;
+
+  @Column(name = "IS_INACTIVE_BY_SYSTEM")
+  private boolean inactiveBySystem;
 }

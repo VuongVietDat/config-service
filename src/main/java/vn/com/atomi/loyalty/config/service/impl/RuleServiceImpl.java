@@ -479,8 +479,12 @@ public class RuleServiceImpl extends BaseService implements RuleService {
   }
 
   @Override
-  public List<RuleOutput> getAllActiveRule(String type) {
-    var rules = ruleRepository.findAllActiveRule(type, LocalDate.now());
+  public List<RuleOutput> getAllActiveRule(String type, String transactionAt) {
+    var date = Utils.convertToLocalDate(transactionAt);
+    if (date == null) {
+      date = LocalDate.now();
+    }
+    var rules = ruleRepository.findAllActiveRule(type, date);
     var ruleOutputs = super.modelMapper.convertToRuleOutputs(rules);
     if (CollectionUtils.isEmpty(ruleOutputs)) {
       return new ArrayList<>();

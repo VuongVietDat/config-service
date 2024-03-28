@@ -16,6 +16,10 @@ public class RuleAllocationOutput {
   @Schema(description = "ID bản ghi")
   private Long id;
 
+  @Schema(
+      description = "true = Quy đổi theo giá trị giao dịch / false = Quy đổi theo số lần giao dịch")
+  private Boolean isExchangeByValue;
+
   @Schema(description = "Số điểm cố định")
   private long fixPointAmount;
 

@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.DiffBuilder;
 import org.apache.commons.lang3.builder.DiffResult;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -18,10 +19,7 @@ import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
-import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
-import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
-import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
+import vn.com.atomi.loyalty.config.dto.input.*;
 import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.entity.Rule;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
@@ -55,6 +53,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
   private final RuleAllocationApprovalRepository ruleAllocationApprovalRepository;
 
   private final RuleConditionApprovalRepository ruleConditionApprovalRepository;
+
+  private final ProductLineRepository productLineRepository;
+
+  private final ProductTypeRepository productTypeRepository;
 
   private final CampaignRepository campaignRepository;
 
@@ -108,6 +110,34 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                         .toList()
                         .contains(conditionInput.getProperties()))) {
       throw new BaseException(ErrorCode.RULE_CONDITION_NOT_EXISTED);
+    }
+    // kiểm tra thưởng thêm loại sản phẩm dịch vụ
+    if (!CollectionUtils.isEmpty(createRuleInput.getRuleBonusInputs())) {
+      var productTypes = productTypeRepository.findByDeletedFalseAndStatus(Status.ACTIVE);
+      var productLines = productLineRepository.findByDeletedFalseAndStatus(Status.ACTIVE);
+      for (RuleBonusInput ruleBonusInput : createRuleInput.getRuleBonusInputs()) {
+        if (BonusType.BONUS_PRODUCT.equals(ruleBonusInput.getType())) {
+          if (productTypes.stream()
+              .filter(
+                  productType -> productType.getTypeCode().equals(ruleBonusInput.getCondition()))
+              .findFirst()
+              .isEmpty()) {
+            throw new BaseException(ErrorCode.PRODUCT_TYPE_NOT_EXISTED);
+          }
+          if (StringUtils.isNoneBlank(ruleBonusInput.getChildCondition())
+              && productLines.stream()
+                  .filter(
+                      productLine ->
+                          productLine.getProductType().equals(ruleBonusInput.getCondition())
+                              && productLine
+                                  .getLineCode()
+                                  .equals(ruleBonusInput.getChildCondition()))
+                  .findFirst()
+                  .isEmpty()) {
+            throw new BaseException(ErrorCode.PRODUCT_LINE_NOT_EXISTED);
+          }
+        }
+      }
     }
     // tạo code
     var id = ruleApprovalRepository.getSequence();

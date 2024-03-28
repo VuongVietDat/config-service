@@ -25,4 +25,6 @@ public interface ProductLineRepository extends JpaRepository<ProductLine, Long> 
               + "  and (:status is null or p.status = :status) ")
   Page<ProductLine> findByDeletedFalseAndProductTypeInAndStatus(
       List<String> productTypes, Status status, Pageable pageable);
+
+  List<ProductLine> findByDeletedFalseAndStatus(Status status);
 }

@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,6 @@ public interface ProductTypeRepository extends JpaRepository<ProductType, Long> 
               + "  and (:status is null or p.status = :status) ")
   Page<ProductType> findByDeletedFalseAndCustomerType(
       String customerType, Status status, Pageable pageable);
+
+  List<ProductType> findByDeletedFalseAndStatus(Status status);
 }

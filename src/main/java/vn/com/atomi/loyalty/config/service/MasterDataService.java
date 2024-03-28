@@ -1,10 +1,9 @@
 package vn.com.atomi.loyalty.config.service;
 
 import java.util.List;
-import vn.com.atomi.loyalty.config.dto.output.ConditionOutput;
-import vn.com.atomi.loyalty.config.dto.output.DictionaryOutput;
-import vn.com.atomi.loyalty.config.dto.output.TransactionGroupOutput;
-import vn.com.atomi.loyalty.config.dto.output.TransactionTypeOutput;
+import org.springframework.data.domain.Pageable;
+import vn.com.atomi.loyalty.base.data.ResponsePage;
+import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -30,7 +29,15 @@ public interface MasterDataService {
 
   List<ConditionOutput> getCustomerGroupConditions(boolean isView);
 
-  List<TransactionGroupOutput> getTransactionGroups(String customerType, Boolean isView);
+  ResponsePage<TransactionGroupOutput> getTransactionGroups(
+      String customerType, Status status, Pageable pageable);
 
-  List<TransactionTypeOutput> getTransactionTypes(String transactionGroup, Boolean isView);
+  ResponsePage<TransactionTypeOutput> getTransactionTypes(
+      List<String> transactionGroup, Status status, Pageable pageable);
+
+  ResponsePage<ProductTypeOutput> getProductTypes(
+      Status status, String customerType, Pageable pageable);
+
+  ResponsePage<ProductLineOutput> getProductLines(
+      Status status, List<String> productTypes, Pageable pageable);
 }

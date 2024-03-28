@@ -28,8 +28,9 @@ public class RankController extends BaseController {
   @PreAuthorize(Authority.Rank.READ_RANK)
   @GetMapping("/ranks")
   public ResponseEntity<ResponseData<ResponsePage<RankOutput>>> getRanks(
-      @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
-      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
+      @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
+          Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)

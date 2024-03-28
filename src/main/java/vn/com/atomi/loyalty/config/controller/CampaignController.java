@@ -45,8 +45,9 @@ public class CampaignController extends BaseController {
   @Operation(summary = "Api lấy danh sách duyệt chiến dịch")
   @GetMapping("/campaigns/approvals")
   public ResponseEntity<ResponseData<ResponsePage<CampaignApprovalOutput>>> getCampaignApprovals(
-      @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
-      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
+      @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
+          Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)
@@ -127,8 +128,9 @@ public class CampaignController extends BaseController {
   @Operation(summary = "Api lấy danh sách chiến dịch")
   @GetMapping("/campaigns")
   public ResponseEntity<ResponseData<ResponsePage<CampaignOutput>>> getCampaigns(
-      @Parameter(description = "Số trang, bắt đầu từ 1") @RequestParam Integer pageNo,
-      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200") @RequestParam
+      @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
+          Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
           @RequestParam(required = false)

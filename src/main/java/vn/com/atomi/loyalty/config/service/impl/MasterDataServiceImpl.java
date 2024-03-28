@@ -7,21 +7,18 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponseData;
+import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
-import vn.com.atomi.loyalty.config.dto.output.ConditionOutput;
-import vn.com.atomi.loyalty.config.dto.output.DictionaryOutput;
-import vn.com.atomi.loyalty.config.dto.output.TransactionGroupOutput;
-import vn.com.atomi.loyalty.config.dto.output.TransactionTypeOutput;
+import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.enums.SourceType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCommonClient;
-import vn.com.atomi.loyalty.config.repository.ConditionRepository;
-import vn.com.atomi.loyalty.config.repository.TransactionGroupRepository;
-import vn.com.atomi.loyalty.config.repository.TransactionTypeRepository;
+import vn.com.atomi.loyalty.config.repository.*;
 import vn.com.atomi.loyalty.config.repository.redis.MasterDataRepository;
 import vn.com.atomi.loyalty.config.service.MasterDataService;
 import vn.com.atomi.loyalty.config.utils.Constants;
@@ -43,6 +40,10 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   private final TransactionGroupRepository transactionGroupRepository;
 
   private final TransactionTypeRepository transactionTypeRepository;
+
+  private final ProductTypeRepository productTypeRepository;
+
+  private final ProductLineRepository productLineRepository;
 
   private final ApplicationContext applicationContext;
 
@@ -154,25 +155,42 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   }
 
   @Override
-  public List<TransactionGroupOutput> getTransactionGroups(String customerType, Boolean isView) {
-    if (isView) {
-      return super.modelMapper.convertToTransactionGroupOutputs(
-          transactionGroupRepository.findByDeletedFalseAndCustomerType(customerType));
-    }
-    return super.modelMapper.convertToTransactionGroupOutputs(
-        transactionGroupRepository.findByDeletedFalseAndStatusAndCustomerType(
-            Status.ACTIVE, customerType));
+  public ResponsePage<TransactionGroupOutput> getTransactionGroups(
+      String customerType, Status status, Pageable pageable) {
+    var page =
+        transactionGroupRepository.findByDeletedFalseAndCustomerType(
+            customerType, status, pageable);
+    return new ResponsePage<>(
+        page, super.modelMapper.convertToTransactionGroupOutputs(page.getContent()));
   }
 
   @Override
-  public List<TransactionTypeOutput> getTransactionTypes(String transactionGroup, Boolean isView) {
-    var list = Arrays.asList(transactionGroup.split(","));
+  public ResponsePage<TransactionTypeOutput> getTransactionTypes(
+      List<String> transactionGroup, Status status, Pageable pageable) {
+    var page =
+        transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCodeIn(
+            status, transactionGroup, pageable);
+    return new ResponsePage<>(
+        page, super.modelMapper.convertToTransactionTypeOutputs(page.getContent()));
+  }
 
-    return super.modelMapper.convertToTransactionTypeOutputs(
-        isView
-            ? transactionTypeRepository.findByDeletedFalseAndGroupCodeIn((list))
-            : transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCodeIn(
-                Status.ACTIVE, list));
+  @Override
+  public ResponsePage<ProductTypeOutput> getProductTypes(
+      Status status, String customerType, Pageable pageable) {
+    var page =
+        productTypeRepository.findByDeletedFalseAndCustomerType(customerType, status, pageable);
+    return new ResponsePage<>(
+        page, super.modelMapper.convertToProductTypeOutputs(page.getContent()));
+  }
+
+  @Override
+  public ResponsePage<ProductLineOutput> getProductLines(
+      Status status, List<String> productTypes, Pageable pageable) {
+    var page =
+        productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
+            productTypes, status, pageable);
+    return new ResponsePage<>(
+        page, super.modelMapper.convertToProductLineOutputs(page.getContent()));
   }
 
   private List<DictionaryOutput> appendSubLeaf(

@@ -338,4 +338,8 @@ public interface ModelMapper {
       List<TransactionType> transactionTypes);
 
   List<RuleOutput> convertToRuleOutputs(List<Rule> rules);
+
+  List<ProductTypeOutput> convertToProductTypeOutputs(List<ProductType> productTypes);
+
+  List<ProductLineOutput> convertToProductLineOutputs(List<ProductLine> productLines);
 }

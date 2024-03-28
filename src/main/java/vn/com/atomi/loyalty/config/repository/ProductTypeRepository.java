@@ -1,12 +1,11 @@
 package vn.com.atomi.loyalty.config.repository;
 
-import java.util.Collection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import vn.com.atomi.loyalty.config.entity.TransactionType;
+import vn.com.atomi.loyalty.config.entity.ProductType;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -14,15 +13,15 @@ import vn.com.atomi.loyalty.config.enums.Status;
  * @version 1.0
  */
 @Repository
-public interface TransactionTypeRepository extends JpaRepository<TransactionType, Long> {
+public interface ProductTypeRepository extends JpaRepository<ProductType, Long> {
 
   @Query(
       value =
           "select p "
-              + "from TransactionType p "
+              + "from ProductType p "
               + "where p.deleted = false "
-              + "  and p.groupCode in (:groupCode) "
+              + "  and (:customerType is null or p.customerType = :customerType) "
               + "  and (:status is null or p.status = :status) ")
-  Page<TransactionType> findByDeletedFalseAndStatusAndGroupCodeIn(
-      Status status, Collection<String> groupCode, Pageable pageable);
+  Page<ProductType> findByDeletedFalseAndCustomerType(
+      String customerType, Status status, Pageable pageable);
 }

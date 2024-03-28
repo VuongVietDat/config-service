@@ -30,11 +30,11 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
       Long id, ApprovalStatus approvalStatus);
 
   @Query(
-          "select r from CampaignApproval r where r.deleted = false "
-                  + "and r.approvalStatus = vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED "
-                  + "and r.campaignId = ?1 and r.id < ?2 "
-                  + "order by r.updatedAt desc "
-                  + "limit 1")
+      "select r from CampaignApproval r where r.deleted = false "
+          + "and r.approvalStatus = vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED "
+          + "and r.campaignId = ?1 and r.id < ?2 "
+          + "order by r.updatedAt desc "
+          + "limit 1")
   Optional<CampaignApproval> findLatestAcceptedRecord(Long campaignId, Long id);
 
   @Query(

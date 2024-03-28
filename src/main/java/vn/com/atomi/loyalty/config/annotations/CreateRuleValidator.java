@@ -132,6 +132,9 @@ public @interface CreateRuleValidator {
             isValid = false;
           }
         }
+        if (ExpirePolicyType.NEVER.equals(value.getExpirePolicyType())) {
+          value.setExpirePolicyValue(null);
+        }
       }
       if (!CollectionUtils.isEmpty(value.getAllocationInputs())) {
         for (int i = 0; i < value.getAllocationInputs().size(); i++) {

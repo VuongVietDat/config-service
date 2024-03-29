@@ -67,4 +67,11 @@ public class RulePreviewOutput {
   @Schema(description = "Ngày duyệt tạo (dd/MM/yyyy HH:mm:ss)")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime creationApprovalDate;
+
+  @Schema(description = "Ngày duyệt gần đây nhất (dd/MM/yyyy HH:mm:ss)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
+  private LocalDateTime lastApproveDate;
+
+  @Schema(description = "Người duyệt gần đây nhất")
+  private String lastApprover;
 }

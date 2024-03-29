@@ -228,6 +228,8 @@ public interface ModelMapper {
   Rule convertToRule(@MappingTarget Rule currentRule, RuleApproval ruleApproval);
 
   @Mapping(target = "typeName", source = "rule.type", qualifiedByName = "findDictionaryName")
+  @Mapping(target = "lastApproveDate", source = "updatedAt")
+  @Mapping(target = "lastApprover", source = "updatedBy")
   RulePreviewOutput convertToRulePreviewOutput(
       RuleProjection rule, @Context List<DictionaryOutput> dictionaryOutputs);
 

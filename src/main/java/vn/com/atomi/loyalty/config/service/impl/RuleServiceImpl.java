@@ -154,17 +154,19 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             code);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() != null) {
-      var ruleConditionApprovals =
-          super.modelMapper.convertToRuleConditionApprovalsFromInput(
-              createRuleInput.getRuleConditionInputs(), ruleApproval.getId());
+    var ruleConditionApprovals =
+        super.modelMapper.convertToRuleConditionApprovalsFromInput(
+            createRuleInput.getRuleConditionInputs(), ruleApproval.getId());
+    if (!CollectionUtils.isEmpty(ruleConditionApprovals)) {
       ruleConditionApprovalRepository.saveAll(ruleConditionApprovals);
     }
     // lưu quy tắc chung phân bổ điểm của bản ghi chờ duyệt
     var ruleAllocationApprovals =
         super.modelMapper.convertToRuleAllocationApprovalsFromInput(
             createRuleInput.getAllocationInputs(), ruleApproval.getId());
-    ruleAllocationApprovalRepository.saveAll(ruleAllocationApprovals);
+    if (!CollectionUtils.isEmpty(ruleAllocationApprovals)) {
+      ruleAllocationApprovalRepository.saveAll(ruleAllocationApprovals);
+    }
     // lưu quy tắc tặng thêm điểm của bản ghi chờ duyệt
     var ruleBonusApprovals =
         super.modelMapper.convertToRuleBonusApprovalsFromInput(
@@ -232,12 +234,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleApprovalOutput = super.modelMapper.convertToRuleApprovalOutput(ruleApproval);
     // lấy điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApprovalOutput.getConditionType() != null) {
-      var ruleConditionApprovals =
-          ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
-      ruleApprovalOutput.setRuleConditionApprovalOutputs(
-          super.modelMapper.convertToRuleConditionApprovalOutputs(ruleConditionApprovals));
-    }
+    var ruleConditionApprovals =
+        ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
+    ruleApprovalOutput.setRuleConditionApprovalOutputs(
+        super.modelMapper.convertToRuleConditionApprovalOutputs(ruleConditionApprovals));
     // lấy quy tắc chung phân bổ điểm của bản ghi chờ duyệt
     var ruleAllocationApprovals =
         ruleAllocationApprovalRepository.findByDeletedFalseAndRuleApprovalId(id);
@@ -313,11 +313,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
     var ruleOutput = super.modelMapper.convertToRuleOutput(rule);
     // lấy điều kiện áp dụng quy tắc
-    if (ruleOutput.getConditionType() != null) {
-      var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
-      ruleOutput.setRuleConditionOutputs(
-          super.modelMapper.convertToRuleConditionOutputs(ruleConditions));
-    }
+    var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
+    ruleOutput.setRuleConditionOutputs(
+        super.modelMapper.convertToRuleConditionOutputs(ruleConditions));
     // lấy quy tắc chung phân bổ điểm
     var ruleAllocations = ruleAllocationRepository.findByDeletedFalseAndRuleId(id);
     ruleOutput.setRuleAllocationOutputs(
@@ -353,10 +351,10 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     ruleApproval = super.modelMapper.convertToRuleApproval(ruleApproval, updateRuleInput);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
-    if (ruleApproval.getConditionType() != null) {
-      var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
-      var ruleConditionApprovals =
-          super.modelMapper.convertToRuleConditionApprovals(ruleConditions, ruleApproval.getId());
+    var ruleConditions = ruleConditionRepository.findByDeletedFalseAndRuleId(id);
+    var ruleConditionApprovals =
+        super.modelMapper.convertToRuleConditionApprovals(ruleConditions, ruleApproval.getId());
+    if (!CollectionUtils.isEmpty(ruleConditionApprovals)) {
       ruleConditionApprovalRepository.saveAll(ruleConditionApprovals);
     }
     // lưu quy tắc chung phân bổ điểm của bản ghi chờ duyệt
@@ -396,12 +394,12 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             super.modelMapper.convertToRuleAllocations(ruleAllocationApprovals, rule.getId());
         ruleAllocationRepository.saveAll(ruleAllocations);
         // lưu điều kiện áp dụng quy tắc
-        if (ruleApproval.getConditionType() != null) {
-          var ruleConditionApprovals =
-              ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
-                  ruleApproval.getId());
-          var ruleConditions =
-              super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
+        var ruleConditionApprovals =
+            ruleConditionApprovalRepository.findByDeletedFalseAndRuleApprovalId(
+                ruleApproval.getId());
+        var ruleConditions =
+            super.modelMapper.convertToRuleConditions(ruleConditionApprovals, rule.getId());
+        if (!CollectionUtils.isEmpty(ruleConditions)) {
           ruleConditionRepository.saveAll(ruleConditions);
         }
         // lưu quy tắc tặng thêm điểm
@@ -528,13 +526,11 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     var ruleBonuses = ruleBonusRepository.findByDeletedFalseAndRuleIdIn(ids);
     // map vào danh sách trả về
     for (RuleOutput ruleOutput : ruleOutputs) {
-      if (ruleOutput.getConditionType() != null) {
-        ruleOutput.setRuleConditionOutputs(
-            super.modelMapper.convertToRuleConditionOutputs(
-                ruleConditions.stream()
-                    .filter(ruleCondition -> ruleCondition.getRuleId().equals(ruleOutput.getId()))
-                    .toList()));
-      }
+      ruleOutput.setRuleConditionOutputs(
+          super.modelMapper.convertToRuleConditionOutputs(
+              ruleConditions.stream()
+                  .filter(ruleCondition -> ruleCondition.getRuleId().equals(ruleOutput.getId()))
+                  .toList()));
       ruleOutput.setRuleAllocationOutputs(
           super.modelMapper.convertToRuleAllocationOutputs(
               ruleAllocations.stream()

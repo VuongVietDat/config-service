@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.dto.input;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +38,7 @@ public class CreateRuleInput {
   @NotNull
   private Long campaignId;
 
+  @Deprecated
   @Schema(
       description =
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")
@@ -67,11 +69,11 @@ public class CreateRuleInput {
   @Schema(description = "Quy tắc chung phân bổ điểm")
   @NotEmpty
   @Valid
-  private List<RuleAllocationInput> allocationInputs;
+  private List<RuleAllocationInput> allocationInputs = new ArrayList<>();
 
   @Schema(description = "Quy tắc tặng thêm điểm")
-  private List<RuleBonusInput> ruleBonusInputs;
+  private List<RuleBonusInput> ruleBonusInputs = new ArrayList<>();
 
   @Schema(description = "Điều kiện áp dụng quy tắc")
-  private List<RuleConditionInput> ruleConditionInputs;
+  private List<RuleConditionInput> ruleConditionInputs = new ArrayList<>();
 }

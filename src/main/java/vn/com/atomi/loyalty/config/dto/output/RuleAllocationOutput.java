@@ -21,33 +21,34 @@ public class RuleAllocationOutput {
   private Boolean isExchangeByValue;
 
   @Schema(description = "Số điểm cố định")
-  private long fixPointAmount;
+  private String fixPointAmount;
 
   @Schema(description = "Giá trị quy đổi (VND)")
-  private long exchangeValue;
+  private String exchangeValue;
 
   @Schema(description = "Giá trị điểm")
-  private long exchangePoint;
+  private String exchangePoint;
 
   @Schema(description = "Giá trị giao dịch tối thiểu")
-  private long minTransaction;
+  private String minTransaction;
 
   @Schema(description = "Tích điểm với số tiền thực khách hàng thanh toán (sau khi trừ khuyến mãi)")
   private Boolean isNetValue;
 
   @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một giao dịch")
-  private long limitPointPerTransaction;
+  private String limitPointPerTransaction;
 
   @Schema(description = "Giới hạn số điểm tối đa phân bổ trên một khách hàng")
-  private long limitPointPerUser;
+  private String limitPointPerUser;
 
+  @Deprecated
   @Schema(
       description =
           "Tần suất giới hạn số điểm tối đa phân bổ trên một khách hàng:</br> HOURS: Giờ</br> DAY: Ngày</br> WEEK: Tuần</br> MONTH: Tháng</br> YEAR: Năm")
   private Frequency frequencyLimitPointPerUser;
 
   @Schema(description = "Giới hạn số lần tối đa phân bổ trên một khách hàng")
-  private long limitEventPerUser;
+  private String limitEventPerUser;
 
   @Schema(
       description =
@@ -55,7 +56,7 @@ public class RuleAllocationOutput {
   private Frequency frequencyLimitEventPerUser;
 
   @Schema(description = "Thời gian chờ giữa 2 lần")
-  private long timeWait;
+  private String timeWait;
 
   @Schema(
       description =

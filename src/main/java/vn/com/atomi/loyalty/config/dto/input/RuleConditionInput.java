@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.dto.input;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.config.enums.ConditionProperties;
 import vn.com.atomi.loyalty.config.enums.Operators;
 
 /**
@@ -14,7 +15,7 @@ import vn.com.atomi.loyalty.config.enums.Operators;
 public class RuleConditionInput {
 
   @Schema(description = "Thuộc tính điều kiện áp dụng quy tắc")
-  private String properties;
+  private ConditionProperties properties;
 
   @Schema(
       description =

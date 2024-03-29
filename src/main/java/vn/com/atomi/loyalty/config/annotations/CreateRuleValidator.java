@@ -12,7 +12,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
@@ -55,6 +54,29 @@ public @interface CreateRuleValidator {
       LocalDate startDateRule = null;
       LocalDate endDateRule = null;
       boolean isValid = true;
+      var ruleConditionInputs = value.getRuleConditionInputs();
+      if (!CollectionUtils.isEmpty(ruleConditionInputs)) {
+        value.setRuleConditionInputs(
+            ruleConditionInputs.stream()
+                .filter(
+                    v ->
+                        v.getOperators() != null
+                            || StringUtils.isNotBlank(v.getValue())
+                            || v.getProperties() != null)
+                .toList());
+      }
+      var ruleBonus = value.getRuleBonusInputs();
+      if (!CollectionUtils.isEmpty(ruleBonus)) {
+        value.setRuleBonusInputs(
+            ruleBonus.stream()
+                .filter(
+                    v ->
+                        v.getValue() != null
+                            || StringUtils.isNotBlank(v.getChildCondition())
+                            || StringUtils.isNotBlank(v.getCondition())
+                            || v.getType() != null)
+                .toList());
+      }
       if (StringUtils.isBlank(value.getStartDate())) {
         context.disableDefaultConstraintViolation();
         context
@@ -139,8 +161,11 @@ public @interface CreateRuleValidator {
       if (!CollectionUtils.isEmpty(value.getAllocationInputs())) {
         for (int i = 0; i < value.getAllocationInputs().size(); i++) {
           RuleAllocationInput allocationInput = value.getAllocationInputs().get(i);
-          if (allocationInput.getExchangePoint() <= 0
+          if (allocationInput.getExchangePoint() != null
+              && allocationInput.getExchangePoint() <= 0
+              && allocationInput.getExchangeValue() != null
               && allocationInput.getExchangeValue() <= 0
+              && allocationInput.getFixPointAmount() != null
               && allocationInput.getFixPointAmount() <= 0) {
             context
                 .buildConstraintViolationWithTemplate("must be greater than or equal to 0")
@@ -148,27 +173,37 @@ public @interface CreateRuleValidator {
                 .addConstraintViolation();
             isValid = false;
           }
-          if (allocationInput.getExchangePoint() > 0 && allocationInput.getExchangeValue() == 0) {
+          if (allocationInput.getExchangePoint() != null
+              && allocationInput.getExchangePoint() > 0
+              && allocationInput.getExchangeValue() != null
+              && allocationInput.getExchangeValue() == 0) {
             context
                 .buildConstraintViolationWithTemplate("must be greater than or equal to 0")
                 .addPropertyNode(String.format("allocationInputs[%s].exchangeValue", i))
                 .addConstraintViolation();
             isValid = false;
           }
-          if (allocationInput.getExchangeValue() > 0 && allocationInput.getExchangePoint() == 0) {
+          if (allocationInput.getExchangeValue() != null
+              && allocationInput.getExchangeValue() > 0
+              && allocationInput.getExchangePoint() != null
+              && allocationInput.getExchangePoint() == 0) {
             context
                 .buildConstraintViolationWithTemplate("must be greater than or equal to 0")
                 .addPropertyNode(String.format("allocationInputs[%s].exchangePoint", i))
                 .addConstraintViolation();
             isValid = false;
           }
-          if (allocationInput.getExchangeValue() > 0
+          if (allocationInput.getExchangeValue() != null
+              && allocationInput.getExchangeValue() > 0
+              && allocationInput.getExchangePoint() != null
               && allocationInput.getExchangePoint() > 0
+              && allocationInput.getFixPointAmount() != null
               && allocationInput.getFixPointAmount() > 0) {
             allocationInput.setExchangePoint(0L);
             allocationInput.setExchangeValue(0L);
           }
-          if (allocationInput.getLimitEventPerUser() > 0
+          if (allocationInput.getLimitEventPerUser() != null
+              && allocationInput.getLimitEventPerUser() > 0
               && allocationInput.getFrequencyLimitEventPerUser() == null) {
             context
                 .buildConstraintViolationWithTemplate("must not be null")
@@ -177,19 +212,12 @@ public @interface CreateRuleValidator {
                 .addConstraintViolation();
             isValid = false;
           }
-          if (allocationInput.getTimeWait() > 0 && allocationInput.getFrequencyTimeWait() == null) {
+          if (allocationInput.getTimeWait() != null
+              && allocationInput.getTimeWait() > 0
+              && allocationInput.getFrequencyTimeWait() == null) {
             context
                 .buildConstraintViolationWithTemplate("must not be null")
                 .addPropertyNode(String.format("allocationInputs[%s].frequencyTimeWait", i))
-                .addConstraintViolation();
-            isValid = false;
-          }
-          if (allocationInput.getLimitPointPerTransaction() > 0
-              && allocationInput.getFrequencyLimitPointPerUser() == null) {
-            context
-                .buildConstraintViolationWithTemplate("must not be null")
-                .addPropertyNode(
-                    String.format("allocationInputs[%s].frequencyLimitPointPerUser", i))
                 .addConstraintViolation();
             isValid = false;
           }
@@ -336,45 +364,32 @@ public @interface CreateRuleValidator {
           }
         }
       }
-      if (value.getConditionType() != null) {
-        if (CollectionUtils.isEmpty(value.getRuleConditionInputs())) {
+      for (int i = 0; i < value.getRuleConditionInputs().size(); i++) {
+        RuleConditionInput ruleConditionInput = value.getRuleConditionInputs().get(i);
+        if (ruleConditionInput.getProperties() != null) {
           context.disableDefaultConstraintViolation();
           context
-              .buildConstraintViolationWithTemplate("must not be empty")
-              .addPropertyNode("ruleConditionInputs")
+              .buildConstraintViolationWithTemplate("must not be blank")
+              .addPropertyNode(String.format("ruleConditionInputs[%s].properties", i))
               .addConstraintViolation();
           isValid = false;
-        } else {
-          for (int i = 0; i < value.getRuleConditionInputs().size(); i++) {
-            RuleConditionInput ruleConditionInput = value.getRuleConditionInputs().get(i);
-            if (StringUtils.isBlank(ruleConditionInput.getProperties())) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate("must not be blank")
-                  .addPropertyNode(String.format("ruleConditionInputs[%s].properties", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
-            if (StringUtils.isBlank(ruleConditionInput.getValue())) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate("must not be blank")
-                  .addPropertyNode(String.format("ruleConditionInputs[%s].value", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
-            if (ruleConditionInput.getOperators() == null) {
-              context.disableDefaultConstraintViolation();
-              context
-                  .buildConstraintViolationWithTemplate("must not be null")
-                  .addPropertyNode(String.format("ruleConditionInputs[%s].operators", i))
-                  .addConstraintViolation();
-              isValid = false;
-            }
-          }
         }
-      } else {
-        value.setRuleConditionInputs(new ArrayList<>());
+        if (StringUtils.isBlank(ruleConditionInput.getValue())) {
+          context.disableDefaultConstraintViolation();
+          context
+              .buildConstraintViolationWithTemplate("must not be blank")
+              .addPropertyNode(String.format("ruleConditionInputs[%s].value", i))
+              .addConstraintViolation();
+          isValid = false;
+        }
+        if (ruleConditionInput.getOperators() == null) {
+          context.disableDefaultConstraintViolation();
+          context
+              .buildConstraintViolationWithTemplate("must not be null")
+              .addPropertyNode(String.format("ruleConditionInputs[%s].operators", i))
+              .addConstraintViolation();
+          isValid = false;
+        }
       }
       return isValid;
     }

@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.dto.input;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
@@ -19,6 +20,7 @@ public class UpdateRuleInput {
 
   @NotBlank
   @Schema(description = "Tên quy tắc sinh điểm")
+  @Size(max = 168)
   private String name;
 
   @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")

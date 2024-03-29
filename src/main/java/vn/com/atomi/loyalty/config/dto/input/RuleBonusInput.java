@@ -1,6 +1,8 @@
 package vn.com.atomi.loyalty.config.dto.input;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import vn.com.atomi.loyalty.config.enums.BonusType;
@@ -18,6 +20,8 @@ public class RuleBonusInput {
   private BonusType type;
 
   @Schema(description = "Giá trị thưởng")
+  @Min(0)
+  @Max(value = 99999999999999L)
   private Double value;
 
   @Schema(

@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.config.enums.ConditionProperties;
 import vn.com.atomi.loyalty.config.enums.Operators;
 
 /**
@@ -31,7 +32,8 @@ public class RuleConditionApproval extends BaseEntity {
   private Long ruleApprovalId;
 
   @Column(name = "PROPERTIES")
-  private String properties;
+  @Enumerated(EnumType.STRING)
+  private ConditionProperties properties;
 
   @Column(name = "OPERATORS")
   @Enumerated(EnumType.STRING)

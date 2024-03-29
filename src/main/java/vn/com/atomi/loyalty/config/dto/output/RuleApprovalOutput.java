@@ -41,6 +41,7 @@ public class RuleApprovalOutput {
   @Schema(description = "ID chiến dịch")
   private Long campaignId;
 
+  @Deprecated
   @Schema(
       description =
           "Loại điều kiện:</br> ALL_MATCH: Tất cả điều kiện thỏa mãn</br> ANY_MATCH: Bất kỳ một điều kiện thỏa mãn")

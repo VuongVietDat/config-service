@@ -36,4 +36,8 @@ public interface RuleProjection {
   LocalDateTime getCreationDate();
 
   LocalDateTime getCreationApprovalDate();
+
+  LocalDateTime getUpdatedAt();
+
+  String getUpdatedBy();
 }

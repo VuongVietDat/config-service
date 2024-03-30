@@ -41,6 +41,9 @@ public class RuleOutput {
   @Schema(description = "ID chiến dịch")
   private Long campaignId;
 
+  @Schema(description = "Mã chiến dịch")
+  private String campaignCode;
+
   @Deprecated
   @Schema(
       description =

@@ -175,6 +175,7 @@ public interface ModelMapper {
       String code);
 
   @Mapping(target = "id", source = "id")
+  @Mapping(target = "campaignCode", source = "campaignCode")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
   @Mapping(target = "endDate", source = "ruleEndDate")
@@ -187,7 +188,8 @@ public interface ModelMapper {
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
       Long id,
-      String code);
+      String code,
+      String campaignCode);
 
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")

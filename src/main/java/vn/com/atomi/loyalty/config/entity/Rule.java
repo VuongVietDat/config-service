@@ -45,6 +45,9 @@ public class Rule extends BaseEntity {
   @Column(name = "CAMPAIGN_ID")
   private Long campaignId;
 
+  @Column(name = "CAMPAIGN_CODE")
+  private String campaignCode;
+
   @Deprecated
   @Column(name = "CONDITION_TYPE")
   @Enumerated(EnumType.STRING)

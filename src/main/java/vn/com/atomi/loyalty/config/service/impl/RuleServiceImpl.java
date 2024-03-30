@@ -108,7 +108,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
                                     dictionary.getParentCode()))
                         .map(DictionaryOutput::getCode)
                         .toList()
-                        .contains(conditionInput.getProperties()))) {
+                        .contains(conditionInput.getProperties().name()))) {
       throw new BaseException(ErrorCode.RULE_CONDITION_NOT_EXISTED);
     }
     // kiểm tra thưởng thêm loại sản phẩm dịch vụ
@@ -151,7 +151,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             ApprovalStatus.WAITING,
             ApprovalType.CREATE,
             id,
-            code);
+            code,
+            campaign.getCode());
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     var ruleConditionApprovals =

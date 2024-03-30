@@ -15,6 +15,7 @@ import vn.com.atomi.loyalty.config.entity.*;
 import vn.com.atomi.loyalty.config.entity.Condition;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
+import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
  * @author haidv
@@ -175,6 +176,7 @@ public interface ModelMapper {
       String code);
 
   @Mapping(target = "id", source = "id")
+  @Mapping(target = "status", ignore = true)
   @Mapping(target = "campaignCode", source = "campaignCode")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
@@ -194,8 +196,9 @@ public interface ModelMapper {
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")
   @Mapping(target = "creationDate", source = "ruleApproval.createdAt")
+  @Mapping(target = "status", source = "status")
   @Mapping(target = "id", ignore = true)
-  Rule convertToRule(RuleApproval ruleApproval, LocalDateTime creationApprovalDate);
+  Rule convertToRule(RuleApproval ruleApproval, Status status, LocalDateTime creationApprovalDate);
 
   @Mapping(target = "creator", source = "createdBy")
   @Mapping(target = "creationDate", source = "createdAt")

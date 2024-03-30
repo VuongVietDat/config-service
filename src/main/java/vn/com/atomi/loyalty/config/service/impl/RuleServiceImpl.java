@@ -384,7 +384,8 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(ruleApproval.getApprovalType())) {
         // lưu thông tin quy tắc
-        var rule = super.modelMapper.convertToRule(ruleApproval, LocalDateTime.now());
+        var rule =
+            super.modelMapper.convertToRule(ruleApproval, Status.ACTIVE, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
         // lưu quy tắc chung phân bổ điểm

@@ -50,10 +50,6 @@ public class CreateRuleInput {
   @Schema(description = "Ngày kết thúc hiệu lực (dd/MM/yyyy)", example = "31/12/2024")
   private String endDate;
 
-  @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
-  @NotNull
-  private Status status;
-
   @Schema(
       description =
           "Loại chính sách hết hạn điểm:</br> AFTER_DAY: Sau số ngày</br> AFTER_DATE: Sau ngày</br> FIRST_DATE_OF_MONTH: Ngày đầu tiên của tháng thứ N +</br>NEVER: Vĩnh viễn",

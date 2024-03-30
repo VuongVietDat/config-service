@@ -67,7 +67,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
 
   @Query(
       value =
-          "select r.code "
+          "select r "
               + "from Rule r "
               + "         join Campaign c on r.campaignId = c.id "
               + "where r.deleted = false "
@@ -81,7 +81,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "                                  (r.endDate is null and :endDate >= r.startDate))) "
               + "    or (:endDate is null and ((r.endDate is not null and (r.endDate >= : startDate)) or r.endDate is null))) "
               + "order by r.updatedAt desc")
-  List<String> findCodeByOverlapActiveTime(
+  List<Rule> findCodeByOverlapActiveTime(
       String type, Long campaignId, LocalDate startDate, LocalDate endDate);
 
   @Transactional

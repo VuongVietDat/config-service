@@ -388,6 +388,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             super.modelMapper.convertToRule(ruleApproval, Status.ACTIVE, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
+        ruleApproval.setStatus(Status.ACTIVE);
         // lưu quy tắc chung phân bổ điểm
         var ruleAllocationApprovals =
             ruleAllocationApprovalRepository.findByDeletedFalseAndRuleApprovalId(

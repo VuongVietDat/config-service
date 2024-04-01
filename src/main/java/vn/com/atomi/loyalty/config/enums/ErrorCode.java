@@ -37,6 +37,7 @@ public enum ErrorCode implements AbstractError {
       1013, "Quy tắc đang có bản ghi cập nhật chờ duyệt.", HttpStatus.NOT_FOUND),
   PRODUCT_TYPE_NOT_EXISTED(1014, "Loại sản phẩm/dịch vụ không tồn tại.", HttpStatus.NOT_FOUND),
   PRODUCT_LINE_NOT_EXISTED(1015, "Dòng sản phẩm dịch vụ không tồn tại.", HttpStatus.NOT_FOUND),
+  NOT_FILED_CHANGE_VALUE(1016, "Không có thông tin nào được cập nhật.", HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

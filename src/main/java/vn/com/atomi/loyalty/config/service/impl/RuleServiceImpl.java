@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -338,6 +339,17 @@ public class RuleServiceImpl extends BaseService implements RuleService {
         ruleRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RULE_NOT_EXISTED));
+    // kiếm tra xem có thay đổi thông tin gì không
+    if (Objects.equals(rule.getName(), updateRuleInput.getName())
+        && Objects.equals(
+            Utils.formatLocalDateToString(rule.getStartDate()), updateRuleInput.getStartDate())
+        && Objects.equals(
+            Utils.formatLocalDateToString(rule.getEndDate()), updateRuleInput.getEndDate())
+        && rule.getStatus().equals(updateRuleInput.getStatus())
+        && rule.getExpirePolicyType().equals(updateRuleInput.getExpirePolicyType())
+        && Objects.equals(rule.getExpirePolicyValue(), updateRuleInput.getExpirePolicyValue())) {
+      throw new BaseException(ErrorCode.NOT_FILED_CHANGE_VALUE);
+    }
     // kiểm tra xem có bản ghi chờ duyệt nào hay không
     if (ruleApprovalRepository.existsByDeletedFalseAndRuleIdAndApprovalStatus(
         id, ApprovalStatus.WAITING)) {

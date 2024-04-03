@@ -366,7 +366,7 @@ public @interface CreateRuleValidator {
       }
       for (int i = 0; i < value.getRuleConditionInputs().size(); i++) {
         RuleConditionInput ruleConditionInput = value.getRuleConditionInputs().get(i);
-        if (ruleConditionInput.getProperties() != null) {
+        if (ruleConditionInput.getProperties() == null) {
           context.disableDefaultConstraintViolation();
           context
               .buildConstraintViolationWithTemplate("must not be blank")

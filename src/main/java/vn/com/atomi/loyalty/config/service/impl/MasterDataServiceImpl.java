@@ -7,14 +7,19 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
+import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.entity.ProductLine;
+import vn.com.atomi.loyalty.config.entity.TransactionType;
+import vn.com.atomi.loyalty.config.enums.ErrorCode;
 import vn.com.atomi.loyalty.config.enums.SourceType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCommonClient;
@@ -44,6 +49,8 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   private final ProductTypeRepository productTypeRepository;
 
   private final ProductLineRepository productLineRepository;
+
+  private final Lv24HMapDataMapRepository lv24HMapDataMapRepository;
 
   private final ApplicationContext applicationContext;
 
@@ -167,9 +174,14 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   @Override
   public ResponsePage<TransactionTypeOutput> getTransactionTypes(
       List<String> transactionGroup, Status status, Pageable pageable) {
-    var page =
-        transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCodeIn(
-            status, transactionGroup, pageable);
+    Page<TransactionType> page;
+    if (!CollectionUtils.isEmpty(transactionGroup)) {
+      page =
+          transactionTypeRepository.findByDeletedFalseAndStatusAndGroupCodeIn(
+              status, transactionGroup, pageable);
+    } else {
+      page = transactionTypeRepository.findByDeletedFalseAndStatus(status, pageable);
+    }
     return new ResponsePage<>(
         page, super.modelMapper.convertToTransactionTypeOutputs(page.getContent()));
   }
@@ -186,11 +198,25 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   @Override
   public ResponsePage<ProductLineOutput> getProductLines(
       Status status, List<String> productTypes, Pageable pageable) {
-    var page =
-        productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
-            productTypes, status, pageable);
+    Page<ProductLine> page;
+    if (!CollectionUtils.isEmpty(productTypes)) {
+      page =
+          productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
+              productTypes, status, pageable);
+    } else {
+      page = productLineRepository.findByDeletedFalseAndStatus(status, pageable);
+    }
     return new ResponsePage<>(
         page, super.modelMapper.convertToProductLineOutputs(page.getContent()));
+  }
+
+  @Override
+  public Lv24ProductDataMapOutput getLv24MapProduct(Long productId) {
+    var data =
+        lv24HMapDataMapRepository
+            .findByDeletedFalseAndProductIdAndStatus(productId, Status.ACTIVE)
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_DATA_MAP_LV24_PRODUCT));
+    return super.modelMapper.convertToLv24ProductDataMapOutput(data);
   }
 
   private List<DictionaryOutput> appendSubLeaf(

@@ -38,6 +38,10 @@ public enum ErrorCode implements AbstractError {
   PRODUCT_TYPE_NOT_EXISTED(1014, "Loại sản phẩm/dịch vụ không tồn tại.", HttpStatus.NOT_FOUND),
   PRODUCT_LINE_NOT_EXISTED(1015, "Dòng sản phẩm dịch vụ không tồn tại.", HttpStatus.NOT_FOUND),
   NOT_FILED_CHANGE_VALUE(1016, "Không có thông tin nào được cập nhật.", HttpStatus.BAD_REQUEST),
+  NOT_DATA_MAP_LV24_PRODUCT(
+      1017,
+      "Không tìm thấy cấu hình chuyển sản phẩm LV24H thành loyalty transaction.",
+      HttpStatus.NOT_FOUND),
   ;
 
   private final int code;

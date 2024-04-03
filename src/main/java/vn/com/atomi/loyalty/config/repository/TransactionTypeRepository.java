@@ -25,4 +25,12 @@ public interface TransactionTypeRepository extends JpaRepository<TransactionType
               + "  and (:status is null or p.status = :status) ")
   Page<TransactionType> findByDeletedFalseAndStatusAndGroupCodeIn(
       Status status, Collection<String> groupCode, Pageable pageable);
+
+  @Query(
+      value =
+          "select p "
+              + "from TransactionType p "
+              + "where p.deleted = false "
+              + "  and (:status is null or p.status = :status) ")
+  Page<TransactionType> findByDeletedFalseAndStatus(Status status, Pageable pageable);
 }

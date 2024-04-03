@@ -40,4 +40,6 @@ public interface MasterDataService {
 
   ResponsePage<ProductLineOutput> getProductLines(
       Status status, List<String> productTypes, Pageable pageable);
+
+  Lv24ProductDataMapOutput getLv24MapProduct(Long productId);
 }

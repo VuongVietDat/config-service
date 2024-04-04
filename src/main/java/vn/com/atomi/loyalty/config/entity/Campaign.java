@@ -35,6 +35,15 @@ public class Campaign extends BaseEntity {
   @Column(name = "name")
   private String name;
 
+  @Column(name = "BUDGET_ID")
+  private Long budgetId;
+
+  @Column(name = "BUDGET_AMOUNT")
+  private long budgetAmount;
+
+  @Column(name = "TOTAL_ALLOCATION_POINT")
+  private long totalAllocationPoint;
+
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
   private Status status;

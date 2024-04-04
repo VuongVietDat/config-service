@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.enums.SourceGroup;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -41,5 +42,5 @@ public interface MasterDataService {
   ResponsePage<ProductLineOutput> getProductLines(
       Status status, List<String> productTypes, Pageable pageable);
 
-  Lv24ProductDataMapOutput getLv24MapProduct(Long productId);
+  SourceDataMapOutput getSourceDataMap(String sourceId, String sourceType, SourceGroup sourceGroup);
 }

@@ -12,17 +12,23 @@ import vn.com.atomi.loyalty.config.enums.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lv24ProductDataMapOutput {
+public class SourceDataMapOutput {
 
   private Long id;
 
-  private Long productId;
+  private String sourceId;
 
-  private String productCode;
+  private String sourceCode;
 
-  private String productName;
+  private String sourceName;
 
-  private String transactionGroup;
+  private String destinationId;
+
+  private String destinationCode;
+
+  private String sourceType;
+
+  private SourceGroup sourceGroup;
 
   private Status status;
 }

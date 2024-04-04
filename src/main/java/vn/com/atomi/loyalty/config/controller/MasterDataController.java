@@ -11,6 +11,7 @@ import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.enums.SourceGroup;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.MasterDataService;
 
@@ -113,17 +114,20 @@ public class MasterDataController extends BaseController {
             transactionGroups, status, super.pageable(pageNo, pageSize, sort)));
   }
 
-  @Operation(summary = "Api (nội bộ) lấy cấu hình chuyển sản phẩm LV24H thành loyalty transaction")
+  @Operation(summary = "Api (nội bộ) lấy cấu hình chuyển data nguồn thành loyalty data")
   @PreAuthorize(Authority.ROLE_SYSTEM)
-  @GetMapping("/internal/lv24h-map-product")
-  public ResponseEntity<ResponseData<Lv24ProductDataMapOutput>> getLv24MapProduct(
+  @GetMapping("/internal/source-data-map")
+  public ResponseEntity<ResponseData<SourceDataMapOutput>> getSourceDataMap(
       @Parameter(
               description = "Chuỗi xác thực khi gọi api nội bộ",
               example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
           @RequestHeader(RequestConstant.SECURE_API_KEY)
           @SuppressWarnings("unused")
           String apiKey,
-      @RequestParam Long productId) {
-    return ResponseUtils.success(masterDataService.getLv24MapProduct(productId));
+      @RequestParam String sourceId,
+      @RequestParam String sourceType,
+      @RequestParam SourceGroup sourceGroup) {
+    return ResponseUtils.success(
+        masterDataService.getSourceDataMap(sourceId, sourceType, sourceGroup));
   }
 }

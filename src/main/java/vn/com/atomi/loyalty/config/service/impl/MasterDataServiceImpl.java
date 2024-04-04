@@ -20,6 +20,7 @@ import vn.com.atomi.loyalty.config.dto.output.*;
 import vn.com.atomi.loyalty.config.entity.ProductLine;
 import vn.com.atomi.loyalty.config.entity.TransactionType;
 import vn.com.atomi.loyalty.config.enums.ErrorCode;
+import vn.com.atomi.loyalty.config.enums.SourceGroup;
 import vn.com.atomi.loyalty.config.enums.SourceType;
 import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCommonClient;
@@ -50,7 +51,7 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
 
   private final ProductLineRepository productLineRepository;
 
-  private final Lv24HMapDataMapRepository lv24HMapDataMapRepository;
+  private final SourceDataMapRepository sourceDataMapRepository;
 
   private final ApplicationContext applicationContext;
 
@@ -211,12 +212,14 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   }
 
   @Override
-  public Lv24ProductDataMapOutput getLv24MapProduct(Long productId) {
+  public SourceDataMapOutput getSourceDataMap(
+      String sourceId, String sourceType, SourceGroup sourceGroup) {
     var data =
-        lv24HMapDataMapRepository
-            .findByDeletedFalseAndProductIdAndStatus(productId, Status.ACTIVE)
-            .orElseThrow(() -> new BaseException(ErrorCode.NOT_DATA_MAP_LV24_PRODUCT));
-    return super.modelMapper.convertToLv24ProductDataMapOutput(data);
+        sourceDataMapRepository
+            .findByDeletedFalseAndStatusAndSourceIdAndSourceTypeAndSourceGroup(
+                Status.ACTIVE, sourceId, sourceType, sourceGroup)
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_SOURCE_DATA_MAP));
+    return super.modelMapper.convertToSourceDataMapOutputOutput(data);
   }
 
   private List<DictionaryOutput> appendSubLeaf(

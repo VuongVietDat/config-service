@@ -67,6 +67,20 @@ public class MasterDataController extends BaseController {
             status, productTypes, super.pageable(pageNo, pageSize, sort)));
   }
 
+  @Operation(summary = "Api (nội bộ) lấy danh sách danh mục dòng sản phẩm dịch vụ")
+  @PreAuthorize(Authority.ROLE_SYSTEM)
+  @GetMapping("/internal/master-data/product-lines")
+  public ResponseEntity<ResponseData<List<ProductLineOutput>>> getProductLines(
+      @Parameter(
+              description = "Chuỗi xác thực khi gọi api nội bộ",
+              example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+          @RequestHeader(RequestConstant.SECURE_API_KEY)
+          @SuppressWarnings("unused")
+          String apiKey,
+      @RequestParam(required = false) List<String> productTypes) {
+    return ResponseUtils.success(masterDataService.getProductLines(productTypes));
+  }
+
   @Operation(summary = "Api lấy danh sách nhóm giao dịch")
   @GetMapping("/master-data/transaction-groups")
   public ResponseEntity<ResponseData<ResponsePage<TransactionGroupOutput>>> getTransactionGroups(

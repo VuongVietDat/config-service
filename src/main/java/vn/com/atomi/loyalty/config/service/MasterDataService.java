@@ -45,4 +45,6 @@ public interface MasterDataService {
   SourceDataMapOutput getSourceDataMap(String sourceId, String sourceType, SourceGroup sourceGroup);
 
   List<SourceDataMapOutput> getAllSourceDataMap(SourceGroup sourceGroup);
+
+  List<ProductLineOutput> getProductLines(List<String> productTypes);
 }

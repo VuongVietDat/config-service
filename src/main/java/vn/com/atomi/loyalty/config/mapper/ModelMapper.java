@@ -175,6 +175,8 @@ public interface ModelMapper {
       Long id,
       String code);
 
+  @Mapping(target = "budgetId", source = "budgetId")
+  @Mapping(target = "budgetCode", source = "budgetCode")
   @Mapping(target = "id", source = "id")
   @Mapping(target = "status", ignore = true)
   @Mapping(target = "campaignCode", source = "campaignCode")
@@ -191,7 +193,9 @@ public interface ModelMapper {
       ApprovalType approvalType,
       Long id,
       String code,
-      String campaignCode);
+      String campaignCode,
+      Long budgetId,
+      String budgetCode);
 
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")

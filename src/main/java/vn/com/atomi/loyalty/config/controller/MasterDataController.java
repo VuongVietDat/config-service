@@ -116,6 +116,20 @@ public class MasterDataController extends BaseController {
 
   @Operation(summary = "Api (nội bộ) lấy cấu hình chuyển data nguồn thành loyalty data")
   @PreAuthorize(Authority.ROLE_SYSTEM)
+  @GetMapping("/internal/source-data-map-all")
+  public ResponseEntity<ResponseData<List<SourceDataMapOutput>>> getAllSourceDataMap(
+      @Parameter(
+              description = "Chuỗi xác thực khi gọi api nội bộ",
+              example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+          @RequestHeader(RequestConstant.SECURE_API_KEY)
+          @SuppressWarnings("unused")
+          String apiKey,
+      @RequestParam SourceGroup sourceGroup) {
+    return ResponseUtils.success(masterDataService.getAllSourceDataMap(sourceGroup));
+  }
+
+  @Operation(summary = "Api (nội bộ) lấy cấu hình chuyển data nguồn thành loyalty data")
+  @PreAuthorize(Authority.ROLE_SYSTEM)
   @GetMapping("/internal/source-data-map")
   public ResponseEntity<ResponseData<SourceDataMapOutput>> getSourceDataMap(
       @Parameter(

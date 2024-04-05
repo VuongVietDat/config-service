@@ -43,4 +43,6 @@ public interface MasterDataService {
       Status status, List<String> productTypes, Pageable pageable);
 
   SourceDataMapOutput getSourceDataMap(String sourceId, String sourceType, SourceGroup sourceGroup);
+
+  List<SourceDataMapOutput> getAllSourceDataMap(SourceGroup sourceGroup);
 }

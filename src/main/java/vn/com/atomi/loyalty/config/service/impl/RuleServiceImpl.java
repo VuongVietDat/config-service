@@ -397,9 +397,12 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(ruleApproval.getApprovalType())) {
+        Status status =
+            ruleApproval.getEndDate() != null && ruleApproval.getEndDate().isBefore(LocalDate.now())
+                ? Status.INACTIVE
+                : Status.ACTIVE;
         // lưu thông tin quy tắc
-        var rule =
-            super.modelMapper.convertToRule(ruleApproval, Status.ACTIVE, LocalDateTime.now());
+        var rule = super.modelMapper.convertToRule(ruleApproval, status, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
         ruleApproval.setStatus(Status.ACTIVE);

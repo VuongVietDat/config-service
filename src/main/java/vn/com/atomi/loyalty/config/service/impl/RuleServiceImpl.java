@@ -500,6 +500,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       WarringOverlapActiveTimeInput warringOverlapActiveTimeInput) {
     var rules =
         ruleRepository.findCodeByOverlapActiveTime(
+            warringOverlapActiveTimeInput.getRuleId(),
             warringOverlapActiveTimeInput.getType(),
             warringOverlapActiveTimeInput.getCampaignId(),
             Utils.convertToLocalDate(warringOverlapActiveTimeInput.getStartDate()),

@@ -21,4 +21,9 @@ public interface LoyaltyCoreClient {
   @GetMapping("/internal/customer-groups/existed")
   ResponseData<Boolean> checkCustomerGroupExisted(
       @RequestHeader(RequestConstant.REQUEST_ID) String requestId, @RequestParam Long id);
+
+  @Operation(summary = "Api (nội bộ) lấy tổng ngân sách đã phân bổ")
+  @GetMapping("/internal/customers-balance-history/")
+  ResponseData<Long> getAmountUsed(
+      @RequestHeader(RequestConstant.REQUEST_ID) String requestId, @RequestParam Long budgetId);
 }

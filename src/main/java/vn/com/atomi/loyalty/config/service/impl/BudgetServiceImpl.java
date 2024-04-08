@@ -9,6 +9,7 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
+import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetDetailOutput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetOutput;
 import vn.com.atomi.loyalty.config.enums.BudgetStatus;
@@ -62,26 +63,26 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
   }
 
   @Override
-  public void updateBudget(Long id, String name, Status status, Long totalBudget) {
+  public void updateBudget(BudgetUpdateInput budgetUpdateInput) {
     var budget =
         budgetRepository
-            .findByDeletedFalseAndId(id)
+            .findByDeletedFalseAndId(budgetUpdateInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-    if (name != null) {
-      budget.setName(name);
+    if (budgetUpdateInput.getName() != null) {
+      budget.setName(budgetUpdateInput.getName());
     }
 
-    if (!status.equals(budget.getStatus()) && budget.getStatus() == Status.INACTIVE) {
+    if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == Status.INACTIVE) {
       LocalDate currentDate = LocalDate.now();
       if (budget.getEndDate().isBefore(currentDate)) {
         throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
       }
-      budget.setStatus(status);
+      budget.setStatus(budgetUpdateInput.getStatus());
     }
 
-    if (totalBudget != null && totalBudget > budget.getTotalBudget()) {
-      budget.setTotalBudget(totalBudget);
+    if (budgetUpdateInput.getTotalBudget() != null && budgetUpdateInput.getTotalBudget() > budget.getTotalBudget()) {
+      budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
     }
     budgetRepository.save(budget);
   }
@@ -93,8 +94,8 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-    var amountUsedTotal = loyaltyCoreClient.getAmountUsed(RequestUtils.extractRequestId(), id);
-    budget.setTotalBudget(amountUsedTotal.getData());
+//    var amountUsedTotal = loyaltyCoreClient.getAmountUsed(RequestUtils.extractRequestId(), id);
+//    budget.setTotalBudget(amountUsedTotal.getData());
     return super.modelMapper.getDetailBudget(budget);
   }
 }

@@ -18,10 +18,10 @@ import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
+import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetDetailOutput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetOutput;
 import vn.com.atomi.loyalty.config.enums.BudgetStatus;
-import vn.com.atomi.loyalty.config.enums.Status;
 import vn.com.atomi.loyalty.config.service.BudgetService;
 
 @RestController
@@ -74,12 +74,9 @@ public class BudgetController extends BaseController {
   @Operation(summary = "Api chỉnh sửa ngân sách")
   //  @PreAuthorize(Authority.CardTransaction.UPDATE_CARD_TRANSACTION)
   @PutMapping("/budget")
-  public ResponseEntity<ResponseData<Void>> updateCardTransaction(
-      @Parameter(description = "Id bản ghi ngân sách") @RequestParam(required = false) Long id,
-      @Parameter(description = "Tên ngân sách ") @RequestParam(required = false) String name,
-      @Parameter(description = "Trạng thái") @RequestParam(required = false) Status status,
-      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false) Long totalBudget) {
-    budgetService.updateBudget(id, name, status, totalBudget);
+  public ResponseEntity<ResponseData<Void>> updateCardTransaction(@RequestBody @Valid
+      BudgetUpdateInput budgetUpdateInput) {
+    budgetService.updateBudget(budgetUpdateInput);
     return ResponseUtils.success();
   }
 

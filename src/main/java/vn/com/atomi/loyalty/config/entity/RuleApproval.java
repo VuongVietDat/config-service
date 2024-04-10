@@ -45,6 +45,12 @@ public class RuleApproval extends BaseEntity {
   @Column(name = "CAMPAIGN_CODE")
   private String campaignCode;
 
+  @Column(name = "BUDGET_ID")
+  private Long budgetId;
+
+  @Column(name = "BUDGET_CODE")
+  private String budgetCode;
+
   @Deprecated
   @Column(name = "CONDITION_TYPE")
   @Enumerated(EnumType.STRING)

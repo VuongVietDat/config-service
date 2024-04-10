@@ -222,6 +222,26 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
     return super.modelMapper.convertToSourceDataMapOutputOutput(data);
   }
 
+  @Override
+  public List<SourceDataMapOutput> getAllSourceDataMap(SourceGroup sourceGroup) {
+    return super.modelMapper.convertToSourceDataMapOutputOutputs(
+        sourceDataMapRepository.findByDeletedFalseAndStatusAndSourceGroup(
+            Status.ACTIVE, sourceGroup));
+  }
+
+  @Override
+  public List<ProductLineOutput> getProductLines(List<String> productTypes) {
+    List<ProductLine> productLines;
+    if (!CollectionUtils.isEmpty(productTypes)) {
+      productLines =
+          productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
+              productTypes, Status.ACTIVE);
+    } else {
+      productLines = productLineRepository.findByDeletedFalseAndStatus(Status.ACTIVE);
+    }
+    return super.modelMapper.convertToProductLineOutputs(productLines);
+  }
+
   private List<DictionaryOutput> appendSubLeaf(
       List<DictionaryOutput> node, boolean isSubLeaf, List<DictionaryOutput> leafs) {
     if (isSubLeaf) {

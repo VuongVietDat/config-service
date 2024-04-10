@@ -5,5 +5,6 @@ package vn.com.atomi.loyalty.config.enums;
  * @version 1.0
  */
 public enum SourceGroup {
-  LV24H
+  LV24H,
+  CARD
 }

@@ -16,6 +16,9 @@ import vn.com.atomi.loyalty.base.constant.DateConstant;
 @Getter
 public class WarringOverlapActiveTimeInput {
 
+  @Schema(description = "ID quy tắc Khi cập nhật")
+  private Long ruleId;
+
   @Schema(description = "Loại quy tắc sinh điểm")
   @NotBlank
   private String type;

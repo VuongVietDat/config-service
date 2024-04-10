@@ -1,5 +1,6 @@
 package vn.com.atomi.loyalty.config.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,7 @@ public interface SourceDataMapRepository extends JpaRepository<SourceDataMap, Lo
 
   Optional<SourceDataMap> findByDeletedFalseAndStatusAndSourceIdAndSourceTypeAndSourceGroup(
       Status status, String sourceId, String sourceType, SourceGroup sourceGroup);
+
+  List<SourceDataMap> findByDeletedFalseAndStatusAndSourceGroup(
+      Status status, SourceGroup sourceGroup);
 }

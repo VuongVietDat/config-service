@@ -44,6 +44,12 @@ public class RuleOutput {
   @Schema(description = "Mã chiến dịch")
   private String campaignCode;
 
+  @Schema(description = "ID ngân sách")
+  private Long budgetId;
+
+  @Schema(description = "Mã ngân sách")
+  private String budgetCode;
+
   @Deprecated
   @Schema(
       description =

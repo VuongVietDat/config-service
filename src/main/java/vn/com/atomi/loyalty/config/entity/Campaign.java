@@ -38,6 +38,9 @@ public class Campaign extends BaseEntity {
   @Column(name = "BUDGET_ID")
   private Long budgetId;
 
+  @Column(name = "BUDGET_CODE")
+  private String budgetCode;
+
   @Column(name = "BUDGET_AMOUNT")
   private long budgetAmount;
 

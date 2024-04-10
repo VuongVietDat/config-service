@@ -72,6 +72,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "         join Campaign c on r.campaignId = c.id "
               + "where r.deleted = false "
               + "  and c.deleted = false "
+              + "  and (:ruleId is null or r.id <> : ruleId) "
               + "  and r.type = :type "
               + "  and r.status = vn.com.atomi.loyalty.config.enums.Status.ACTIVE "
               + "  and r.campaignId = :campaignId "
@@ -82,7 +83,7 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
               + "    or (:endDate is null and ((r.endDate is not null and (r.endDate >= : startDate)) or r.endDate is null))) "
               + "order by r.updatedAt desc")
   List<Rule> findCodeByOverlapActiveTime(
-      String type, Long campaignId, LocalDate startDate, LocalDate endDate);
+      Long ruleId, String type, Long campaignId, LocalDate startDate, LocalDate endDate);
 
   @Transactional
   @Modifying

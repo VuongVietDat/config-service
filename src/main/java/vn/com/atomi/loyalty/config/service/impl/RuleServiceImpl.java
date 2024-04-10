@@ -153,7 +153,9 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             ApprovalType.CREATE,
             id,
             code,
-            campaign.getCode());
+            campaign.getCode(),
+            campaign.getBudgetId(),
+            campaign.getBudgetCode());
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     var ruleConditionApprovals =
@@ -395,9 +397,12 @@ public class RuleServiceImpl extends BaseService implements RuleService {
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(ruleApproval.getApprovalType())) {
+        Status status =
+            ruleApproval.getEndDate() != null && ruleApproval.getEndDate().isBefore(LocalDate.now())
+                ? Status.INACTIVE
+                : Status.ACTIVE;
         // lưu thông tin quy tắc
-        var rule =
-            super.modelMapper.convertToRule(ruleApproval, Status.ACTIVE, LocalDateTime.now());
+        var rule = super.modelMapper.convertToRule(ruleApproval, status, LocalDateTime.now());
         rule = ruleRepository.save(rule);
         ruleApproval.setRuleId(rule.getId());
         ruleApproval.setStatus(Status.ACTIVE);
@@ -498,6 +503,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
       WarringOverlapActiveTimeInput warringOverlapActiveTimeInput) {
     var rules =
         ruleRepository.findCodeByOverlapActiveTime(
+            warringOverlapActiveTimeInput.getRuleId(),
             warringOverlapActiveTimeInput.getType(),
             warringOverlapActiveTimeInput.getCampaignId(),
             Utils.convertToLocalDate(warringOverlapActiveTimeInput.getStartDate()),

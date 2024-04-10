@@ -40,6 +40,9 @@ public enum ErrorCode implements AbstractError {
   NOT_FILED_CHANGE_VALUE(1016, "Không có thông tin nào được cập nhật.", HttpStatus.BAD_REQUEST),
   NOT_SOURCE_DATA_MAP(
       1017, "Không tìm thấy cấu hình chuyển data nguồn thành loyalty data.", HttpStatus.NOT_FOUND),
+  EXISTED_DECISION_NUMBER(1018, "Quyết định ngân sách đã tồn tại.", HttpStatus.BAD_REQUEST),
+  RECORD_NOT_EXISTED(1019, "Bản ghi không tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
+  CONDITION_BUDGET_FAILED(1020, "Ngày hết hạn phải lớn hơn ngày hiệu lực", HttpStatus.BAD_REQUEST),
   ;
 
   private final int code;

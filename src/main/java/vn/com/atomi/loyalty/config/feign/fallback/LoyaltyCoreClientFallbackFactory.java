@@ -24,6 +24,11 @@ public class LoyaltyCoreClientFallbackFactory implements FallbackFactory<Loyalty
       public ResponseData<Boolean> checkCustomerGroupExisted(String requestId, Long id) {
         throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
       }
+
+      @Override
+      public ResponseData<Long> getAmountUsed(String requestId, Long budgetId) {
+        throw new BaseException(CommonErrorCode.EXECUTE_THIRTY_SERVICE_ERROR, cause);
+      }
     };
   }
 }

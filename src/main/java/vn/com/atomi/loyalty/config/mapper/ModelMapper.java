@@ -357,5 +357,15 @@ public interface ModelMapper {
 
   SourceDataMapOutput convertToSourceDataMapOutputOutput(SourceDataMap data);
 
+
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  Budget createBudget(BudgetInput budgetInput, LocalDate startDate, LocalDate endDate);
+
+  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
+
+  BudgetDetailOutput getDetailBudget(Budget budget);
+
   List<SourceDataMapOutput> convertToSourceDataMapOutputOutputs(List<SourceDataMap> sourceDataMaps);
+
 }

@@ -50,4 +50,6 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
       LocalDate startDate,
       LocalDate endDate,
       Pageable pageable);
+
+  Optional<Campaign> findByDeletedFalseAndBudgetId(Long id);
 }

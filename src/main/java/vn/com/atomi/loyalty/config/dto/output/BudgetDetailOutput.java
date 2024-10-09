@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 
 @Builder
 @Setter
@@ -36,7 +37,11 @@ public class BudgetDetailOutput {
 
   @Schema(description = "Trạng thái")
   @Enumerated(EnumType.STRING)
-  private String statusBudget;
+  private String status;
+
+  @Schema(description = "Trạng thái phê duyệt")
+  @Enumerated(EnumType.STRING)
+  private ApprovalStatus approvalStatus;
 
   @Schema(description = "Tổng số ngân sách đã phân bổ")
   private Long totalUnSpentBudget;
@@ -55,4 +60,7 @@ public class BudgetDetailOutput {
 
   @Schema(description = "Tổng số điểm đã tiêu")
   private int totalPointsSpent;
+
+
+
 }

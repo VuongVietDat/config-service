@@ -196,7 +196,14 @@ public interface ModelMapper {
       String campaignCode,
       Long budgetId,
       String budgetCode);
-
+  RuleApproval convetToBudgetApproval(
+          Long budgetId,
+          LocalDate startDate,
+          LocalDate endDate,
+          ApprovalStatus approvalStatus,
+          ApprovalType approvalType,
+          Long id,
+          String budgetCode);
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")
   @Mapping(target = "creationDate", source = "ruleApproval.createdAt")
@@ -362,10 +369,15 @@ public interface ModelMapper {
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   Budget createBudget(BudgetInput budgetInput, LocalDate startDate, LocalDate endDate);
 
-  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
+//  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
 
   BudgetDetailOutput getDetailBudget(Budget budget);
 
   List<SourceDataMapOutput> convertToSourceDataMapOutputOutputs(List<SourceDataMap> sourceDataMaps);
+
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
+  BudgetOutput convertToBudgetOutPut(Budget budget);
 
 }

@@ -83,4 +83,8 @@ public class RuleApproval extends BaseEntity {
   @Column(name = "STATUS")
   @Enumerated(EnumType.STRING)
   private Status status;
+
+//  @ManyToOne
+//  @JoinColumn(name = "budget_id")
+//  private Budget budget;
 }

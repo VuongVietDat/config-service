@@ -2,8 +2,14 @@ package vn.com.atomi.loyalty.config.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.config.dto.projection.CampaignApprovalProjection;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
+import vn.com.atomi.loyalty.config.enums.BudgetStatus;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 @Builder
@@ -40,5 +46,13 @@ public class Budget extends BaseEntity {
 
   @Column(name = "STATUS")
   @Enumerated(EnumType.STRING)
-  private Status status;
+  private BudgetStatus status;
+
+  @OneToOne
+  @JoinColumn(name = "id", referencedColumnName = "ID")
+  private RuleApproval ruleApproval;
+//  @OneToMany(mappedBy = "budget")
+//  private List<RuleApproval> orderItems = new ArrayList<>();
+
 }
+

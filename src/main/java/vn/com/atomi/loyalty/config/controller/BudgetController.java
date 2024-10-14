@@ -17,10 +17,12 @@ import vn.com.atomi.loyalty.base.data.BaseController;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
+import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetDetailOutput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetOutput;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.BudgetStatus;
 import vn.com.atomi.loyalty.config.service.BudgetService;
 
@@ -51,6 +53,13 @@ public class BudgetController extends BaseController {
           String sort,
       @Parameter(description = "Số quyết định") @RequestParam(required = false)
           String decisionNumber,
+      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false)
+          String totalBudget,
+      @Parameter(
+              description =
+                      "Trạng thái phê duyệt:</br> WAITING: Chờ duyệt</br> ACCEPTED: Đồng ý</br> REJECTED: Từ chối</br> RECALL: Thu hồi")
+      @RequestParam(required = false)
+          ApprovalStatus approvalStatus,
       @Parameter(description = "Trạng thái") @RequestParam(required = false) BudgetStatus status,
       @Parameter(description = "Tên tài liệu") @RequestParam(required = false) String name,
       @Parameter(description = "Thời gian hiệu lực từ ngày (dd/MM/yyyy)", example = "01/01/2024")
@@ -64,10 +73,12 @@ public class BudgetController extends BaseController {
     return ResponseUtils.success(
         budgetService.getListBudget(
             decisionNumber,
+            totalBudget,
             startDate,
             endDate,
             status,
             name,
+            approvalStatus,
             super.pageable(pageNo, pageSize, sort)));
   }
 
@@ -86,4 +97,12 @@ public class BudgetController extends BaseController {
       @Parameter(description = "Id bản ghi ngân sách") @RequestParam(required = false) Long id) {
     return budgetService.detailBudget(id);
   }
+
+    @Operation(summary = "Api phê duyệt ngân sách")
+//    @PreAuthorize(Authority.Rule.APPROVE_BUDGET)
+    @PutMapping("/budget/approvals")
+    public ResponseEntity<ResponseData<Void>> approveBudget(@Valid @RequestBody ApprovalInput input) {
+        budgetService.approveBudget(input);
+        return ResponseUtils.success();
+    }
 }

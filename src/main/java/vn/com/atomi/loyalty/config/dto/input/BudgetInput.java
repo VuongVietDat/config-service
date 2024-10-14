@@ -6,7 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.BudgetStatus;
+import vn.com.atomi.loyalty.config.enums.Status;
 
 @Setter
 @Getter
@@ -40,5 +42,9 @@ public class BudgetInput {
 
   @Schema(description = "Trạng thái")
   @NotNull
-  private BudgetStatus budgetStatus;
+  private BudgetStatus status;
+
+//  @Schema(description = "Trạng thái duyet")
+//  @NotNull
+//  private ApprovalStatus approvalStatus;
 }

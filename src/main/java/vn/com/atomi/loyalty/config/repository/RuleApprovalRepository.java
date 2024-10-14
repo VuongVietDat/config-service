@@ -95,4 +95,6 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
 
   boolean existsByDeletedFalseAndRuleIdAndApprovalStatus(
       Long ruleId, ApprovalStatus approvalStatus);
+
+  Optional<RuleApproval> findByBudgetId(Long budgetId);
 }

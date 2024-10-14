@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
+import vn.com.atomi.loyalty.config.enums.BudgetStatus;
 
 @Builder
 @Setter
@@ -34,5 +35,10 @@ public class BudgetOutput {
   private LocalDate endDate;
 
   @Schema(description = "Trạng thái")
-  private Status status;
+  private BudgetStatus status;
+
+  @Schema(
+          description =
+                  "Trang thai phê duyệt: </br>WAITING: Cho</br>ACCEPTED: Phê duyệt</br>REJECTED: Tu choi")
+  private ApprovalStatus approvalStatus;
 }

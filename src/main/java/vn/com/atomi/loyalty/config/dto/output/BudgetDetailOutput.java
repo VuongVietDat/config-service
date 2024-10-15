@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
+import vn.com.atomi.loyalty.config.enums.ApprovalType;
 
 @Builder
 @Setter
@@ -29,6 +31,9 @@ public class BudgetDetailOutput {
   @Schema(description = "Tổng số ngân sách")
   private Long totalBudget;
 
+  @Schema(description = "Tạo bởi")
+  private String createdBy;
+
   @Schema(description = "Ngày bắt đầu hiệu lực")
   private LocalDate startDate;
 
@@ -42,6 +47,11 @@ public class BudgetDetailOutput {
   @Schema(description = "Trạng thái phê duyệt")
   @Enumerated(EnumType.STRING)
   private ApprovalStatus approvalStatus;
+
+  @Schema(
+          description =
+                  "Loại phê duyệt: </br>CREATE: Phê duyệt tạo</br>UPDATE: Phê duyệt cập nhật</br>CANCEL: Phê duyệt hủy bỏ")
+  private ApprovalType approvalType;
 
   @Schema(description = "Tổng số ngân sách đã phân bổ")
   private Long totalUnSpentBudget;
@@ -61,6 +71,7 @@ public class BudgetDetailOutput {
   @Schema(description = "Tổng số điểm đã tiêu")
   private int totalPointsSpent;
 
-
+  @Schema(description = "Lịch sử phê duyệt")
+  private List<HistoryOutput> historyOutputs;
 
 }

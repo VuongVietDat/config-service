@@ -29,6 +29,9 @@ public class CampaignOutput {
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   private Status status;
 
+  @Schema(description = "Mã chiến dịch")
+  private String code;
+
   @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   private LocalDate startDate;
@@ -47,4 +50,8 @@ public class CampaignOutput {
   @Schema(description = "Ngày duyệt tạo (dd/MM/yyyy HH:mm:ss)")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime creationApprovalDate;
+
+//  @Schema(description = "Tổng ngân sách")
+//  private LocalDateTime creationApprovalDate;
+
 }

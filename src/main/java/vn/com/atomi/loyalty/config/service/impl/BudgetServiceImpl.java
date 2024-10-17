@@ -2,6 +2,9 @@ package vn.com.atomi.loyalty.config.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -12,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetDetailOutput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetOutput;
+import vn.com.atomi.loyalty.config.dto.output.HistoryOutput;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
 import vn.com.atomi.loyalty.config.enums.*;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCoreClient;
@@ -138,11 +141,57 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-//    var amountUsedTotal = loyaltyCoreClient.getAmountUsed(RequestUtils.extractRequestId(), id);
-//    budget.setTotalBudget(amountUsedTotal.getData());
-    return super.modelMapper.getDetailBudget(budget);
+    var ruleApproval = ruleApprovalRepository.findByBudgetId(budget.getId());
+    var budgetOutput = super.modelMapper.getDetailBudget(budget);
+    if (ruleApproval.isPresent()) {
+      budgetOutput.setApprovalStatus(ruleApproval.get().getApprovalStatus());
+      budgetOutput.setCreatedBy(ruleApproval.get().getCreatedBy());
+    }
+    //  lấy lịch sử phê duyệt
+    var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndBudgetId(id);
+    budgetOutput.setHistoryOutputs(this.buildHistoryOutputs(ruleApprovals));
+    return budgetOutput;
   }
 
+  private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {
+    List<HistoryOutput> historyOutputs = new ArrayList<>();
+    long recordNo = 0L;
+    for (RuleApproval ruleApproval : ruleApprovals) {
+      if (ruleApproval.getApprovalStatus().equals(ApprovalStatus.WAITING)) {
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalStatus(ruleApproval.getApprovalStatus())
+                        .actionAt(ruleApproval.getCreatedAt())
+                        .userAction(ruleApproval.getCreatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .build());
+      } else {
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalStatus(ApprovalStatus.WAITING)
+                        .actionAt(ruleApproval.getCreatedAt())
+                        .userAction(ruleApproval.getCreatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .build());
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalComment(ruleApproval.getApprovalComment())
+                        .approvalStatus(ruleApproval.getApprovalStatus())
+                        .actionAt(ruleApproval.getUpdatedAt())
+                        .userAction(ruleApproval.getUpdatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .build());
+      }
+    }
+    historyOutputs.sort(Comparator.comparing(HistoryOutput::getActionAt));
+    return historyOutputs;
+  }
   @Transactional(isolation = Isolation.READ_COMMITTED)
   @Override
   public void approveBudget(ApprovalInput input) {

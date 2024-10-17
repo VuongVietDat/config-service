@@ -57,7 +57,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
           LocalDate startDate,
           LocalDate endDate,
           Pageable pageable);
-
+  @Query("SELECT b, r.approvalStatus FROM Budget b LEFT JOIN RuleApproval r ON b.id = r.budgetId WHERE b.id = :id")
   Optional<Budget> findByDeletedFalseAndId(Long id);
 
 

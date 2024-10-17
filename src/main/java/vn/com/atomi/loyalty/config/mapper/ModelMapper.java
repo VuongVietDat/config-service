@@ -369,8 +369,10 @@ public interface ModelMapper {
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   Budget createBudget(BudgetInput budgetInput, LocalDate startDate, LocalDate endDate);
 
-//  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
-
+  //  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetDetailOutput getDetailBudget(Budget budget);
 
   List<SourceDataMapOutput> convertToSourceDataMapOutputOutputs(List<SourceDataMap> sourceDataMaps);

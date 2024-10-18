@@ -68,4 +68,7 @@ public class Campaign extends BaseEntity {
 
   @Column(name = "creation_approval_date")
   private LocalDateTime creationApprovalDate;
+
+  @Column(name = "description")
+  private String description;
 }

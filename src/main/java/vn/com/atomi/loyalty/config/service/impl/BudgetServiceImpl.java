@@ -116,11 +116,14 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         budget.setName(budgetUpdateInput.getName());
       }
 
-      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
-        LocalDate currentDate = LocalDate.now();
-        if (budget.getEndDate().isBefore(currentDate)) {
-          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
-        }
+//      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
+//        LocalDate currentDate = LocalDate.now();
+//        if (budget.getEndDate().isBefore(currentDate)) {
+//          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
+//        }
+//        budget.setStatus(budgetUpdateInput.getStatus());
+//      }
+      if (!budgetUpdateInput.getStatus().equals(budget.getStatus())) {
         budget.setStatus(budgetUpdateInput.getStatus());
       }
       //Budget new > Budget current
@@ -146,6 +149,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
     if (ruleApproval.isPresent()) {
       budgetOutput.setApprovalStatus(ruleApproval.get().getApprovalStatus());
       budgetOutput.setCreatedBy(ruleApproval.get().getCreatedBy());
+      budgetOutput.setApprovalId(ruleApproval.get().getId());
     }
     //  lấy lịch sử phê duyệt
     var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndBudgetId(id);
@@ -166,6 +170,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                         .userAction(ruleApproval.getCreatedBy())
                         .approvalId(ruleApproval.getId())
                         .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
                         .build());
       } else {
         historyOutputs.add(
@@ -176,6 +181,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                         .userAction(ruleApproval.getCreatedBy())
                         .approvalId(ruleApproval.getId())
                         .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
                         .build());
         historyOutputs.add(
                 HistoryOutput.builder()
@@ -186,6 +192,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                         .userAction(ruleApproval.getUpdatedBy())
                         .approvalId(ruleApproval.getId())
                         .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
                         .build());
       }
     }

@@ -161,19 +161,26 @@ public interface ModelMapper {
   }
 
   @Mapping(target = "id", source = "id")
+  @Mapping(target = "name", source = "name")
   @Mapping(target = "code", source = "code")
+  @Mapping(target = "description", source = "description")
   @Mapping(target = "startDate", source = "startDate")
   @Mapping(target = "endDate", source = "endDate")
   @Mapping(target = "approvalType", source = "approvalType")
   @Mapping(target = "approvalStatus", source = "approvalStatus")
+  @Mapping(target = "budgetId", source = "budgetId")
+  @Mapping(target = "campaignId", source = "campaignId")
   CampaignApproval convertToCampaignApproval(
-      CampaignInput campaignInput,
-      LocalDate startDate,
-      LocalDate endDate,
-      ApprovalStatus approvalStatus,
-      ApprovalType approvalType,
-      Long id,
-      String code);
+          Long campaignId,
+          String code,
+          String name,
+          String description,
+          LocalDate startDate,
+          LocalDate endDate,
+          ApprovalStatus approvalStatus,
+          ApprovalType approvalType,
+          Long id,
+          Long budgetId);
 
   @Mapping(target = "budgetId", source = "budgetId")
   @Mapping(target = "budgetCode", source = "budgetCode")
@@ -197,12 +204,12 @@ public interface ModelMapper {
       Long budgetId,
       String budgetCode);
   RuleApproval convetToBudgetApproval(
-          Long budgetId,
+          Long id,
           LocalDate startDate,
           LocalDate endDate,
           ApprovalStatus approvalStatus,
           ApprovalType approvalType,
-          Long id,
+          Long budgetId,
           String budgetCode);
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")
@@ -382,4 +389,7 @@ public interface ModelMapper {
   @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetOutput convertToBudgetOutPut(Budget budget);
 
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  Campaign createCampaign(CampaignInput campaignInput, LocalDate startDate, LocalDate endDate);
 }

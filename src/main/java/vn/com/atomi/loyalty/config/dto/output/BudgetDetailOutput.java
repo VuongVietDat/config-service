@@ -22,6 +22,9 @@ public class BudgetDetailOutput {
   @Schema(description = "ID bản ghi")
   private String id;
 
+  @Schema(description = "ID bản ghi ngân sách chờ duyệt ")
+  private Long approvalId;
+
   @Schema(description = "Tên ngân sách")
   private String name;
 

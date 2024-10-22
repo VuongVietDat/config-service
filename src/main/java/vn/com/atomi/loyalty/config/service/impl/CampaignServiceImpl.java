@@ -21,11 +21,9 @@ import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
 import vn.com.atomi.loyalty.config.entity.CampaignApproval;
-import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
-import vn.com.atomi.loyalty.config.enums.ApprovalType;
-import vn.com.atomi.loyalty.config.enums.ErrorCode;
-import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.enums.*;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCoreClient;
+import vn.com.atomi.loyalty.config.repository.BudgetRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignRepository;
 import vn.com.atomi.loyalty.config.service.CampaignService;
@@ -42,6 +40,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   private final CampaignApprovalRepository campaignApprovalRepository;
   private final CampaignRepository campaignRepository;
   private final LoyaltyCoreClient loyaltyCoreClient;
+  private final BudgetRepository budgetRepository;
 
   @Override
   public void createCampaign(CampaignInput campaignInput) {
@@ -49,26 +48,38 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
     // kiểm tra customer group
-    if (Boolean.FALSE.equals(
-        loyaltyCoreClient
-            .checkCustomerGroupExisted(
-                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
-            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
+//    if (Boolean.FALSE.equals(
+//        loyaltyCoreClient
+//            .checkCustomerGroupExisted(
+//                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
+//            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
 
+    // kiểm tra budget
+    var budget =
+            budgetRepository
+                    .findByDeletedFalseAndIdAndStatus(campaignInput.getBudgetId(), BudgetStatus.ACTIVE)
+                    .orElseThrow(() -> new BaseException(ErrorCode.BUDGET_NOT_EXISTED));
+    var campaign = super.modelMapper.createCampaign(campaignInput, startDate, endDate);
+    if (campaign.getBudgetAmount()<=budget.getTotalBudget()){
+      campaignRepository.save(campaign);
+    }
+    else {
+      throw new BaseException(ErrorCode.ERROR_BUDGET_AMOUNT);
+    }
     // tạo code
     var id = campaignApprovalRepository.getSequence();
-    var code = Utils.generateCode(id, CampaignApproval.class.getSimpleName());
-
     // lưu bản ghi chờ duyệt
     var approval =
         modelMapper.convertToCampaignApproval(
-            campaignInput,
+            campaign.getId(),
+            campaign.getCode(),
+            campaign.getDescription(),
+            campaign.getName(),
             startDate,
             endDate,
             ApprovalStatus.WAITING,
             ApprovalType.CREATE,
-            id,
-            code);
+            id, budget.getId());
     campaignApprovalRepository.save(approval);
   }
 

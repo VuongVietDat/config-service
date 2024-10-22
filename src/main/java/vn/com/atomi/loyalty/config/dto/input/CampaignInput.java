@@ -26,9 +26,13 @@ public class CampaignInput implements IDateInput {
   @NotBlank
   private String description;
 
-  @Schema(description = "Nhóm khách hàng áp dụng")
-  @NotNull
-  private Long customerGroupId;
+  @Schema(description = "Mô tả")
+  @NotBlank
+  private String code;
+
+//  @Schema(description = "Nhóm khách hàng áp dụng")
+//  @NotNull
+//  private Long customerGroupId;
 
   @Schema(description = "Ngày bắt đầu hiệu lực (dd/MM/yyyy)", example = "01/01/2024")
   @DateTimeValidator(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
@@ -41,4 +45,14 @@ public class CampaignInput implements IDateInput {
   @Schema(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
   @NotNull
   private Status status;
+
+  @Schema(description = "ngan sach chien dich")
+  @NotNull
+  private Long budgetAmount;
+
+  @Schema(description = "id ngan sach")
+  @NotNull
+  private Long budgetId;
+
+
 }

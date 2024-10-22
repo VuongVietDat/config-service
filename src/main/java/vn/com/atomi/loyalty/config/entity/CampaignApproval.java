@@ -66,4 +66,7 @@ public class CampaignApproval extends BaseEntity {
 
   @Column(name = "approver")
   private String approver;
+
+  @Column(name = "budgetId")
+  private Long budgetId;
 }

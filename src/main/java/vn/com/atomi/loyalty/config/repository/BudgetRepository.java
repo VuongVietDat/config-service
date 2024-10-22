@@ -17,7 +17,7 @@ import vn.com.atomi.loyalty.config.enums.Status;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
   Optional<Budget> findByDeletedFalseAndDecisionNumber(String decisionNumber);
-
+  Optional<Budget> findByDeletedFalseAndIdAndStatus(Long id, BudgetStatus status);
   @Query(
 //          value =
 //                  "SELECT a "
@@ -34,19 +34,19 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 //                          )
           value = "SELECT a "
                   + "FROM Budget a "
-                  + "WHERE "
-                  + "(:decisionNumber IS NULL OR a.decisionNumber LIKE %:decisionNumber%) "
+                  + "WHERE (:decisionNumber IS NULL OR a.decisionNumber LIKE %:decisionNumber%) "
                   + "AND (:totalBudget IS NULL OR a.totalBudget = :totalBudget) "
                   + "AND (a.deleted = false) "
                   + "AND (:status IS NULL OR a.status = :status) "
                   + "AND (:name IS NULL OR a.name LIKE %:name%) "
                   + "AND (:startDate IS NULL OR a.startDate >= :startDate) "
                   + "AND (:endDate IS NULL OR a.endDate <= :endDate) "
-                  + "AND EXISTS ( "
-                  + "   SELECT b "
+                  + "AND (:approvalStatus IS NULL OR EXISTS ( "
+                  + "   SELECT 1 "
                   + "   FROM RuleApproval b "
-                  + "   WHERE (:approvalStatus IS NULL OR b.approvalStatus = :approvalStatus) "
-                  + ")")
+                  + "   WHERE b.budgetId = a.id "
+                  + "   AND b.approvalStatus = :approvalStatus))"
+  )
 
   Page<Budget> getListBudget(
           String decisionNumber,
@@ -57,7 +57,10 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
           LocalDate startDate,
           LocalDate endDate,
           Pageable pageable);
-  @Query("SELECT b, r.approvalStatus FROM Budget b LEFT JOIN RuleApproval r ON b.id = r.budgetId WHERE b.id = :id")
+  @Query("SELECT b, r.approvalStatus " +
+          "FROM Budget b LEFT JOIN RuleApproval r " +
+          "ON b.id = r.budgetId " +
+          "WHERE b.id = :id")
   Optional<Budget> findByDeletedFalseAndId(Long id);
 
 

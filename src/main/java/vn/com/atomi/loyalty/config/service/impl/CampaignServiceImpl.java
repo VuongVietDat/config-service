@@ -73,13 +73,16 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         modelMapper.convertToCampaignApproval(
             campaign.getId(),
             campaign.getCode(),
-            campaign.getDescription(),
             campaign.getName(),
+            campaign.getBudgetAmount(),
+            campaign.getDescription(),
             startDate,
             endDate,
             ApprovalStatus.WAITING,
             ApprovalType.CREATE,
-            id, budget.getId());
+            id,
+            budget.getId(),
+            budget.getTotalBudget());
     campaignApprovalRepository.save(approval);
   }
 
@@ -94,6 +97,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String endApprovedDate,
       String name,
       String code,
+      Long totalBudget,
+      Long budgetAmount,
+      Long budgetId,
       Pageable pageable) {
     var stDate = Utils.convertToLocalDateTimeStartDay(startApprovedDate);
     var edDate = Utils.convertToLocalDateTimeEndDay(endApprovedDate);
@@ -116,6 +122,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             Utils.makeLikeParameter(code),
             stDate,
             edDate,
+            budgetAmount,
+            totalBudget,
+            budgetId,
             pageable);
 
     if (CollectionUtils.isEmpty(campaignPage.getContent()))
@@ -141,6 +150,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String endDate,
       String name,
       String code,
+      Long budgetId,
+      Long budgetAmount,
+      Long totalAmount,
       Pageable pageable) {
     var campaignPage =
         campaignRepository.findByCondition(
@@ -149,6 +161,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             status,
             Utils.convertToLocalDate(startDate),
             Utils.convertToLocalDate(endDate),
+            budgetId,
+            budgetAmount,
+            totalAmount,
             pageable);
     return new ResponsePage<>(
         campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
@@ -172,12 +187,12 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
-      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
-        // lưu thông tin
-        var campaign = super.modelMapper.convertToCampaign(campaignApproval);
-        campaign = campaignRepository.save(campaign);
-        campaignApproval.setCampaignId(campaign.getId());
-      }
+//      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
+//        // lưu thông tin
+//        var campaign = super.modelMapper.convertToCampaign(campaignApproval);
+//        campaign = campaignRepository.save(campaign);
+//        campaignApproval.setCampaignId(campaign.getId());
+//      }
 
       // trường hợp phê duyệt cập nhật
       if (ApprovalType.UPDATE.equals(campaignApproval.getApprovalType())) {
@@ -194,6 +209,8 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     campaignApproval.setApprovalStatus(
         input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
     campaignApproval.setApprovalComment(input.getComment());
+    campaignApproval.setApprover(campaignApproval.getCreatedBy());
+    campaignApproval.setStatus(campaignApproval.getStatus());
     campaignApprovalRepository.save(campaignApproval);
   }
 

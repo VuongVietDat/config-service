@@ -34,4 +34,12 @@ public interface CampaignApprovalProjection {
   ApprovalType getApprovalType();
 
   String getApprover();
+
+  Long getBudgetId();
+
+  Long getBudgetAmount();
+
+  Long getTotalBudget();
+
+
 }

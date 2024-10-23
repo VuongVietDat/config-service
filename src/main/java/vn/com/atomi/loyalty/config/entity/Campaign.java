@@ -63,6 +63,9 @@ public class Campaign extends BaseEntity {
   @Column(name = "creator")
   private String creator;
 
+  @Column(name = "created_by")
+  private String createdBy;
+
   @Column(name = "creation_date")
   private LocalDateTime creationDate;
 

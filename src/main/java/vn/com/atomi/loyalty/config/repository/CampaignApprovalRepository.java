@@ -53,10 +53,16 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
               + "       cam.approvalType as approvalType, "
               + "       cam.approver as approver, "
               + "       cam.createdAt      as creationDate, "
-              + "       cam.createdBy    as creator "
-              + "from CampaignApproval cam "
+              + "       cam.createdBy    as creator, "
+              + "       c.budgetAmount    as budgetAmount, "
+              + "       b.totalBudget    as totalBudget, "
+              + "       cam.budgetId    as budgetId "
+              + "from CampaignApproval cam " +
+                  "join Campaign c on cam.campaignId=c.id " +
+                  "join Budget b on cam.budgetId=b.id " +
+                  "where"
               // + "         join CustomerGroup cus on cam.customerGroupId = cus.id "
-              + "where cam.deleted = false "
+              + " cam.deleted = false "
               // + "  and cus.deleted = false "
               + "  and (:status is null or cam.status = :status) "
               + "  and (:approvalStatus is null or cam.approvalStatus = :approvalStatus)"
@@ -69,6 +75,17 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
               + "       and cam.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
               + "  and (:endApprovedDate is null or (cam.updatedAt >= :endApprovedDate "
               + "       and cam.approvalStatus in (vn.com.atomi.loyalty.config.enums.ApprovalStatus.ACCEPTED, vn.com.atomi.loyalty.config.enums.ApprovalStatus.REJECTED))) "
+                  + "AND (:budgetAmount IS NULL OR EXISTS ( "
+                  + "   SELECT 1 "
+                  + "   FROM Campaign c "
+                  + "   WHERE cam.campaignId = c.id "
+                  + "   AND c.budgetAmount = :budgetAmount)) "
+                  + "AND (:totalBudget IS NULL OR EXISTS ( "
+                  + "   SELECT 1 "
+                  + "   FROM Budget b "
+                  + "   WHERE cam.budgetId = b.id "
+                  + "   AND b.totalBudget = :totalBudget))"
+              + "  and (:budgetId is null or cam.budgetId = :budgetId) "
               + "order by cam.updatedAt desc ")
   Page<CampaignApprovalProjection> findByCondition(
       Status status,
@@ -80,5 +97,8 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
       String code,
       LocalDateTime startApprovedDate,
       LocalDateTime endApprovedDate,
+      Long budgetAmount,
+      Long totalBudget,
+      Long budgetId,
       Pageable pageable);
 }

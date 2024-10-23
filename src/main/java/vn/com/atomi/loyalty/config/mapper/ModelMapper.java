@@ -161,8 +161,8 @@ public interface ModelMapper {
   }
 
   @Mapping(target = "id", source = "id")
-  @Mapping(target = "name", source = "name")
   @Mapping(target = "code", source = "code")
+  @Mapping(target = "name", source = "name")
   @Mapping(target = "description", source = "description")
   @Mapping(target = "startDate", source = "startDate")
   @Mapping(target = "endDate", source = "endDate")
@@ -170,17 +170,22 @@ public interface ModelMapper {
   @Mapping(target = "approvalStatus", source = "approvalStatus")
   @Mapping(target = "budgetId", source = "budgetId")
   @Mapping(target = "campaignId", source = "campaignId")
+  @Mapping(target = "budgetAmount", source = "budgetAmount")
+  @Mapping(target = "totalBudget", source = "totalBudget")
   CampaignApproval convertToCampaignApproval(
           Long campaignId,
           String code,
           String name,
+          Long budgetAmount,
           String description,
           LocalDate startDate,
           LocalDate endDate,
           ApprovalStatus approvalStatus,
           ApprovalType approvalType,
           Long id,
-          Long budgetId);
+          Long budgetId,
+          Long totalBudget
+  );
 
   @Mapping(target = "budgetId", source = "budgetId")
   @Mapping(target = "budgetCode", source = "budgetCode")
@@ -204,12 +209,12 @@ public interface ModelMapper {
       Long budgetId,
       String budgetCode);
   RuleApproval convetToBudgetApproval(
-          Long id,
+         Long budgetId,
           LocalDate startDate,
           LocalDate endDate,
           ApprovalStatus approvalStatus,
           ApprovalType approvalType,
-          Long budgetId,
+          Long id,
           String budgetCode);
   @Mapping(target = "creationApprovalDate", source = "creationApprovalDate")
   @Mapping(target = "creator", source = "ruleApproval.createdBy")

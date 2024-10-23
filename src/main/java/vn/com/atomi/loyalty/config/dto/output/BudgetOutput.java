@@ -26,7 +26,7 @@ public class BudgetOutput {
   private String decisionNumber;
 
   @Schema(description = "Tổng số ngân sách")
-  private String totalBudget;
+  private Long totalBudget;
 
   @Schema(description = "Ngày bắt đầu hiệu lực")
   private LocalDate startDate;

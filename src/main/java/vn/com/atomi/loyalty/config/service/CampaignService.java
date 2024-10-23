@@ -30,12 +30,15 @@ public interface CampaignService {
       String endApprovedDate,
       String name,
       String code,
+      Long budgetAmount,
+      Long totalBudget,
+      Long budgetId,
       Pageable pageable);
 
   CampaignApprovalOutput getCampaignApproval(Long id);
 
   ResponsePage<CampaignOutput> getCampaigns(
-      Status status, String startDate, String endDate, String name, String code, Pageable pageable);
+          Status status, String startDate, String endDate, String name, String code,Long budgetId, Long budgetAmount, Long totalBudget, Pageable pageable);
 
   CampaignOutput getCampaign(Long id);
 

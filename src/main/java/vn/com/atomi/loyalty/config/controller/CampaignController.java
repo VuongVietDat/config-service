@@ -82,7 +82,10 @@ public class CampaignController extends BaseController {
           @RequestParam(required = false)
           String endApprovedDate,
       @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
-      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code,
+      @Parameter(description = "Ngân sách nguồn") @RequestParam(required = false) Long totalBudget,
+      @Parameter(description = "Ngân sách chiến dịch") @RequestParam(required = false) Long budgetAmount,
+      @Parameter(description = "ID ngân sách") @RequestParam(required = false) Long budgetId){
     return ResponseUtils.success(
         campaignService.getCampaignApprovals(
             status,
@@ -94,6 +97,9 @@ public class CampaignController extends BaseController {
             endApprovedDate,
             name,
             code,
+            totalBudget,
+            budgetAmount,
+            budgetId,
             super.pageable(pageNo, pageSize, sort)));
   }
 
@@ -147,10 +153,13 @@ public class CampaignController extends BaseController {
           @RequestParam(required = false)
           String endDate,
       @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
-      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code,
+      @Parameter(description = "ID ngân sách ") @RequestParam(required = false) Long budgetId,
+        @Parameter(description = "Ngân sách chiến dịch ") @RequestParam(required = false) Long budgetAmount,
+      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false) Long totalBudget) {
     return ResponseUtils.success(
         campaignService.getCampaigns(
-            status, startDate, endDate, name, code, super.pageable(pageNo, pageSize, sort)));
+            status, startDate, endDate, name, code,budgetId, budgetAmount, totalBudget, super.pageable(pageNo, pageSize, sort)));
   }
 
   @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)

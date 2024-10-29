@@ -43,6 +43,12 @@ public class CampaignOutput {
   @Schema(description = "Người tạo")
   private String creator;
 
+  @Schema(description = "Người tạo created")
+  private String createdBy;
+
+  @Schema(description = "Người cập nhật")
+  private String updatedBy;
+
   @Schema(description = "Ngày tạo (dd/MM/yyyy HH:mm:ss)")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime creationDate;
@@ -53,5 +59,16 @@ public class CampaignOutput {
 
 //  @Schema(description = "Tổng ngân sách")
 //  private LocalDateTime creationApprovalDate;
+
+  @Schema(description = "Ngân sách chiến dịch")
+  private Long budgetAmount;
+
+  @Schema(description = "Ngân sách nguon")
+  private Long totalBudget;
+
+  @Schema(description = "ID ngân sách")
+  private Long budgetId;
+
+
 
 }

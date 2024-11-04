@@ -101,4 +101,6 @@ public interface CampaignApprovalRepository extends JpaRepository<CampaignApprov
       Long totalBudget,
       Long budgetId,
       Pageable pageable);
+
+  Optional<CampaignApproval> findByCampaignId(Long campaignId);
 }

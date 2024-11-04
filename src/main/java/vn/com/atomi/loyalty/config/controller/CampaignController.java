@@ -155,11 +155,12 @@ public class CampaignController extends BaseController {
       @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
       @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code,
       @Parameter(description = "ID ngân sách ") @RequestParam(required = false) Long budgetId,
-        @Parameter(description = "Ngân sách chiến dịch ") @RequestParam(required = false) Long budgetAmount,
-      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false) Long totalBudget) {
+      @Parameter(description = "Ngân sách chiến dịch ") @RequestParam(required = false) Long budgetAmount,
+      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false) Long totalBudget,
+      @Parameter(description = "Trạng thái phê duyệt") @RequestParam(required = false) ApprovalStatus approvalStatus){
     return ResponseUtils.success(
         campaignService.getCampaigns(
-            status, startDate, endDate, name, code,budgetId, budgetAmount, totalBudget, super.pageable(pageNo, pageSize, sort)));
+            status, startDate, endDate, name, code,budgetId, budgetAmount, totalBudget,approvalStatus, super.pageable(pageNo, pageSize, sort)));
   }
 
   @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)

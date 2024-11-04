@@ -150,6 +150,10 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
       budgetOutput.setApprovalStatus(ruleApproval.get().getApprovalStatus());
       budgetOutput.setCreatedBy(ruleApproval.get().getCreatedBy());
       budgetOutput.setApprovalId(ruleApproval.get().getId());
+      //totalUnSpentBudget, TotalSpentBudget
+      budgetOutput.setTotalUnSpentBudget(0);
+      budgetOutput.setTotalSpentBudget(0);
+      var campaign = campaignRepository.findByDeletedFalseAndId(ruleApproval.get().getCampaignId());
     }
     //  lấy lịch sử phê duyệt
     var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndBudgetId(id);

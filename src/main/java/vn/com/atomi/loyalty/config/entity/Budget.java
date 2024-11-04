@@ -35,6 +35,12 @@ public class Budget extends BaseEntity {
   @Column(name = "TOTAL_BUDGET")
   private Long totalBudget;
 
+  @Column(name = "TOTAL_POINTS_SPENT")
+  private Long totalPointsSpent;
+
+  @Column(name = "TOTAL_POINTS_ADDED")
+  private Long totalPointsAdded;
+
   @Column(name = "NAME")
   private String name;
 

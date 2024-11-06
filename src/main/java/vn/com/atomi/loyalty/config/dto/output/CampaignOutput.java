@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -69,6 +70,11 @@ public class CampaignOutput {
   @Schema(description = "ID ngân sách")
   private Long budgetId;
 
-
+  @Schema(description = "Tổng số điểm đã cộng")
+  private long totalAllocationPoint;
+  @Schema(description = "Tổng số điểm đã tiêu")
+  private long totalPointsSpent;
+  @Schema(description = "Trạng thái phê duyệt")
+  private ApprovalStatus approvalStatus;
 
 }

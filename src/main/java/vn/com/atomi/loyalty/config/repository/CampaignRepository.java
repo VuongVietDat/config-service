@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vn.com.atomi.loyalty.config.entity.Campaign;
+import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.Status;
 
 /**
@@ -48,6 +49,11 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
                           + "   FROM Budget b "
                           + "   WHERE b.id = c.budgetId "
                           + "   AND b.totalBudget = :totalBudget))"
+                          + "AND (:approvalStatus IS NULL OR EXISTS ( "
+                          + "   SELECT 1 "
+                          + "   FROM CampaignApproval a "
+                          + "   WHERE a.campaignId = c.id "
+                          + "   AND a.approvalStatus = :approvalStatus))"
                           + "order by c.updatedAt desc ")
   Page<Campaign> findByCondition(
           String code,
@@ -58,6 +64,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
           Long budgetId,
           Long budgetAmount,
           Long totalBudget,
+          ApprovalStatus approvalStatus,
           Pageable pageable);
 
   Optional<Campaign> findByDeletedFalseAndBudgetId(Long id);

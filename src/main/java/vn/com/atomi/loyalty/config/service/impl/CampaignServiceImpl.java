@@ -153,6 +153,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       Long budgetId,
       Long budgetAmount,
       Long totalAmount,
+      ApprovalStatus approvalStatus,
       Pageable pageable) {
     var campaignPage =
         campaignRepository.findByCondition(
@@ -164,9 +165,19 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             budgetId,
             budgetAmount,
             totalAmount,
+            approvalStatus,
             pageable);
-    return new ResponsePage<>(
-        campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
+    var campaignOutputs = campaignPage.getContent().stream().map(campaign -> {
+      var output = modelMapper.convertToCampaignOutput(campaign);
+      var campaignApproval = campaignApprovalRepository.findByCampaignId(campaign.getId());
+      if (campaignApproval.isPresent()) {
+        output.setApprovalStatus(campaignApproval.get().getApprovalStatus());
+      }
+      return output;
+    }).collect(Collectors.toList());
+    return new ResponsePage<>(campaignPage, campaignOutputs);
+//    return new ResponsePage<>(
+//        campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
   }
 
   @Override

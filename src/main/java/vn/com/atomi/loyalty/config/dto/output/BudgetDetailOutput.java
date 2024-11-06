@@ -57,10 +57,10 @@ public class BudgetDetailOutput {
   private ApprovalType approvalType;
 
   @Schema(description = "Tổng số ngân sách đã phân bổ")
-  private Long totalUnSpentBudget;
+  private int totalUnSpentBudget;
 
   @Schema(description = "Tổng số ngân sách chưa phân bổ")
-  private Long totalSpentBudget;
+  private int totalSpentBudget;
 
   @Schema(description = "Ngày cập nhật gần nhất")
   private LocalDate updatedAt;
@@ -69,10 +69,10 @@ public class BudgetDetailOutput {
   private LocalDate createdAt;
 
   @Schema(description = "Tổng số điểm đã cộng")
-  private int totalAllocationPoint;
+  private long totalPointAdded;
 
   @Schema(description = "Tổng số điểm đã tiêu")
-  private int totalPointsSpent;
+  private long totalPointsSpent;
 
   @Schema(description = "Lịch sử phê duyệt")
   private List<HistoryOutput> historyOutputs;

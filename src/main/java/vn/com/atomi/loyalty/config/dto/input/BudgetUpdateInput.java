@@ -28,7 +28,6 @@ public class BudgetUpdateInput {
   private Long totalBudget;
 
   @Schema(description = "Trạng thái")
-  @NotNull
   private BudgetStatus status;
 
   @Schema(description = "Trạng thái duyet")

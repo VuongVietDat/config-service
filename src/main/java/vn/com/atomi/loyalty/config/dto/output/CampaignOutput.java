@@ -50,6 +50,17 @@ public class CampaignOutput {
   @Schema(description = "Người cập nhật")
   private String updatedBy;
 
+  @Schema(description = "Ghi chú")
+  private String description;
+
+  @Schema(description = "Thời gian tạo (dd/MM/yyyy HH:mm:ss)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
+  private LocalDateTime createdAt;
+
+  @Schema(description = "Thời gian chỉnh sửa gần nhất (dd/MM/yyyy HH:mm:ss)")
+  @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
+  private LocalDateTime updatedAt;
+
   @Schema(description = "Ngày tạo (dd/MM/yyyy HH:mm:ss)")
   @JsonFormat(pattern = DateConstant.STR_PLAN_DD_MM_YYYY_HH_MM_SS_STROKE)
   private LocalDateTime creationDate;

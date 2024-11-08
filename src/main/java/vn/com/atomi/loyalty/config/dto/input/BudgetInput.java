@@ -3,6 +3,7 @@ package vn.com.atomi.loyalty.config.dto.input;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,6 +26,7 @@ public class BudgetInput {
   @Schema(description = "Tên ngân sách")
   @NotNull
   @Size(max = 168, message = "String length must be less than or equal to 168")
+  @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Budget name must not contain special characters or HTML tags")
   private String name;
 
   @Schema(description = "Tổng ngân sách")
@@ -41,10 +43,9 @@ public class BudgetInput {
   private String endDate;
 
   @Schema(description = "Trạng thái")
-  @NotNull
   private BudgetStatus status;
 
-//  @Schema(description = "Trạng thái duyet")
-//  @NotNull
-//  private ApprovalStatus approvalStatus;
+  @Schema(description = "Trạng thái duyet")
+  @NotNull
+  private ApprovalStatus approvalStatus;
 }

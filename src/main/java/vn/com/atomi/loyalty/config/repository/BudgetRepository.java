@@ -60,7 +60,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
   @Query("SELECT b, r.approvalStatus " +
           "FROM Budget b LEFT JOIN RuleApproval r " +
           "ON b.id = r.budgetId " +
-          "WHERE b.id = :id")
+          "WHERE b.id = :id AND b.deleted = false AND r.deleted = false")
   Optional<Budget> findByDeletedFalseAndId(Long id);
 
 

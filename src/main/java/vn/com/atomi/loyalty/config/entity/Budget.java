@@ -29,7 +29,7 @@ public class Budget extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
-  @Column(name = "DECISION_NUMBER")
+  @Column(name = "DECISION_NUMBER", unique = true, nullable = false)
   private String decisionNumber;
 
   @Column(name = "TOTAL_BUDGET")

@@ -47,13 +47,25 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
 //    if (!currentDate.isBefore(startDate) && !currentDate.isAfter(endDate)) {
 //      budgetInput.setStatus(BudgetStatus.ACTIVE);
 //    }
+
+    LocalDate currentDate = LocalDate.now();
+    // Check if startDate and endDate are in the past
+    if (startDate.isBefore(currentDate)|| endDate.isBefore(currentDate)){
+      throw new BaseException(ErrorCode.INVALID_DATE_RANGE);
+    }
+    // Check that startDate is before or equal to endDate
+    if (startDate.isAfter(endDate)) {
+      throw new BaseException(ErrorCode.INVALID_DATE_RANGE);
+    }
+
     if (budgetRepository
         .findByDeletedFalseAndDecisionNumber(budgetInput.getDecisionNumber())
         .isPresent()) {
       throw new BaseException(ErrorCode.EXISTED_DECISION_NUMBER);
     }
-
     var budget = super.modelMapper.createBudget(budgetInput, startDate, endDate);
+    //mac dinh la null khi tao
+    budget.setStatus(null);
     budgetRepository.save(budget);
     // tạo code
     var id = ruleApprovalRepository.getSequence();
@@ -68,6 +80,8 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                     ApprovalType.CREATE,
                     id,
                     budget.getDecisionNumber());
+    //check Luu - Gui cho duyet
+    budgetApproval.setApprovalStatus(budgetInput.getApprovalStatus());
     budgetApproval = ruleApprovalRepository.save(budgetApproval);
     ruleApprovalRepository.save(budgetApproval);
   }
@@ -115,14 +129,14 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
       if (budgetUpdateInput.getName() != null) {
         budget.setName(budgetUpdateInput.getName());
       }
-
-//      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
-//        LocalDate currentDate = LocalDate.now();
-//        if (budget.getEndDate().isBefore(currentDate)) {
-//          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
-//        }
-//        budget.setStatus(budgetUpdateInput.getStatus());
-//      }
+      //check cap nhat trang thai INACTIVE --> ACTIVE
+      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
+        LocalDate currentDate = LocalDate.now();
+        if (budget.getEndDate().isBefore(currentDate)) {
+          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
+        }
+        budget.setStatus(budgetUpdateInput.getStatus());
+      }
       if (!budgetUpdateInput.getStatus().equals(budget.getStatus())) {
         budget.setStatus(budgetUpdateInput.getStatus());
       }

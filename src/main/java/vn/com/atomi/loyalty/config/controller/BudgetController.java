@@ -49,15 +49,15 @@ public class BudgetController extends BaseController {
       @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
           Integer pageSize,
       @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
-          @RequestParam(required = false)
-          String sort,
+      @RequestParam(required = false)
+      String sort,
       @Parameter(description = "Số quyết định") @RequestParam(required = false)
           String decisionNumber,
       @Parameter(description = "Tổng ngân sách") @RequestParam(required = false)
           String totalBudget,
       @Parameter(
               description =
-                      "Trạng thái phê duyệt:</br> WAITING: Chờ duyệt</br> ACCEPTED: Đồng ý</br> REJECTED: Từ chối</br> RECALL: Thu hồi")
+                      "Trạng thái phê duyệt:</br> WAITING: Chờ duyệt</br> ACCEPTED: Đồng ý</br> REJECTED: Từ chối</br> RECALL: Lưu nháp")
       @RequestParam(required = false)
           ApprovalStatus approvalStatus,
       @Parameter(description = "Trạng thái") @RequestParam(required = false) BudgetStatus status,
@@ -66,7 +66,7 @@ public class BudgetController extends BaseController {
           @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String startDate,
-      @Parameter(description = "Thời gian hiệu lực đến ngày (dd/MM/yyyy)", example = "01/01/2024")
+      @Parameter(description = "Thời gian hiệu lực đến ngày (dd/MM/yyyy)", example = "31/12/2024")
           @DateTimeValidator(required = false, pattern = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
           @RequestParam(required = false)
           String endDate) {

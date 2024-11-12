@@ -125,7 +125,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             .findByDeletedFalseAndId(budgetUpdateInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-    if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING) {
+    if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL) {
       if (budgetUpdateInput.getName() != null) {
         budget.setName(budgetUpdateInput.getName());
       }

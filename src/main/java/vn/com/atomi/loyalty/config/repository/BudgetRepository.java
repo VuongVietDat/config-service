@@ -45,7 +45,7 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
                   + "   SELECT 1 "
                   + "   FROM RuleApproval b "
                   + "   WHERE b.budgetId = a.id "
-                  + "   AND b.approvalStatus = :approvalStatus))"
+                  + "   AND b.approvalStatus = :approvalStatus)) ORDER BY a.updatedAt desc"
   )
 
   Page<Budget> getListBudget(

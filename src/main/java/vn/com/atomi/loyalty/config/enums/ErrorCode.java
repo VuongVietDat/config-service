@@ -43,10 +43,11 @@ public enum ErrorCode implements AbstractError {
   EXISTED_DECISION_NUMBER(1018, "Quyết định ngân sách đã tồn tại.", HttpStatus.BAD_REQUEST),
   RECORD_NOT_EXISTED(1019, "Bản ghi không tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
   CONDITION_BUDGET_FAILED(1020, "Thời gian hiệu lực đã hết, không thể cập nhật trạng thái!", HttpStatus.BAD_REQUEST),
-  INVALID_APPROVAL_STATUS(1021,"Trạng thái khác WAITING không được phép chỉnh sửa", HttpStatus.BAD_REQUEST),
+  INVALID_APPROVAL_STATUS(1021,"Trạng thái hiện tại không được phép chỉnh sửa", HttpStatus.BAD_REQUEST),
   BUDGET_NOT_EXISTED(1022, "Ngân sách không tồn tại.", HttpStatus.NOT_FOUND),
   ERROR_BUDGET_AMOUNT(1023, "Budget Campaign phải nhỏ hơn total Budget", HttpStatus.NOT_FOUND),
-  INVALID_DATE_RANGE(1024, "Không được chọn ngày trong quá khứ", HttpStatus.BAD_REQUEST)
+  INVALID_DATE_RANGE(1024, "Không được chọn ngày trong quá khứ", HttpStatus.BAD_REQUEST),
+  CHANGE_STATUS_FAILED(1025, "Không thể chỉnh sửa trạng thái ngoài thời gian hiệu lực", HttpStatus.BAD_REQUEST)
   ;
 
   private final int code;

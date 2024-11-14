@@ -60,5 +60,7 @@ public class Budget extends BaseEntity {
 //  @OneToMany(mappedBy = "budget")
 //  private List<RuleApproval> orderItems = new ArrayList<>();
 
+  @Column(name = "IS_INACTIVE_BY_SYSTEM")
+  private boolean inactiveBySystem;
 }
 

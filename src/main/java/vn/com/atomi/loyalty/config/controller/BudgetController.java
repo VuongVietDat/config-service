@@ -5,18 +5,16 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 import vn.com.atomi.loyalty.base.annotations.DateTimeValidator;
 import vn.com.atomi.loyalty.base.constant.DateConstant;
+import vn.com.atomi.loyalty.base.constant.RequestConstant;
 import vn.com.atomi.loyalty.base.data.BaseController;
 import vn.com.atomi.loyalty.base.data.ResponseData;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.data.ResponseUtils;
+import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
@@ -103,6 +101,21 @@ public class BudgetController extends BaseController {
     @PutMapping("/budget/approvals")
     public ResponseEntity<ResponseData<Void>> approveBudget(@Valid @RequestBody ApprovalInput input) {
         budgetService.approveBudget(input);
+        return ResponseUtils.success();
+    }
+
+    @Operation(
+            summary = "Api (nội bộ) tự động chuyển trạng thái hết hiệu lực ngan sach khi hết ngày kết thúc")
+    @PreAuthorize(Authority.ROLE_SYSTEM)
+    @PutMapping("/internal/budgets/automatically-expires")
+    public ResponseEntity<ResponseData<Void>> automaticallyExpiresBudget(
+            @Parameter(
+                    description = "Chuỗi xác thực khi gọi api nội bộ",
+                    example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+            @RequestHeader(RequestConstant.SECURE_API_KEY)
+            @SuppressWarnings("unused")
+            String apiKey) {
+        budgetService.automaticallyExpiresBudget();
         return ResponseUtils.success();
     }
 }

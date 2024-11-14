@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
+import vn.com.atomi.loyalty.config.enums.BudgetStatus;
 
 @Builder
 @Setter
@@ -45,7 +46,7 @@ public class BudgetDetailOutput {
 
   @Schema(description = "Trạng thái")
   @Enumerated(EnumType.STRING)
-  private String status;
+  private BudgetStatus status;
 
   @Schema(description = "Trạng thái phê duyệt")
   @Enumerated(EnumType.STRING)

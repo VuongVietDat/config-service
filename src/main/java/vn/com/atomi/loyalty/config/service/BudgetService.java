@@ -29,4 +29,6 @@ public interface BudgetService {
   void updateBudget(BudgetUpdateInput budgetUpdateInput);
 
   void approveBudget(ApprovalInput input);
+
+  void automaticallyExpiresBudget();
 }

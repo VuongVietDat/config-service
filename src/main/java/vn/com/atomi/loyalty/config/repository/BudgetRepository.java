@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.config.entity.Budget;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.BudgetStatus;
@@ -67,4 +69,9 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
   @Query("SELECT b, r.approvalStatus FROM Budget b LEFT JOIN RuleApproval r ON b.id = r.budgetId WHERE b.id = :id")
   List<Object[]> findBudgetWithApprovalStatus(Long id);
 
+  @Transactional
+  @Modifying
+  @Query(
+          "update Budget b set b.status = vn.com.atomi.loyalty.config.enums.BudgetStatus.INACTIVE, b.inactiveBySystem = true where b.endDate < :endDate")
+  void automaticallyExpiresBudget(LocalDate endDate);
 }

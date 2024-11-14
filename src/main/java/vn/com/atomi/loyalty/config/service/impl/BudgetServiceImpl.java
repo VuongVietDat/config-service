@@ -30,6 +30,8 @@ import vn.com.atomi.loyalty.config.repository.RuleApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.RuleRepository;
 import vn.com.atomi.loyalty.config.service.BudgetService;
 import vn.com.atomi.loyalty.config.utils.Utils;
+import static vn.com.atomi.loyalty.config.enums.BudgetStatus.ACTIVE;
+import static vn.com.atomi.loyalty.config.enums.BudgetStatus.INACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -64,8 +66,8 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
       throw new BaseException(ErrorCode.EXISTED_DECISION_NUMBER);
     }
     var budget = super.modelMapper.createBudget(budgetInput, startDate, endDate);
-    //mac dinh la null khi tao
-    budget.setStatus(null);
+    //mac dinh la INACTIVE khi tao
+    budget.setStatus(INACTIVE);
     budgetRepository.save(budget);
     // tạo code
     var id = ruleApprovalRepository.getSequence();
@@ -124,13 +126,15 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         budgetRepository
             .findByDeletedFalseAndId(budgetUpdateInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
-
-    if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL) {
+    var budgetApproval = ruleApprovalRepository.findByBudgetId(budget.getId());
+    //check trang thai phe duyet duoi db cua budget
+    //RECALL chi duoc cap nhat totalbudget
+    if (budgetApproval.get().getApprovalStatus()==ApprovalStatus.RECALL) {
       if (budgetUpdateInput.getName() != null) {
         budget.setName(budgetUpdateInput.getName());
       }
-      //check cap nhat trang thai INACTIVE --> ACTIVE
-      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
+      //check cap nhat trang thai INACTIVE --> ACTIVE (Unused)
+      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == INACTIVE) {
         LocalDate currentDate = LocalDate.now();
         if (budget.getEndDate().isBefore(currentDate)) {
           throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
@@ -140,13 +144,28 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
       if (!budgetUpdateInput.getStatus().equals(budget.getStatus())) {
         budget.setStatus(budgetUpdateInput.getStatus());
       }
-      //Budget new > Budget current
-      if (budgetUpdateInput.getTotalBudget() != null && budgetUpdateInput.getTotalBudget() > budget.getTotalBudget()) {
-        budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
+      budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
+
+      if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+        budgetApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
+      }
+      else if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL){
+        budgetApproval.get().setApprovalStatus(ApprovalStatus.RECALL);
       }
       budgetRepository.save(budget);
     }
-    else {
+    //trang thai duyet ACCEPTED Va nam trong khoang thoi gian hieu luc: INACTIVE -> ACTIVE
+    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.ACCEPTED){
+      LocalDate currentDate = LocalDate.now();
+      if (budget.getStartDate().isAfter(currentDate) && budget.getEndDate().isBefore(currentDate)){
+        throw new BaseException(ErrorCode.CHANGE_STATUS_FAILED);
+      }
+      else {
+        budget.setStatus(budgetUpdateInput.getStatus());
+      }
+      budgetRepository.save(budget);
+    }
+    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.REJECTED && budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
       throw new BaseException(ErrorCode.INVALID_APPROVAL_STATUS);
     }
   }
@@ -255,5 +274,9 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
     budgetApproval.setApprovalComment(input.getComment());
     ruleApprovalRepository.save(budgetApproval);
+  }
+
+  public void automaticallyExpiresBudget() {
+    budgetRepository.automaticallyExpiresBudget(LocalDate.now());
   }
 }

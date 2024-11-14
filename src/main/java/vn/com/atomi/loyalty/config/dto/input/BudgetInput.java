@@ -26,7 +26,7 @@ public class BudgetInput {
   @Schema(description = "Tên ngân sách")
   @NotNull
   @Size(max = 168, message = "String length must be less than or equal to 168")
-  @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Budget name must not contain special characters or HTML tags")
+//  @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Budget name must not contain special characters or HTML tags")
   private String name;
 
   @Schema(description = "Tổng ngân sách")

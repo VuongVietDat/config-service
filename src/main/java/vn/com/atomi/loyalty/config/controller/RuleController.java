@@ -18,10 +18,12 @@ import vn.com.atomi.loyalty.config.dto.input.CreateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.UpdateRuleInput;
 import vn.com.atomi.loyalty.config.dto.input.WarringOverlapActiveTimeInput;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.entity.RulePOC;
 import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
 import vn.com.atomi.loyalty.config.enums.ApprovalType;
 import vn.com.atomi.loyalty.config.enums.PointType;
 import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.service.RulePocService;
 import vn.com.atomi.loyalty.config.service.RuleService;
 
 /**
@@ -33,6 +35,8 @@ import vn.com.atomi.loyalty.config.service.RuleService;
 public class RuleController extends BaseController {
 
   private final RuleService ruleService;
+
+  private final RulePocService rulePocService;
 
   @Operation(summary = "Api tạo mới quy tắc sinh điểm (bản ghi chờ duyệt)")
   @PreAuthorize(Authority.Rule.CREATE_RULE)
@@ -255,4 +259,19 @@ public class RuleController extends BaseController {
           String transactionAt) {
     return ResponseUtils.success(ruleService.getAllActiveRule(type, transactionAt));
   }
+
+    @Operation(summary = "Api (nội bộ) lấy tất cả quy tắc theo kịch bản phục vụ POC")
+    @PreAuthorize(Authority.ROLE_SYSTEM)
+    @GetMapping("/internal/rules/poc")
+    public ResponseEntity<ResponseData<RulePOC>> getAllActiveRulePoc(
+            @Parameter(
+                    description = "Chuỗi xác thực khi gọi api nội bộ",
+                    example = "eb6b9f6fb84a45d9c9b2ac5b2c5bac4f36606b13abcb9e2de01fa4f066968cd0")
+            @RequestHeader(RequestConstant.SECURE_API_KEY)
+            @SuppressWarnings("unused")
+            String apiKey,
+            @Parameter(description = "Loại quy tắc sinh điểm theo kịch bản", example = "CASA") @RequestParam
+            String type) {
+        return ResponseUtils.success(rulePocService.findByType(type));
+    }
 }

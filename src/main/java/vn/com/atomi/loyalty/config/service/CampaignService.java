@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.input.CampaignUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
@@ -44,7 +45,7 @@ public interface CampaignService {
 
   void approveCampaign(ApprovalInput input);
 
-  void updateCampaign(Long id, CampaignInput campaignInput);
+  void updateCampaign(CampaignUpdateInput campaignUpdateInput);
 
   void recallCampaignApproval(Long id);
 

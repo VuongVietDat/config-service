@@ -244,6 +244,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             ruleApprovalRepository
                     .findByDeletedFalseAndIdAndApprovalStatus(input.getId(), ApprovalStatus.WAITING)
                     .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
+    var budgetOuput = budgetRepository.findByDeletedFalseAndId(budgetApproval.getBudgetId());
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(budgetApproval.getApprovalType())) {
@@ -255,7 +256,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         var budget = super.modelMapper.convertToRule(budgetApproval, status, LocalDateTime.now());
         budget = ruleRepository.save(budget);
         budgetApproval.setBudgetId(budget.getBudgetId());
-        budgetApproval.setStatus(Status.ACTIVE);
+        budget.setStatus(Status.ACTIVE);
       }
 
       // trường hợp phê duyệt cập nhật

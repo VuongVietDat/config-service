@@ -168,7 +168,6 @@ public interface ModelMapper {
   @Mapping(target = "endDate", source = "endDate")
   @Mapping(target = "approvalType", source = "approvalType")
   @Mapping(target = "approvalStatus", source = "approvalStatus")
-  @Mapping(target = "budgetId", source = "budgetId")
   @Mapping(target = "campaignId", source = "campaignId")
   @Mapping(target = "budgetAmount", source = "budgetAmount")
   @Mapping(target = "totalBudget", source = "totalBudget")
@@ -183,15 +182,11 @@ public interface ModelMapper {
           ApprovalStatus approvalStatus,
           ApprovalType approvalType,
           Long id,
-          Long budgetId,
           Long totalBudget
   );
 
-  @Mapping(target = "budgetId", source = "budgetId")
-  @Mapping(target = "budgetCode", source = "budgetCode")
   @Mapping(target = "id", source = "id")
   @Mapping(target = "status", ignore = true)
-  @Mapping(target = "campaignCode", source = "campaignCode")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
   @Mapping(target = "endDate", source = "ruleEndDate")
@@ -204,10 +199,7 @@ public interface ModelMapper {
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
       Long id,
-      String code,
-      String campaignCode,
-      Long budgetId,
-      String budgetCode);
+      String code);
   RuleApproval convetToBudgetApproval(
          Long budgetId,
           LocalDate startDate,

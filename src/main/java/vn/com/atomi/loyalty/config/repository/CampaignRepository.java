@@ -68,4 +68,7 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
           Pageable pageable);
 
   Optional<Campaign> findByDeletedFalseAndBudgetId(Long id);
+
+  @Query("SELECT c FROM Campaign c WHERE c.deleted = false ORDER BY c.createdAt DESC LIMIT 1")
+  Optional<Campaign> findTopByOrderByCreatedAtDesc();
 }

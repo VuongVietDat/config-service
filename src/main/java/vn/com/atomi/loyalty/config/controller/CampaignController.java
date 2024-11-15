@@ -14,6 +14,7 @@ import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.input.CampaignUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
@@ -172,16 +173,26 @@ public class CampaignController extends BaseController {
   }
 
   @PreAuthorize(Authority.Campaign.UPDATE_CAMPAIGN)
-  @Operation(
-      summary =
-          "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
-  @PutMapping("/campaigns/{id}")
-  public ResponseEntity<ResponseData<Void>> updateCampaign(
-      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id,
-      @RequestBody CampaignInput campaignInput) {
-    campaignService.updateCampaign(id, campaignInput);
-    return ResponseUtils.success();
-  }
+//  @Operation(
+//      summary =
+//          "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
+//  @PutMapping("/campaigns/{id}")
+//  public ResponseEntity<ResponseData<Void>> updateCampaign(
+//      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id,
+//      @RequestBody CampaignInput campaignInput) {
+//    campaignService.updateCampaign(id, campaignInput);
+//    return ResponseUtils.success();
+//  }
+
+    @Operation(summary = "Api chỉnh sửa bản ghi chiến dịch")
+    //  @PreAuthorize(Authority.CardTransaction.UPDATE_CARD_TRANSACTION)
+    @PutMapping("/campaign/{id}")
+    public ResponseEntity<ResponseData<Void>> updateCampaign(
+            @RequestBody @Valid
+            CampaignUpdateInput campaignUpdateInput) {
+        campaignService.updateCampaign(campaignUpdateInput);
+        return ResponseUtils.success();
+    }
 
   @PreAuthorize(Authority.Campaign.APPROVE_CAMPAIGN)
   @Operation(summary = "Api phê duyệt chiến dịch")

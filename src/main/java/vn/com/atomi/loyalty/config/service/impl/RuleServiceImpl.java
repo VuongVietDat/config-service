@@ -152,10 +152,7 @@ public class RuleServiceImpl extends BaseService implements RuleService {
             ApprovalStatus.WAITING,
             ApprovalType.CREATE,
             id,
-            code,
-            campaign.getCode(),
-            campaign.getBudgetId(),
-            campaign.getBudgetCode());
+            code);
     ruleApproval = ruleApprovalRepository.save(ruleApproval);
     // lưu điều kiện áp dụng quy tắc của bản ghi chờ duyệt
     var ruleConditionApprovals =

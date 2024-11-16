@@ -92,7 +92,7 @@ public interface RuleApprovalRepository extends JpaRepository<RuleApproval, Long
       Pageable pageable);
 
   List<RuleApproval> findByDeletedFalseAndRuleId(Long ruleId);
-
+  List<RuleApproval> findByDeletedFalseAndBudgetId(Long budgetId);
   boolean existsByDeletedFalseAndRuleIdAndApprovalStatus(
       Long ruleId, ApprovalStatus approvalStatus);
 

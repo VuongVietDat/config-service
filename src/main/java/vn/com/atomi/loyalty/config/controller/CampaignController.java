@@ -14,6 +14,7 @@ import vn.com.atomi.loyalty.base.data.*;
 import vn.com.atomi.loyalty.base.security.Authority;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.input.CampaignUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
@@ -82,7 +83,10 @@ public class CampaignController extends BaseController {
           @RequestParam(required = false)
           String endApprovedDate,
       @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
-      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code,
+      @Parameter(description = "Ngân sách nguồn") @RequestParam(required = false) Long totalBudget,
+      @Parameter(description = "Ngân sách chiến dịch") @RequestParam(required = false) Long budgetAmount,
+      @Parameter(description = "ID ngân sách") @RequestParam(required = false) Long budgetId){
     return ResponseUtils.success(
         campaignService.getCampaignApprovals(
             status,
@@ -94,6 +98,9 @@ public class CampaignController extends BaseController {
             endApprovedDate,
             name,
             code,
+            totalBudget,
+            budgetAmount,
+            budgetId,
             super.pageable(pageNo, pageSize, sort)));
   }
 
@@ -147,10 +154,14 @@ public class CampaignController extends BaseController {
           @RequestParam(required = false)
           String endDate,
       @Parameter(description = "Tên chiến dịch") @RequestParam(required = false) String name,
-      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code) {
+      @Parameter(description = "Mã chiến dịch") @RequestParam(required = false) String code,
+      @Parameter(description = "ID ngân sách ") @RequestParam(required = false) Long budgetId,
+      @Parameter(description = "Ngân sách chiến dịch ") @RequestParam(required = false) Long budgetAmount,
+      @Parameter(description = "Tổng ngân sách") @RequestParam(required = false) Long totalBudget,
+      @Parameter(description = "Trạng thái phê duyệt") @RequestParam(required = false) ApprovalStatus approvalStatus){
     return ResponseUtils.success(
         campaignService.getCampaigns(
-            status, startDate, endDate, name, code, super.pageable(pageNo, pageSize, sort)));
+            status, startDate, endDate, name, code,budgetId, budgetAmount, totalBudget,approvalStatus, super.pageable(pageNo, pageSize, sort)));
   }
 
   @PreAuthorize(Authority.Campaign.READ_CAMPAIGN)
@@ -162,16 +173,26 @@ public class CampaignController extends BaseController {
   }
 
   @PreAuthorize(Authority.Campaign.UPDATE_CAMPAIGN)
-  @Operation(
-      summary =
-          "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
-  @PutMapping("/campaigns/{id}")
-  public ResponseEntity<ResponseData<Void>> updateCampaign(
-      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id,
-      @RequestBody CampaignInput campaignInput) {
-    campaignService.updateCampaign(id, campaignInput);
-    return ResponseUtils.success();
-  }
+//  @Operation(
+//      summary =
+//          "Api cập nhật bản ghi chiến dịch theo id (tương đương với việc tạo mới bản ghi chờ duyệt từ 1 bản ghi đã có)")
+//  @PutMapping("/campaigns/{id}")
+//  public ResponseEntity<ResponseData<Void>> updateCampaign(
+//      @Parameter(description = "ID bản ghi chiến dịch") @PathVariable Long id,
+//      @RequestBody CampaignInput campaignInput) {
+//    campaignService.updateCampaign(id, campaignInput);
+//    return ResponseUtils.success();
+//  }
+
+    @Operation(summary = "Api chỉnh sửa bản ghi chiến dịch")
+    //  @PreAuthorize(Authority.CardTransaction.UPDATE_CARD_TRANSACTION)
+    @PutMapping("/campaign/{id}")
+    public ResponseEntity<ResponseData<Void>> updateCampaign(
+            @RequestBody @Valid
+            CampaignUpdateInput campaignUpdateInput) {
+        campaignService.updateCampaign(campaignUpdateInput);
+        return ResponseUtils.success();
+    }
 
   @PreAuthorize(Authority.Campaign.APPROVE_CAMPAIGN)
   @Operation(summary = "Api phê duyệt chiến dịch")

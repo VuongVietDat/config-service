@@ -2,6 +2,9 @@ package vn.com.atomi.loyalty.config.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -12,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetInput;
 import vn.com.atomi.loyalty.config.dto.input.BudgetUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetDetailOutput;
 import vn.com.atomi.loyalty.config.dto.output.BudgetOutput;
+import vn.com.atomi.loyalty.config.dto.output.HistoryOutput;
 import vn.com.atomi.loyalty.config.entity.RuleApproval;
 import vn.com.atomi.loyalty.config.enums.*;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCoreClient;
@@ -27,6 +30,8 @@ import vn.com.atomi.loyalty.config.repository.RuleApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.RuleRepository;
 import vn.com.atomi.loyalty.config.service.BudgetService;
 import vn.com.atomi.loyalty.config.utils.Utils;
+import static vn.com.atomi.loyalty.config.enums.BudgetStatus.ACTIVE;
+import static vn.com.atomi.loyalty.config.enums.BudgetStatus.INACTIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +49,25 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
 //    if (!currentDate.isBefore(startDate) && !currentDate.isAfter(endDate)) {
 //      budgetInput.setStatus(BudgetStatus.ACTIVE);
 //    }
+
+    LocalDate currentDate = LocalDate.now();
+    // Check if startDate and endDate are in the past
+    if (startDate.isBefore(currentDate)|| endDate.isBefore(currentDate)){
+      throw new BaseException(ErrorCode.INVALID_DATE_RANGE);
+    }
+    // Check that startDate is before or equal to endDate
+    if (startDate.isAfter(endDate)) {
+      throw new BaseException(ErrorCode.INVALID_DATE_RANGE);
+    }
+
     if (budgetRepository
         .findByDeletedFalseAndDecisionNumber(budgetInput.getDecisionNumber())
         .isPresent()) {
       throw new BaseException(ErrorCode.EXISTED_DECISION_NUMBER);
     }
-
     var budget = super.modelMapper.createBudget(budgetInput, startDate, endDate);
+    //mac dinh la INACTIVE khi tao
+    budget.setStatus(INACTIVE);
     budgetRepository.save(budget);
     // tạo code
     var id = ruleApprovalRepository.getSequence();
@@ -65,6 +82,8 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                     ApprovalType.CREATE,
                     id,
                     budget.getDecisionNumber());
+    //check Luu - Gui cho duyet
+    budgetApproval.setApprovalStatus(budgetInput.getApprovalStatus());
     budgetApproval = ruleApprovalRepository.save(budgetApproval);
     ruleApprovalRepository.save(budgetApproval);
   }
@@ -107,26 +126,46 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         budgetRepository
             .findByDeletedFalseAndId(budgetUpdateInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
-
-    if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING) {
+    var budgetApproval = ruleApprovalRepository.findByBudgetId(budget.getId());
+    //check trang thai phe duyet duoi db cua budget
+    //RECALL chi duoc cap nhat totalbudget
+    if (budgetApproval.get().getApprovalStatus()==ApprovalStatus.RECALL) {
       if (budgetUpdateInput.getName() != null) {
         budget.setName(budgetUpdateInput.getName());
       }
-
-      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == BudgetStatus.INACTIVE) {
+      //check cap nhat trang thai INACTIVE --> ACTIVE (Unused)
+      if (!budgetUpdateInput.getStatus().equals(budget.getStatus()) && budget.getStatus() == INACTIVE) {
         LocalDate currentDate = LocalDate.now();
         if (budget.getEndDate().isBefore(currentDate)) {
           throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
         }
         budget.setStatus(budgetUpdateInput.getStatus());
       }
-      //Budget new > Budget current
-      if (budgetUpdateInput.getTotalBudget() != null && budgetUpdateInput.getTotalBudget() > budget.getTotalBudget()) {
-        budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
+      if (!budgetUpdateInput.getStatus().equals(budget.getStatus())) {
+        budget.setStatus(budgetUpdateInput.getStatus());
+      }
+      budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
+
+      if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+        budgetApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
+      }
+      else if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL){
+        budgetApproval.get().setApprovalStatus(ApprovalStatus.RECALL);
       }
       budgetRepository.save(budget);
     }
-    else {
+    //trang thai duyet ACCEPTED Va nam trong khoang thoi gian hieu luc: INACTIVE -> ACTIVE
+    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.ACCEPTED){
+      LocalDate currentDate = LocalDate.now();
+      if (budget.getStartDate().isAfter(currentDate) && budget.getEndDate().isBefore(currentDate)){
+        throw new BaseException(ErrorCode.CHANGE_STATUS_FAILED);
+      }
+      else {
+        budget.setStatus(budgetUpdateInput.getStatus());
+      }
+      budgetRepository.save(budget);
+    }
+    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.REJECTED && budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
       throw new BaseException(ErrorCode.INVALID_APPROVAL_STATUS);
     }
   }
@@ -138,11 +177,65 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
 
-//    var amountUsedTotal = loyaltyCoreClient.getAmountUsed(RequestUtils.extractRequestId(), id);
-//    budget.setTotalBudget(amountUsedTotal.getData());
-    return super.modelMapper.getDetailBudget(budget);
+    var ruleApproval = ruleApprovalRepository.findByBudgetId(budget.getId());
+    var budgetOutput = super.modelMapper.getDetailBudget(budget);
+    if (ruleApproval.isPresent()) {
+      budgetOutput.setApprovalStatus(ruleApproval.get().getApprovalStatus());
+      budgetOutput.setCreatedBy(ruleApproval.get().getCreatedBy());
+      budgetOutput.setApprovalId(ruleApproval.get().getId());
+      //totalUnSpentBudget, TotalSpentBudget
+      budgetOutput.setTotalUnSpentBudget(0);
+      budgetOutput.setTotalSpentBudget(0);
+      var campaign = campaignRepository.findByDeletedFalseAndId(ruleApproval.get().getCampaignId());
+    }
+    //  lấy lịch sử phê duyệt
+    var ruleApprovals = ruleApprovalRepository.findByDeletedFalseAndBudgetId(id);
+    budgetOutput.setHistoryOutputs(this.buildHistoryOutputs(ruleApprovals));
+    return budgetOutput;
   }
 
+  private List<HistoryOutput> buildHistoryOutputs(List<RuleApproval> ruleApprovals) {
+    List<HistoryOutput> historyOutputs = new ArrayList<>();
+    long recordNo = 0L;
+    for (RuleApproval ruleApproval : ruleApprovals) {
+      if (ruleApproval.getApprovalStatus().equals(ApprovalStatus.WAITING)) {
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalStatus(ruleApproval.getApprovalStatus())
+                        .actionAt(ruleApproval.getCreatedAt())
+                        .userAction(ruleApproval.getCreatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
+                        .build());
+      } else {
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalStatus(ApprovalStatus.WAITING)
+                        .actionAt(ruleApproval.getCreatedAt())
+                        .userAction(ruleApproval.getCreatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
+                        .build());
+        historyOutputs.add(
+                HistoryOutput.builder()
+                        .id(++recordNo)
+                        .approvalComment(ruleApproval.getApprovalComment())
+                        .approvalStatus(ruleApproval.getApprovalStatus())
+                        .actionAt(ruleApproval.getUpdatedAt())
+                        .userAction(ruleApproval.getUpdatedBy())
+                        .approvalId(ruleApproval.getId())
+                        .approvalType(ruleApproval.getApprovalType())
+                        .approvalComment(ruleApproval.getApprovalComment())
+                        .build());
+      }
+    }
+    historyOutputs.sort(Comparator.comparing(HistoryOutput::getActionAt));
+    return historyOutputs;
+  }
   @Transactional(isolation = Isolation.READ_COMMITTED)
   @Override
   public void approveBudget(ApprovalInput input) {
@@ -151,6 +244,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             ruleApprovalRepository
                     .findByDeletedFalseAndIdAndApprovalStatus(input.getId(), ApprovalStatus.WAITING)
                     .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
+    var budgetOuput = budgetRepository.findByDeletedFalseAndId(budgetApproval.getBudgetId());
     if (input.getIsAccepted()) {
       // trường hợp phê duyệt tạo
       if (ApprovalType.CREATE.equals(budgetApproval.getApprovalType())) {
@@ -162,7 +256,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         var budget = super.modelMapper.convertToRule(budgetApproval, status, LocalDateTime.now());
         budget = ruleRepository.save(budget);
         budgetApproval.setBudgetId(budget.getBudgetId());
-        budgetApproval.setStatus(Status.ACTIVE);
+        budget.setStatus(Status.ACTIVE);
       }
 
       // trường hợp phê duyệt cập nhật
@@ -181,5 +275,9 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
     budgetApproval.setApprovalComment(input.getComment());
     ruleApprovalRepository.save(budgetApproval);
+  }
+
+  public void automaticallyExpiresBudget() {
+    budgetRepository.automaticallyExpiresBudget(LocalDate.now());
   }
 }

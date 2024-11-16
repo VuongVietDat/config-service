@@ -26,6 +26,9 @@ public class CampaignApprovalOutput {
   @Schema(description = "ID bản ghi")
   private Long id;
 
+  @Schema(description = "ID chiến dịch")
+  private Long campaignId;
+
   @Schema(description = "Tên chiến dịch")
   private String name;
 
@@ -73,4 +76,13 @@ public class CampaignApprovalOutput {
 
   @Schema(description = "Người duyệt")
   private String approver;
+
+  @Schema(description = "Ngân sách chiến dịch")
+  private Long budgetAmount;
+
+  @Schema(description = "Ngân sách nguồn")
+  private Long totalBudget;
+
+  @Schema(description = "ID ngân sách")
+  private Long budgetId;
 }

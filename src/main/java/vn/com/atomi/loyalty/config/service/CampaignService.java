@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.input.CampaignUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
@@ -30,18 +31,21 @@ public interface CampaignService {
       String endApprovedDate,
       String name,
       String code,
+      Long budgetAmount,
+      Long totalBudget,
+      Long budgetId,
       Pageable pageable);
 
   CampaignApprovalOutput getCampaignApproval(Long id);
 
   ResponsePage<CampaignOutput> getCampaigns(
-      Status status, String startDate, String endDate, String name, String code, Pageable pageable);
+          Status status, String startDate, String endDate, String name, String code,Long budgetId, Long budgetAmount, Long totalBudget, ApprovalStatus approvalStatus, Pageable pageable);
 
   CampaignOutput getCampaign(Long id);
 
   void approveCampaign(ApprovalInput input);
 
-  void updateCampaign(Long id, CampaignInput campaignInput);
+  void updateCampaign(CampaignUpdateInput campaignUpdateInput);
 
   void recallCampaignApproval(Long id);
 

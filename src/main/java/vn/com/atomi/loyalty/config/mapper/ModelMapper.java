@@ -162,24 +162,31 @@ public interface ModelMapper {
 
   @Mapping(target = "id", source = "id")
   @Mapping(target = "code", source = "code")
+  @Mapping(target = "name", source = "name")
+  @Mapping(target = "description", source = "description")
   @Mapping(target = "startDate", source = "startDate")
   @Mapping(target = "endDate", source = "endDate")
   @Mapping(target = "approvalType", source = "approvalType")
   @Mapping(target = "approvalStatus", source = "approvalStatus")
+  @Mapping(target = "campaignId", source = "campaignId")
+  @Mapping(target = "budgetAmount", source = "budgetAmount")
+  @Mapping(target = "totalBudget", source = "totalBudget")
   CampaignApproval convertToCampaignApproval(
-      CampaignInput campaignInput,
-      LocalDate startDate,
-      LocalDate endDate,
-      ApprovalStatus approvalStatus,
-      ApprovalType approvalType,
-      Long id,
-      String code);
+          Long campaignId,
+          String code,
+          String name,
+          Long budgetAmount,
+          String description,
+          LocalDate startDate,
+          LocalDate endDate,
+          ApprovalStatus approvalStatus,
+          ApprovalType approvalType,
+          Long id,
+          Long totalBudget
+  );
 
-  @Mapping(target = "budgetId", source = "budgetId")
-  @Mapping(target = "budgetCode", source = "budgetCode")
   @Mapping(target = "id", source = "id")
   @Mapping(target = "status", ignore = true)
-  @Mapping(target = "campaignCode", source = "campaignCode")
   @Mapping(target = "code", source = "code")
   @Mapping(target = "startDate", source = "ruleStartDate")
   @Mapping(target = "endDate", source = "ruleEndDate")
@@ -192,12 +199,9 @@ public interface ModelMapper {
       ApprovalStatus approvalStatus,
       ApprovalType approvalType,
       Long id,
-      String code,
-      String campaignCode,
-      Long budgetId,
-      String budgetCode);
+      String code);
   RuleApproval convetToBudgetApproval(
-          Long budgetId,
+         Long budgetId,
           LocalDate startDate,
           LocalDate endDate,
           ApprovalStatus approvalStatus,
@@ -369,8 +373,10 @@ public interface ModelMapper {
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   Budget createBudget(BudgetInput budgetInput, LocalDate startDate, LocalDate endDate);
 
-//  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
-
+  //  List<BudgetOutput> convertToBudgetOutPut(List<Budget> content);
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetDetailOutput getDetailBudget(Budget budget);
 
   List<SourceDataMapOutput> convertToSourceDataMapOutputOutputs(List<SourceDataMap> sourceDataMaps);
@@ -379,8 +385,12 @@ public interface ModelMapper {
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetOutput convertToBudgetOutPut(Budget budget);
-
+  
   RulePOCOutput convertRulePOCOutput(
           RulePOC rulePOC);
+
+  @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
+  Campaign createCampaign(CampaignInput campaignInput, LocalDate startDate, LocalDate endDate);
 
 }

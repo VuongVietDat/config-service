@@ -14,22 +14,22 @@ import org.springframework.util.CollectionUtils;
 import vn.com.atomi.loyalty.base.data.BaseService;
 import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
-import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.input.ApprovalInput;
 import vn.com.atomi.loyalty.config.dto.input.CampaignInput;
+import vn.com.atomi.loyalty.config.dto.input.CampaignUpdateInput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignApprovalOutput;
 import vn.com.atomi.loyalty.config.dto.output.CampaignOutput;
 import vn.com.atomi.loyalty.config.dto.output.ComparisonOutput;
 import vn.com.atomi.loyalty.config.entity.CampaignApproval;
-import vn.com.atomi.loyalty.config.enums.ApprovalStatus;
-import vn.com.atomi.loyalty.config.enums.ApprovalType;
-import vn.com.atomi.loyalty.config.enums.ErrorCode;
-import vn.com.atomi.loyalty.config.enums.Status;
+import vn.com.atomi.loyalty.config.enums.*;
 import vn.com.atomi.loyalty.config.feign.LoyaltyCoreClient;
+import vn.com.atomi.loyalty.config.repository.BudgetRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignApprovalRepository;
 import vn.com.atomi.loyalty.config.repository.CampaignRepository;
 import vn.com.atomi.loyalty.config.service.CampaignService;
 import vn.com.atomi.loyalty.config.utils.Utils;
+import static vn.com.atomi.loyalty.config.enums.ApprovalType.UPDATE;
+import static vn.com.atomi.loyalty.config.enums.Status.INACTIVE;
 
 /**
  * @author haidv
@@ -42,6 +42,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   private final CampaignApprovalRepository campaignApprovalRepository;
   private final CampaignRepository campaignRepository;
   private final LoyaltyCoreClient loyaltyCoreClient;
+  private final BudgetRepository budgetRepository;
 
   @Override
   public void createCampaign(CampaignInput campaignInput) {
@@ -49,26 +50,59 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var endDate = Utils.convertToLocalDate(campaignInput.getEndDate());
 
     // kiểm tra customer group
-    if (Boolean.FALSE.equals(
-        loyaltyCoreClient
-            .checkCustomerGroupExisted(
-                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
-            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
+//    if (Boolean.FALSE.equals(
+//        loyaltyCoreClient
+//            .checkCustomerGroupExisted(
+//                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
+//            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
+    var lastestCampaign = campaignRepository.findTopByOrderByCreatedAtDesc();
+//    var code = lastestCampaign.get().getCode();
+//    campaignInput.setCode(code);
 
+    String lastCode = lastestCampaign.get().getCode();
+    String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (e.g., "CD")
+    String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (e.g., "000")
+
+// Chuyển phần số thành Integer để tăng giá trị
+    int newNumber = Integer.parseInt(numberPart) + 1;
+
+// Định dạng lại mã mới với phần số có độ dài cố định (ví dụ: 3 chữ số)
+    String newCode = prefix + String.format("%03d", newNumber);
+
+    campaignInput.setCode(newCode);
+// Gán lại cho campaign
+     campaignInput.setCode(newCode);
+    // kiểm tra budget
+    var budget =
+            budgetRepository
+                    .findByDeletedFalseAndIdAndStatus(campaignInput.getBudgetId(), BudgetStatus.ACTIVE)
+                    .orElseThrow(() -> new BaseException(ErrorCode.BUDGET_NOT_EXISTED));
+    var campaign = super.modelMapper.createCampaign(campaignInput, startDate, endDate);
+    campaign.setStatus(INACTIVE);
+    if (campaign.getBudgetAmount()<=budget.getTotalBudget()){
+      campaignRepository.save(campaign);
+    }
+    else {
+      throw new BaseException(ErrorCode.ERROR_BUDGET_AMOUNT);
+    }
     // tạo code
     var id = campaignApprovalRepository.getSequence();
-    var code = Utils.generateCode(id, CampaignApproval.class.getSimpleName());
-
     // lưu bản ghi chờ duyệt
     var approval =
         modelMapper.convertToCampaignApproval(
-            campaignInput,
+            campaign.getId(),
+            campaign.getCode(),
+            campaign.getName(),
+            campaign.getBudgetAmount(),
+            campaign.getDescription(),
             startDate,
             endDate,
             ApprovalStatus.WAITING,
             ApprovalType.CREATE,
             id,
-            code);
+            budget.getTotalBudget());
+    approval.setApprovalStatus(campaignInput.getApprovalStatus());
+    approval = campaignApprovalRepository.save(approval);
     campaignApprovalRepository.save(approval);
   }
 
@@ -83,6 +117,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String endApprovedDate,
       String name,
       String code,
+      Long totalBudget,
+      Long budgetAmount,
+      Long budgetId,
       Pageable pageable) {
     var stDate = Utils.convertToLocalDateTimeStartDay(startApprovedDate);
     var edDate = Utils.convertToLocalDateTimeEndDay(endApprovedDate);
@@ -105,6 +142,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             Utils.makeLikeParameter(code),
             stDate,
             edDate,
+            budgetAmount,
+            totalBudget,
+            budgetId,
             pageable);
 
     if (CollectionUtils.isEmpty(campaignPage.getContent()))
@@ -130,6 +170,10 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String endDate,
       String name,
       String code,
+      Long budgetId,
+      Long budgetAmount,
+      Long totalAmount,
+      ApprovalStatus approvalStatus,
       Pageable pageable) {
     var campaignPage =
         campaignRepository.findByCondition(
@@ -138,9 +182,22 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
             status,
             Utils.convertToLocalDate(startDate),
             Utils.convertToLocalDate(endDate),
+            budgetId,
+            budgetAmount,
+            totalAmount,
+            approvalStatus,
             pageable);
-    return new ResponsePage<>(
-        campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
+    var campaignOutputs = campaignPage.getContent().stream().map(campaign -> {
+      var output = modelMapper.convertToCampaignOutput(campaign);
+      var campaignApproval = campaignApprovalRepository.findByCampaignId(campaign.getId());
+      if (campaignApproval.isPresent()) {
+        output.setApprovalStatus(campaignApproval.get().getApprovalStatus());
+      }
+      return output;
+    }).collect(Collectors.toList());
+    return new ResponsePage<>(campaignPage, campaignOutputs);
+//    return new ResponsePage<>(
+//        campaignPage, super.modelMapper.convertToCampaignOutput(campaignPage.getContent()));
   }
 
   @Override
@@ -149,7 +206,13 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
-    return super.modelMapper.convertToCampaignOutput(campaign);
+    var out =  super.modelMapper.convertToCampaignOutput(campaign);
+    var approvalId = campaignApprovalRepository.findByCampaignId(campaign.getId());
+    out.setApprovalCampaignId(approvalId.get().getId());
+    out.setApprovalStatus(approvalId.get().getApprovalStatus());
+    var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
+    out.setBudgetName(budgetId.get().getName());
+    return out;
   }
 
   @Override
@@ -159,49 +222,94 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignApprovalRepository
             .findByDeletedFalseAndIdAndApprovalStatus(input.getId(), ApprovalStatus.WAITING)
             .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
-    if (input.getIsAccepted()) {
-      // trường hợp phê duyệt tạo
-      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
-        // lưu thông tin
-        var campaign = super.modelMapper.convertToCampaign(campaignApproval);
-        campaign = campaignRepository.save(campaign);
-        campaignApproval.setCampaignId(campaign.getId());
-      }
-
-      // trường hợp phê duyệt cập nhật
-      if (ApprovalType.UPDATE.equals(campaignApproval.getApprovalType())) {
-        // lấy thông tin hiện tại
-        var currentRule =
-            campaignRepository
-                .findByDeletedFalseAndId(campaignApproval.getCampaignId())
-                .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
-        currentRule = super.modelMapper.convertToCampaign(currentRule, campaignApproval);
-        campaignRepository.save(currentRule);
-      }
-    }
+//    if (input.getIsAccepted()) {
+//      // trường hợp phê duyệt tạo
+//      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
+//        // lưu thông tin
+//        var campaign = super.modelMapper.convertToCampaign(campaignApproval);
+//        campaign = campaignRepository.save(campaign);
+//        campaignApproval.setCampaignId(campaign.getId());
+//      }
+//
+//      // trường hợp phê duyệt cập nhật
+//      if (UPDATE.equals(campaignApproval.getApprovalType())) {
+//        // lấy thông tin hiện tại
+//        var currentCampaign =
+//            campaignRepository
+//                .findByDeletedFalseAndId(campaignApproval.getCampaignId())
+//                .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+//        currentCampaign = super.modelMapper.convertToCampaign(currentCampaign, campaignApproval);
+//        campaignRepository.save(currentCampaign);
+//      }
+//    }
     // cập nhật trạng thái bản ghi chờ duyệt
     campaignApproval.setApprovalStatus(
         input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
     campaignApproval.setApprovalComment(input.getComment());
+    campaignApproval.setApprover(campaignApproval.getCreatedBy());
+    campaignApproval.setStatus(campaignApproval.getStatus());
     campaignApprovalRepository.save(campaignApproval);
   }
 
   @Override
-  public void updateCampaign(Long id, CampaignInput campaignInput) {
-    // lấy record hiện tại
-    var campaign =
-        campaignRepository
-            .findByDeletedFalseAndId(id)
-            .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+//  public void updateCampaign1(Long id, CampaignInput campaignInput) {
+//    // lấy record hiện tại
+//    var campaign =
+//        campaignRepository
+//            .findByDeletedFalseAndId(id)
+//            .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
+//
+//    // todo: check các field ảnh hưởng tới rules
+//    // map data mới vào chiến dịch hiện tại
+//    var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
+//    // tạo bản ghi chờ duyệt
+//    var campaignApproval =
+//        super.modelMapper.convertToCampaignApproval(
+//            newCampaign, ApprovalStatus.WAITING, ApprovalType.UPDATE);
+//    campaignApprovalRepository.save(campaignApproval);
+//  }
 
-    // todo: check các field ảnh hưởng tới rules
-    // map data mới vào chiến dịch hiện tại
-    var newCampaign = super.modelMapper.convertToCampaign(campaign, campaignInput);
-    // tạo bản ghi chờ duyệt
-    var campaignApproval =
-        super.modelMapper.convertToCampaignApproval(
-            newCampaign, ApprovalStatus.WAITING, ApprovalType.UPDATE);
-    campaignApprovalRepository.save(campaignApproval);
+  public void updateCampaign(CampaignUpdateInput campaignUpdateInput) {
+    var campaign =
+            campaignRepository
+                    .findByDeletedFalseAndId(campaignUpdateInput.getId())
+                    .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
+    var campaignApproval = campaignApprovalRepository.findByCampaignId(campaign.getId());
+    //check trang thai phe duyet duoi db cua budget
+    if (campaignApproval.get().getApprovalStatus()==ApprovalStatus.RECALL) {
+      if (campaignUpdateInput.getName() != null) {
+        campaign.setName(campaignUpdateInput.getName());
+        campaignApproval.get().setName(campaignUpdateInput.getName());
+      }
+      campaign.setBudgetAmount(campaignUpdateInput.getBudgetAmount());
+      campaignApproval.get().setBudgetAmount(campaignUpdateInput.getBudgetAmount());
+      campaign.setDescription(campaignUpdateInput.getDescription());
+      campaignApproval.get().setDescription(campaignUpdateInput.getDescription());
+      if (campaignUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+        campaignApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
+      }
+      else if (campaignUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL){
+        campaignApproval.get().setApprovalStatus(ApprovalStatus.RECALL);
+      }
+      campaignApproval.get().setApprovalType(UPDATE);
+      campaignRepository.save(campaign);
+    }
+    //trang thai duyet ACCEPTED Va nam trong khoang thoi gian hieu luc: INACTIVE -> ACTIVE
+    else if(campaignApproval.get().getApprovalStatus()==ApprovalStatus.ACCEPTED){
+      LocalDate currentDate = LocalDate.now();
+      if (campaign.getStartDate().isAfter(currentDate) && campaign.getEndDate().isBefore(currentDate)){
+        throw new BaseException(ErrorCode.CHANGE_STATUS_FAILED);
+      }
+      else {
+        campaign.setStatus(campaignUpdateInput.getStatus());
+      }
+      var budget = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
+      campaignApproval.get().setApprovalType(UPDATE);
+      campaignRepository.save(campaign);
+    }
+    else {
+      throw new BaseException(ErrorCode.INVALID_APPROVAL_STATUS);
+    }
   }
 
   @Override
@@ -226,7 +334,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignApprovalRepository
             .findByDeletedFalseAndId(id)
             .orElseThrow(() -> new BaseException(ErrorCode.CAMPAIGN_NOT_EXISTED));
-    if (!ApprovalType.UPDATE.equals(newCampaignApproval.getApprovalType())) {
+    if (!UPDATE.equals(newCampaignApproval.getApprovalType())) {
       throw new BaseException(ErrorCode.APPROVE_TYPE_NOT_MATCH_UPDATE);
     }
     // tìm kiếm bản ghi đã phê duyệt gần nhất

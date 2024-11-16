@@ -29,11 +29,17 @@ public class Budget extends BaseEntity {
       allocationSize = 1)
   private Long id;
 
-  @Column(name = "DECISION_NUMBER")
+  @Column(name = "DECISION_NUMBER", unique = true, nullable = false)
   private String decisionNumber;
 
   @Column(name = "TOTAL_BUDGET")
   private Long totalBudget;
+
+  @Column(name = "TOTAL_POINTS_SPENT")
+  private Long totalPointsSpent;
+
+  @Column(name = "TOTAL_POINTS_ADDED")
+  private Long totalPointsAdded;
 
   @Column(name = "NAME")
   private String name;
@@ -54,5 +60,7 @@ public class Budget extends BaseEntity {
 //  @OneToMany(mappedBy = "budget")
 //  private List<RuleApproval> orderItems = new ArrayList<>();
 
+  @Column(name = "IS_INACTIVE_BY_SYSTEM")
+  private boolean inactiveBySystem;
 }
 

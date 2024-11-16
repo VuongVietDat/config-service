@@ -385,8 +385,12 @@ public interface ModelMapper {
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetOutput convertToBudgetOutPut(Budget budget);
+  
+  RulePOCOutput convertRulePOCOutput(
+          RulePOC rulePOC);
 
   @Mapping(target = "startDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   @Mapping(target = "endDate", dateFormat = DateConstant.STR_PLAN_DD_MM_YYYY_STROKE)
   Campaign createCampaign(CampaignInput campaignInput, LocalDate startDate, LocalDate endDate);
+
 }

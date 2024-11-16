@@ -380,4 +380,7 @@ public interface ModelMapper {
   @Mapping(target = "approvalStatus", ignore = true) // Ignore this field during mapping
   BudgetOutput convertToBudgetOutPut(Budget budget);
 
+  RulePOCOutput convertRulePOCOutput(
+          RulePOC rulePOC);
+
 }

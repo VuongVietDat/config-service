@@ -1,8 +1,13 @@
 package vn.com.atomi.loyalty.config.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import vn.com.atomi.loyalty.base.data.BaseEntity;
+import vn.com.atomi.loyalty.config.enums.PointType;
+import vn.com.atomi.loyalty.config.enums.Status;
+
+import java.time.LocalDate;
 
 @Builder
 @Setter
@@ -45,5 +50,19 @@ public class RulePOC extends BaseEntity {
 
     @Column(name = "LIMIT_EVENT_PER_USER") //Limit diem cho 1 user tren 1 su kien
     private Long limitEventPerUser;
+
+    @Column(name = "POINT_TYPE")
+    @Enumerated(EnumType.STRING)
+    private PointType pointType;
+
+    @Column(name = "START_DATE")
+    private LocalDate startDate;
+
+    @Column(name = "END_DATE")
+    private LocalDate endDate;
+
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 }

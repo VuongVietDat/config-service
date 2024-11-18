@@ -47,7 +47,8 @@ public enum ErrorCode implements AbstractError {
   BUDGET_NOT_EXISTED(1022, "Ngân sách không tồn tại.", HttpStatus.NOT_FOUND),
   ERROR_BUDGET_AMOUNT(1023, "Budget Campaign phải nhỏ hơn total Budget", HttpStatus.NOT_FOUND),
   INVALID_DATE_RANGE(1024, "Không được chọn ngày trong quá khứ", HttpStatus.BAD_REQUEST),
-  CHANGE_STATUS_FAILED(1025, "Không thể chỉnh sửa trạng thái ngoài thời gian hiệu lực", HttpStatus.BAD_REQUEST)
+  CHANGE_STATUS_FAILED(1025, "Không thể chỉnh sửa trạng thái ngoài thời gian hiệu lực", HttpStatus.BAD_REQUEST),
+  CONDITION_BUDGET_FAILED_APPROVAL_STATUS(1026, "Thời gian hiệu lực của bản ghi gửi phê duyệt đã hết, vui lòng tạo bản ghi mới trên hệ thống!", HttpStatus.BAD_REQUEST)
   ;
 
   private final int code;

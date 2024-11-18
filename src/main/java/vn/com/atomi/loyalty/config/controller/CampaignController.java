@@ -215,4 +215,10 @@ public class CampaignController extends BaseController {
       @RequestParam Long customerGroupId) {
     return ResponseUtils.success(campaignService.checkCampaignActive(customerGroupId));
   }
+
+    @GetMapping("/new-code")
+    public ResponseEntity<String> getNewCampaignCode() {
+        String newCode = campaignService.generateNewCampaignCode();
+        return ResponseEntity.ok(newCode);
+    }
 }

@@ -71,4 +71,5 @@ public interface CampaignRepository extends JpaRepository<Campaign, Long> {
 
   @Query("SELECT c FROM Campaign c WHERE c.deleted = false ORDER BY c.createdAt DESC LIMIT 1")
   Optional<Campaign> findTopByOrderByCreatedAtDesc();
+  Boolean existsByCode(String code);
 }

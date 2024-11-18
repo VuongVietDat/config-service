@@ -145,8 +145,12 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
         budget.setStatus(budgetUpdateInput.getStatus());
       }
       budget.setTotalBudget(budgetUpdateInput.getTotalBudget());
-
+      // fix trong man cap nhat ngan sach co duoc phep gui phe duyet hay ko
       if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+        LocalDate currentDate = LocalDate.now();
+        if (budget.getEndDate().isBefore(currentDate)) {
+          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED_APPROVAL_STATUS);
+        }
         budgetApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
       }
       else if (budgetUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL){

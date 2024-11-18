@@ -30,7 +30,7 @@ import vn.com.atomi.loyalty.config.service.CampaignService;
 import vn.com.atomi.loyalty.config.utils.Utils;
 import static vn.com.atomi.loyalty.config.enums.ApprovalType.UPDATE;
 import static vn.com.atomi.loyalty.config.enums.Status.INACTIVE;
-
+import vn.com.atomi.loyalty.config.entity.Campaign;
 /**
  * @author haidv
  * @version 1.0
@@ -370,5 +370,24 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   @Override
   public Boolean checkCampaignActive(Long groupId) {
     return campaignRepository.existsByActiveCampaign(groupId, LocalDate.now());
+  }
+
+
+  public String generateNewCampaignCode() {
+    // Lấy campaign mới nhất
+    var latestCampaign = campaignRepository.findTopByOrderByCreatedAtDesc();
+
+    // Mặc định nếu không có campaign nào
+    String lastCode = latestCampaign.map(Campaign::getCode).orElse("CAM-000");
+
+    // Phân tách tiền tố và số thứ tự
+    String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (ví dụ: "CAM-")
+    String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (ví dụ: "000")
+
+    // Chuyển phần số sang Integer và tăng giá trị
+    int newNumber = Integer.parseInt(numberPart) + 1;
+
+    // Tạo mã mới với phần số có độ dài cố định (ví dụ: 3 chữ số)
+    return prefix + String.format("%03d", newNumber);
   }
 }

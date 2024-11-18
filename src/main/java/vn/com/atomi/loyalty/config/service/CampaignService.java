@@ -52,4 +52,6 @@ public interface CampaignService {
   List<ComparisonOutput> geCampaignApprovalComparison(Long id);
 
   Boolean checkCampaignActive(Long groupId);
+
+  String generateNewCampaignCode();
 }

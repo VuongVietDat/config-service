@@ -55,23 +55,16 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
 //            .checkCustomerGroupExisted(
 //                RequestUtils.extractRequestId(), campaignInput.getCustomerGroupId())
 //            .getData())) throw new BaseException(ErrorCode.CUSTOMER_GROUP_NOT_EXISTED);
-    var lastestCampaign = campaignRepository.findTopByOrderByCreatedAtDesc();
-//    var code = lastestCampaign.get().getCode();
-//    campaignInput.setCode(code);
-
-    String lastCode = lastestCampaign.get().getCode();
-    String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (e.g., "CD")
-    String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (e.g., "000")
-
-// Chuyển phần số thành Integer để tăng giá trị
-    int newNumber = Integer.parseInt(numberPart) + 1;
-
-// Định dạng lại mã mới với phần số có độ dài cố định (ví dụ: 3 chữ số)
-    String newCode = prefix + String.format("%03d", newNumber);
-
-    campaignInput.setCode(newCode);
-// Gán lại cho campaign
-     campaignInput.setCode(newCode);
+    Boolean isCheckCode = campaignRepository.existsByCode(campaignInput.getCode());
+    if (isCheckCode) {
+      var lastestCampaign = campaignRepository.findTopByOrderByCreatedAtDesc();
+      String lastCode = lastestCampaign.get().getCode();
+      String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (e.g., "CD")
+      String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (e.g., "000")
+      int newNumber = Integer.parseInt(numberPart) + 1;
+      String newCode = prefix + String.format("%03d", newNumber);
+      campaignInput.setCode(newCode);
+    }
     // kiểm tra budget
     var budget =
             budgetRepository

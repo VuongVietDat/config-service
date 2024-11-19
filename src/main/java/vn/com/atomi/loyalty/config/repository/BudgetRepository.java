@@ -36,11 +36,11 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
 //                          )
           value = "SELECT a "
                   + "FROM Budget a "
-                  + "WHERE (:decisionNumber IS NULL OR a.decisionNumber LIKE %:decisionNumber%) "
+                  + "WHERE (:decisionNumber IS NULL OR lower(a.decisionNumber) like lower('%' || :decisionNumber || '%')) "
                   + "AND (:totalBudget IS NULL OR a.totalBudget = :totalBudget) "
                   + "AND (a.deleted = false) "
                   + "AND (:status IS NULL OR a.status = :status) "
-                  + "AND (:name IS NULL OR a.name LIKE %:name%) "
+                  + "AND (:name is null or lower(a.name) like lower('%' || :name || '%')) "
                   + "AND (:startDate IS NULL OR a.startDate >= :startDate) "
                   + "AND (:endDate IS NULL OR a.endDate <= :endDate) "
                   + "AND (:approvalStatus IS NULL OR EXISTS ( "
@@ -74,4 +74,11 @@ public interface BudgetRepository extends JpaRepository<Budget, Long> {
   @Query(
           "update Budget b set b.status = vn.com.atomi.loyalty.config.enums.BudgetStatus.INACTIVE, b.inactiveBySystem = true where b.endDate < :endDate")
   void automaticallyExpiresBudget(LocalDate endDate);
+
+  @Transactional
+  @Modifying
+  @Query(
+          "update Budget b set b.status = vn.com.atomi.loyalty.config.enums.BudgetStatus.ACTIVE, b.inactiveBySystem = false where b.startDate = :startDate")
+  void automaticallyActiveBudget(LocalDate startDate);
+
 }

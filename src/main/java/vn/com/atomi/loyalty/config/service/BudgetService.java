@@ -31,4 +31,6 @@ public interface BudgetService {
   void approveBudget(ApprovalInput input);
 
   void automaticallyExpiresBudget();
+
+  void automaticallyActiveBudget();
 }

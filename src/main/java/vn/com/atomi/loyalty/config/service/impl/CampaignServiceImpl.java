@@ -1,6 +1,7 @@
 package vn.com.atomi.loyalty.config.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -205,6 +206,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     out.setApprovalStatus(approvalId.get().getApprovalStatus());
     var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
     out.setBudgetName(budgetId.get().getName());
+    out.setDecisionNumber(budgetId.get().getDecisionNumber());
     return out;
   }
 
@@ -215,6 +217,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
         campaignApprovalRepository
             .findByDeletedFalseAndIdAndApprovalStatus(input.getId(), ApprovalStatus.WAITING)
             .orElseThrow(() -> new BaseException(ErrorCode.APPROVING_RECORD_NOT_EXISTED));
+      var campaignOut = campaignRepository.findByDeletedFalseAndId(campaignApproval.getCampaignId());
 //    if (input.getIsAccepted()) {
 //      // trường hợp phê duyệt tạo
 //      if (ApprovalType.CREATE.equals(campaignApproval.getApprovalType())) {
@@ -236,11 +239,22 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
 //      }
 //    }
     // cập nhật trạng thái bản ghi chờ duyệt
-    campaignApproval.setApprovalStatus(
-        input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
     campaignApproval.setApprovalComment(input.getComment());
     campaignApproval.setApprover(campaignApproval.getCreatedBy());
-    campaignApproval.setStatus(campaignApproval.getStatus());
+    if (input.getIsAccepted()) {
+      campaignApproval.setApprovalStatus(ApprovalStatus.ACCEPTED);
+      LocalDate currentDate = LocalDate.now();
+      if(campaignApproval.getStartDate().isAfter(currentDate) || campaignApproval.getEndDate().isBefore(currentDate)) {
+        campaignOut.get().setStatus(Status.INACTIVE);
+      }
+      else{
+        campaignOut.get().setStatus(Status.ACTIVE);
+      }
+      campaignOut.get().setUpdatedAt(LocalDateTime.now());
+    }
+    else{
+      campaignOut.get().setStatus(Status.INACTIVE);
+    }
     campaignApprovalRepository.save(campaignApproval);
   }
 
@@ -278,12 +292,37 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       campaignApproval.get().setBudgetAmount(campaignUpdateInput.getBudgetAmount());
       campaign.setDescription(campaignUpdateInput.getDescription());
       campaignApproval.get().setDescription(campaignUpdateInput.getDescription());
+      //check cap nhat trang thai INACTIVE --> ACTIVE
+      if (!campaignUpdateInput.getStatus().equals(campaign.getStatus()) && campaign.getStatus() == Status.INACTIVE) {
+        LocalDate currentDate = LocalDate.now();
+        if (campaign.getEndDate().isBefore(currentDate)) {
+          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED);
+        }
+        campaign.setStatus(campaignUpdateInput.getStatus());
+      }
+      if (!campaignUpdateInput.getStatus().equals(campaign.getStatus())) {
+        campaign.setStatus(campaignUpdateInput.getStatus());
+      }
+      // fix trong man cap nhat ngan sach co duoc phep gui phe duyet hay ko
       if (campaignUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+        LocalDate currentDate = LocalDate.now();
+        if (campaign.getStartDate().isAfter(currentDate)) {
+          campaignApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
+          campaign.setStatus(Status.INACTIVE);
+        }
+        if (campaign.getStartDate().isBefore(currentDate) && campaign.getEndDate().isAfter(currentDate)){
+          campaignApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
+          campaign.setStatus(Status.INACTIVE);
+        }
+        if (campaign.getEndDate().isBefore(currentDate)) {
+          throw new BaseException(ErrorCode.CONDITION_BUDGET_FAILED_APPROVAL_STATUS);
+        }
         campaignApproval.get().setApprovalStatus(ApprovalStatus.WAITING);
       }
       else if (campaignUpdateInput.getApprovalStatus()==ApprovalStatus.RECALL){
         campaignApproval.get().setApprovalStatus(ApprovalStatus.RECALL);
       }
+      campaign.setBudgetId(campaignUpdateInput.getBudgetId());
       campaignApproval.get().setApprovalType(UPDATE);
       campaignRepository.save(campaign);
     }
@@ -300,7 +339,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       campaignApproval.get().setApprovalType(UPDATE);
       campaignRepository.save(campaign);
     }
-    else {
+    else if(campaignApproval.get().getApprovalStatus()==ApprovalStatus.REJECTED || campaignUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
       throw new BaseException(ErrorCode.INVALID_APPROVAL_STATUS);
     }
   }

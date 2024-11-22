@@ -28,7 +28,6 @@ public class CampaignUpdateInput {
     private String name;
 
     @Schema(description = "Mô tả")
-    @NotBlank
     private String description;
 
     @Schema(description = "Mã chiến dịch")

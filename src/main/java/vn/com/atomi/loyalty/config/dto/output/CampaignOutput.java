@@ -78,6 +78,9 @@ public class CampaignOutput {
   @Schema(description = "Tên ngân sách")
   private String budgetName;
 
+  @Schema(description = "Số quyết định ")
+  private String decisionNumber;
+
   @Schema(description = "Ngân sách nguồn")
   private Long totalBudget;
 

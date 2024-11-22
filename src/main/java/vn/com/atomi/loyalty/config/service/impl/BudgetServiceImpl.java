@@ -127,7 +127,6 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
             .findByDeletedFalseAndId(budgetUpdateInput.getId())
             .orElseThrow(() -> new BaseException(ErrorCode.RECORD_NOT_EXISTED));
     var budgetApproval = ruleApprovalRepository.findByBudgetId(budget.getId());
-    var campaign = campaignRepository.findByDeletedFalseAndBudgetId(budgetUpdateInput.getId());
     //check trang thai phe duyet duoi db cua budget
     //RECALL chi duoc cap nhat totalbudget
     if (budgetApproval.get().getApprovalStatus()==ApprovalStatus.RECALL) {
@@ -178,7 +177,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
       }
       budgetRepository.save(budget);
     }
-    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.REJECTED && budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
+    else if(budgetApproval.get().getApprovalStatus()==ApprovalStatus.REJECTED || budgetUpdateInput.getApprovalStatus()==ApprovalStatus.WAITING){
       throw new BaseException(ErrorCode.INVALID_APPROVAL_STATUS);
     }
   }
@@ -246,7 +245,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                         .build());
       }
     }
-    historyOutputs.sort(Comparator.comparing(HistoryOutput::getActionAt));
+    historyOutputs.sort(Comparator.comparing(HistoryOutput::getActionAt).reversed());
     return historyOutputs;
   }
   @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -289,6 +288,7 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
                     ? Status.INACTIVE
                     : Status.ACTIVE;
     var budget = super.modelMapper.convertToRule(budgetApproval, status, LocalDateTime.now());
+    var budgetOut = budgetRepository.findByDeletedFalseAndId(budgetApproval.getBudgetId());
     // cập nhật trạng thái bản ghi chờ duyệt
     budgetApproval.setApprovalStatus(
             input.getIsAccepted() ? ApprovalStatus.ACCEPTED : ApprovalStatus.REJECTED);
@@ -297,15 +297,16 @@ public class BudgetServiceImpl extends BaseService implements BudgetService {
     if (input.getIsAccepted()) {
       budgetApproval.setApprovalStatus(ApprovalStatus.ACCEPTED);
       LocalDate currentDate = LocalDate.now();
-      if(budget.getStartDate().isAfter(currentDate)) {
-        budget.setStatus(Status.INACTIVE);
+      if(budget.getStartDate().isAfter(currentDate)||budget.getEndDate().isBefore(currentDate)) {
+        budgetOut.get().setStatus(BudgetStatus.INACTIVE);
       }
-      if (budget.getStartDate().isBefore(currentDate) && budget.getEndDate().isAfter(currentDate)){
-        budget.setStatus(Status.ACTIVE);
+      else {
+        budgetOut.get().setStatus(BudgetStatus.ACTIVE);
       }
-      if (budget.getEndDate().isBefore(currentDate)) {
-        budget.setStatus(Status.INACTIVE);
-      }
+      budgetOut.get().setUpdatedAt(LocalDateTime.now());
+    }
+    else{
+      budgetOut.get().setStatus(BudgetStatus.INACTIVE);
     }
   }
 }

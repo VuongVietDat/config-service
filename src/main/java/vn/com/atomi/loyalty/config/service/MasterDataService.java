@@ -40,7 +40,10 @@ public interface MasterDataService {
       Status status, String customerType, Pageable pageable);
 
   ResponsePage<ProductLineOutput> getProductLines(
-      Status status, List<String> productTypes, Pageable pageable);
+		  Status status, List<String> productTypes, Pageable pageable);
+  
+  ResponsePage<ProductOutput> getProducts(
+      Status status, List<String> productes, Pageable pageable);
 
   SourceDataMapOutput getSourceDataMap(String sourceId, String sourceType, SourceGroup sourceGroup);
 

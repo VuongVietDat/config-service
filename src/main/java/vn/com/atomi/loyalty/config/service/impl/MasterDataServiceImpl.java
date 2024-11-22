@@ -17,6 +17,7 @@ import vn.com.atomi.loyalty.base.data.ResponsePage;
 import vn.com.atomi.loyalty.base.exception.BaseException;
 import vn.com.atomi.loyalty.base.utils.RequestUtils;
 import vn.com.atomi.loyalty.config.dto.output.*;
+import vn.com.atomi.loyalty.config.entity.Product;
 import vn.com.atomi.loyalty.config.entity.ProductLine;
 import vn.com.atomi.loyalty.config.entity.TransactionType;
 import vn.com.atomi.loyalty.config.enums.ErrorCode;
@@ -50,6 +51,8 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
   private final ProductTypeRepository productTypeRepository;
 
   private final ProductLineRepository productLineRepository;
+  
+  private final ProductRepository productRepository;
 
   private final SourceDataMapRepository sourceDataMapRepository;
 
@@ -198,17 +201,31 @@ public class MasterDataServiceImpl extends BaseService implements MasterDataServ
 
   @Override
   public ResponsePage<ProductLineOutput> getProductLines(
-      Status status, List<String> productTypes, Pageable pageable) {
-    Page<ProductLine> page;
-    if (!CollectionUtils.isEmpty(productTypes)) {
+		  Status status, List<String> productTypes, Pageable pageable) {
+	  Page<ProductLine> page;
+	  if (!CollectionUtils.isEmpty(productTypes)) {
+		  page =
+				  productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
+						  productTypes, status, pageable);
+	  } else {
+		  page = productLineRepository.findByDeletedFalseAndStatus(status, pageable);
+	  }
+	  return new ResponsePage<>(
+			  page, super.modelMapper.convertToProductLineOutputs(page.getContent()));
+  }
+  
+  @Override
+  public ResponsePage<ProductOutput> getProducts(
+      Status status, List<String> productLines, Pageable pageable) {
+    Page<Product> page;
+    if (!CollectionUtils.isEmpty(productLines)) {
       page =
-          productLineRepository.findByDeletedFalseAndProductTypeInAndStatus(
-              productTypes, status, pageable);
+          productRepository.findByDeletedFalseAndProductInAndStatus(productLines, status, pageable);
     } else {
-      page = productLineRepository.findByDeletedFalseAndStatus(status, pageable);
+      page = productRepository.findByDeletedFalseAndStatus(status, pageable);
     }
     return new ResponsePage<>(
-        page, super.modelMapper.convertToProductLineOutputs(page.getContent()));
+        page, super.modelMapper.convertToProductOutputs(page.getContent()));
   }
 
   @Override

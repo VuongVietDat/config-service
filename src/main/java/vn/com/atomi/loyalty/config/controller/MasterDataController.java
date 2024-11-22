@@ -66,6 +66,29 @@ public class MasterDataController extends BaseController {
         masterDataService.getProductLines(
             status, productTypes, super.pageable(pageNo, pageSize, sort)));
   }
+  
+  
+  @Operation(summary = "Api lấy danh sách danh sach sản phẩm dịch vụ")
+  @GetMapping("/master-data/products")
+  public ResponseEntity<ResponseData<ResponsePage<ProductOutput>>> getProducts(
+      @Parameter(description = "Số trang, bắt đầu từ 1", example = "1") @RequestParam
+          Integer pageNo,
+      @Parameter(description = "Số lượng bản ghi 1 trang, tối đa 200", example = "10") @RequestParam
+          Integer pageSize,
+      @Parameter(description = "Sắp xếp, Pattern: ^[a-z0-9]+:(asc|desc)")
+          @RequestParam(required = false, defaultValue = "orderNo:asc")
+          String sort,
+      @Parameter(description = "Trạng thái:</br> ACTIVE: Hiệu lực</br> INACTIVE: Không hiệu lực")
+          @RequestParam(required = false)
+          Status status,
+      @Parameter(description = "Danh sách sản phẩm", example = "VisaSignature,MasterCard")
+          @RequestParam(required = false)
+          List<String> productLines) {
+    return ResponseUtils.success(
+        masterDataService.getProducts(
+            status, productLines, super.pageable(pageNo, pageSize, sort)));
+  }
+  
 
   @Operation(summary = "Api (nội bộ) lấy danh sách danh mục dòng sản phẩm dịch vụ")
   @PreAuthorize(Authority.ROLE_SYSTEM)

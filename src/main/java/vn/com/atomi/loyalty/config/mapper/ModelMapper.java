@@ -371,6 +371,8 @@ public interface ModelMapper {
 
   List<ProductLineOutput> convertToProductLineOutputs(List<ProductLine> productLines);
 
+  List<ProductOutput> convertToProductOutputs(List<Product> products);
+
   SourceDataMapOutput convertToSourceDataMapOutputOutput(SourceDataMap data);
 
 

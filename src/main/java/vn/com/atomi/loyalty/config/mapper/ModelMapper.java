@@ -215,6 +215,11 @@ public interface ModelMapper {
   @Mapping(target = "id", ignore = true)
   Rule convertToRule(RuleApproval ruleApproval, Status status, LocalDateTime creationApprovalDate);
 
+  @Mapping(target = "creator", source = "campaignApproval.createdBy")
+  @Mapping(target = "creationDate", source = "campaignApproval.createdAt")
+  @Mapping(target = "status", source = "status")
+  Campaign convertToCampaign1(CampaignApproval campaignApproval, Status status, LocalDateTime creationApprovalDate);
+
   @Mapping(target = "creator", source = "createdBy")
   @Mapping(target = "creationDate", source = "createdAt")
   @Mapping(target = "id", ignore = true)

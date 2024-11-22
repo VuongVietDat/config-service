@@ -24,7 +24,6 @@ public class CampaignInput implements IDateInput {
   private String name;
 
   @Schema(description = "Mô tả")
-  @NotBlank
   private String description;
 
   @Schema(description = "Mã chiến dịch")

@@ -65,4 +65,15 @@ public class RulePOC extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "CAMPAIGN_ID")
+    private Long campaignId;
+
+    @Column(name = "CAMPAIGN_CODE")
+    private String campaignCode;
+
+    @Column(name = "BUDGET_ID")
+    private Long budgetId;
+
+    @Column(name = "BUDGET_CODE")
+    private String budgetCode;
 }

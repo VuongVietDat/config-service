@@ -63,7 +63,7 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
       String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (e.g., "CD")
       String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (e.g., "000")
       int newNumber = Integer.parseInt(numberPart) + 1;
-      String newCode = prefix + String.format("%03d", newNumber);
+      String newCode = prefix + String.format("%04d", newNumber);
       campaignInput.setCode(newCode);
     }
     // kiểm tra budget
@@ -204,9 +204,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var approvalId = campaignApprovalRepository.findByCampaignId(campaign.getId());
     out.setApprovalCampaignId(approvalId.get().getId());
     out.setApprovalStatus(approvalId.get().getApprovalStatus());
-    var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
-    out.setBudgetName(budgetId.get().getName());
-    out.setDecisionNumber(budgetId.get().getDecisionNumber());
+//    var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
+//    out.setBudgetName(budgetId.get().getName());
+//    out.setDecisionNumber(budgetId.get().getDecisionNumber());
     return out;
   }
 
@@ -408,18 +408,11 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
   public String generateNewCampaignCode() {
     // Lấy campaign mới nhất
     var latestCampaign = campaignRepository.findTopByOrderByCreatedAtDesc();
-
     // Mặc định nếu không có campaign nào
     String lastCode = latestCampaign.map(Campaign::getCode).orElse("CAM-000");
-
-    // Phân tách tiền tố và số thứ tự
     String prefix = lastCode.replaceAll("\\d", ""); // Lấy phần tiền tố (ví dụ: "CAM-")
     String numberPart = lastCode.replaceAll("\\D", ""); // Lấy phần số (ví dụ: "000")
-
-    // Chuyển phần số sang Integer và tăng giá trị
     int newNumber = Integer.parseInt(numberPart) + 1;
-
-    // Tạo mã mới với phần số có độ dài cố định (ví dụ: 3 chữ số)
-    return prefix + String.format("%03d", newNumber);
+    return prefix + String.format("%04d", newNumber);
   }
 }

@@ -184,8 +184,13 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var campaignOutputs = campaignPage.getContent().stream().map(campaign -> {
       var output = modelMapper.convertToCampaignOutput(campaign);
       var campaignApproval = campaignApprovalRepository.findByCampaignId(campaign.getId());
+      var budget = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
       if (campaignApproval.isPresent()) {
         output.setApprovalStatus(campaignApproval.get().getApprovalStatus());
+      }
+      if (budget.isPresent()) {
+        output.setDecisionNumber(budget.get().getDecisionNumber());
+        output.setBudgetName(budget.get().getName());
       }
       return output;
     }).collect(Collectors.toList());
@@ -204,9 +209,9 @@ public class CampaignServiceImpl extends BaseService implements CampaignService 
     var approvalId = campaignApprovalRepository.findByCampaignId(campaign.getId());
     out.setApprovalCampaignId(approvalId.get().getId());
     out.setApprovalStatus(approvalId.get().getApprovalStatus());
-//    var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
-//    out.setBudgetName(budgetId.get().getName());
-//    out.setDecisionNumber(budgetId.get().getDecisionNumber());
+    var budgetId = budgetRepository.findByDeletedFalseAndId(campaign.getBudgetId());
+    out.setBudgetName(budgetId.get().getName());
+    out.setDecisionNumber(budgetId.get().getDecisionNumber());
     return out;
   }
 

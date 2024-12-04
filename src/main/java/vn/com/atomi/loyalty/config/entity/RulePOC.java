@@ -51,6 +51,9 @@ public class RulePOC extends BaseEntity {
     @Column(name = "LIMIT_EVENT_PER_USER") //Limit diem cho 1 user tren 1 su kien
     private Long limitEventPerUser;
 
+    @Column(name = "POINT_BONUS") //Diem thuong them
+    private Long pointBonus;
+
     @Column(name = "POINT_TYPE")
     @Enumerated(EnumType.STRING)
     private PointType pointType;
